@@ -1,0 +1,19 @@
+{
+  "name": "indoornavi_api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test-concat": "grunt test",
+    "test-run": "jasmine",
+    "test": "npm-run-all test-concat test-run"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "grunt": "^1.0.1",
+    "grunt-contrib-concat": "^1.0.1",
+    "jasmine": "^2.8.0",
+    "npm-run-all": "^4.1.1"
+  }
+}

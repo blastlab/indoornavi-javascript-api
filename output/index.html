@@ -1,0 +1,28 @@
+<html>
+<head>
+
+</head>
+<body>
+<button disabled id="toggle10999" onclick="toggle10999()">Toggle 10999</button>
+<div id="map"></div>
+</body>
+<script src="indoorNavi.js"></script>
+<script>
+    const navi = new IndoorNavi(
+        'http://localhost:4200/',
+        'TestAdmin',
+        'map',
+        {
+            width: 800,
+            height: 600
+        }
+    );
+    navi.load(3).then(function () {
+        document.getElementById('toggle10999').removeAttribute('disabled');
+    });
+
+    function toggle10999() {
+        navi.toggleTagVisibility(10999);
+    }
+</script>
+</html>
