@@ -22,9 +22,17 @@ class Communication {
 
 class DOM {
     static getById(id) {
-        return document.getElementById(id).getElementsByTagName('iframe')[0];
+        return document.getElementById(id);
+    }
+
+    static getByTagName(tagName, container) {
+        if (!container) {
+            container = window;
+        }
+        return container.getElementsByTagName(tagName)[0]
     }
 }
+
 class IndoorNavi {
 
     /**
@@ -50,12 +58,12 @@ class IndoorNavi {
      @returns {Promise} promise that will resolve when connection to WebSocket has been established
      */
     load(mapId) {
-        const iFrame = document.createElement('iframe');
         const self = this;
+        const iFrame = document.createElement('iframe');
         iFrame.style.width = `${!!this.config.width ? this.config.width : 640}px`;
         iFrame.style.height = `${!!this.config.height ? this.config.height : 480}px`;
         iFrame.setAttribute('src', `${this.targetHost}/embedded/${mapId}?api_key=${this.apiKey}`);
-        document.getElementById(this.containerId).appendChild(iFrame);
+        DOM.getById(this.containerId).appendChild(iFrame);
         return new Promise(function(resolve) {
             iFrame.onload = function() {
                 self.isReady = true;
@@ -72,11 +80,10 @@ class IndoorNavi {
         if (!this.isReady) {
             throw new Error('IndoorNavi is not ready');
         }
-        const iFrame = DOM.getById(this.containerId);
-        // const communication = new Communication();
-        Communication.send(iFrame, {
+        const iFrame = DOM.getByTagName('iframe', DOM.getById(this.containerId));
+        Communication.send(iFrame, this.targetHost, {
             command: 'toggleTagVisibility',
             args: tagShortId
-        }, this.targetHost);
+        });
     }
 }

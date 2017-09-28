@@ -18,6 +18,7 @@ describe('IndoorNavi main module tests', function () {
         indoorNavi.isReady = true;
         spyOn(Communication, 'send').and.stub();
         spyOn(DOM, 'getById').and.stub();
+        spyOn(DOM, 'getByTagName').and.stub();
 
         // when
         indoorNavi.toggleTagVisibility(1);
@@ -25,5 +26,6 @@ describe('IndoorNavi main module tests', function () {
         // then
         expect(Communication.send).toHaveBeenCalled();
         expect(DOM.getById).toHaveBeenCalled();
+        expect(DOM.getByTagName).toHaveBeenCalled();
     });
 });

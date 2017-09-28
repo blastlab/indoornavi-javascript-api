@@ -9,7 +9,7 @@
 <script src="indoorNavi.js"></script>
 <script>
     const navi = new IndoorNavi(
-        'http://localhost:4200/',
+        'http://172.16.170.27:4200/',
         'TestAdmin',
         'map',
         {
@@ -17,7 +17,7 @@
             height: 600
         }
     );
-    navi.load(3).then(function () {
+    navi.load(9).then(function () {
         document.getElementById('toggle10999').removeAttribute('disabled');
     });
 

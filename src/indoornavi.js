@@ -45,10 +45,10 @@ class IndoorNavi {
         if (!this.isReady) {
             throw new Error('IndoorNavi is not ready');
         }
-        const iFrame = DOM.getById(this.containerId);
-        Communication.send(iFrame, {
+        const iFrame = DOM.getByTagName('iframe', DOM.getById(this.containerId));
+        Communication.send(iFrame, this.targetHost, {
             command: 'toggleTagVisibility',
             args: tagShortId
-        }, this.targetHost);
+        });
     }
 }
