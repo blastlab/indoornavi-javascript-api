@@ -18,6 +18,14 @@ class Communication {
     static send(iFrame, host, data) {
         iFrame.contentWindow.postMessage(data, host);
     }
+
+    static listen(eventName, callback) {
+        window.addEventListener('message', function(event) {
+            if ('type' in event.data && event.data.type === eventName) {
+                callback(event.data);
+            }
+        }, false);
+    }
 }
 
 class DOM {
@@ -85,5 +93,18 @@ class IndoorNavi {
             command: 'toggleTagVisibility',
             args: tagShortId
         });
+    }
+
+    addEventListener(eventName, callback) {
+        if (!this.isReady) {
+            throw new Error('IndoorNavi is not ready');
+        }
+        const iFrame = DOM.getByTagName('iframe', DOM.getById(this.containerId));
+        Communication.send(iFrame, this.targetHost, {
+            command: 'addEventListener',
+            args: eventName
+        });
+
+        Communication.listen(eventName, callback);
     }
 }
