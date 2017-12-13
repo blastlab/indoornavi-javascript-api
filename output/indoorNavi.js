@@ -86,7 +86,7 @@ class IndoorNavi {
      */
     toggleTagVisibility(tagShortId) {
         if (!this.isReady) {
-            throw new Error('IndoorNavi is not ready');
+            throw new Error('IndoorNavi is not ready. Call load() first and then when promise resolves IndoorNavi will be ready.');
         }
         const iFrame = DOM.getByTagName('iframe', DOM.getById(this.containerId));
         Communication.send(iFrame, this.targetHost, {
@@ -95,9 +95,14 @@ class IndoorNavi {
         });
     }
 
+    /**
+     * Add listener to react when the specific event occurs
+     * @param eventName - name of the specific event (i.e. 'area')
+     * @param callback - this method will be called when the specific event occurs
+     */
     addEventListener(eventName, callback) {
         if (!this.isReady) {
-            throw new Error('IndoorNavi is not ready');
+            throw new Error('IndoorNavi is not ready. Call load() first and then when promise resolves IndoorNavi will be ready.');
         }
         const iFrame = DOM.getByTagName('iframe', DOM.getById(this.containerId));
         Communication.send(iFrame, this.targetHost, {
