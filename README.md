@@ -19,3 +19,12 @@ It will make a single file file: output/indoorNavi.js
 ```
 npm run test
 ```
+
+## Create documentation
+
+1. install globally https://github.com/jsdoc3/jsdoc
+2. then run this command:
+
+```
+jsdoc path_to_indoorNavi.js
+```
