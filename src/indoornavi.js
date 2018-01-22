@@ -1,7 +1,6 @@
 class IndoorNavi {
-
     /**
-     * Create the IndoorNavi object to communicate with IndoorNavi server
+     * Create the IndoorNavi object to communicate with IndoorNavi frontend server
      * @param {string} targetHost - address to the IndoorNavi server
      * @param {string} apiKey - the API key created on IndoorNavi server (must be assigned to your domain)
      * @param {string} containerId of DOM element which will be used to create iframe with map
@@ -20,7 +19,7 @@ class IndoorNavi {
     /**
      * Load map with specific id
      @param {number} mapId
-     @returns {Promise} promise that will resolve when connection to WebSocket has been established
+     @returns {Promise} promise that will resolve when connection to WebSocket will be established
      */
     load(mapId) {
         const self = this;
@@ -54,8 +53,8 @@ class IndoorNavi {
 
     /**
      * Add listener to react when the specific event occurs
-     * @param eventName - name of the specific event (i.e. 'area')
-     * @param callback - this method will be called when the specific event occurs
+     * @param {string} eventName - name of the specific event (i.e. 'area', 'coordinates')
+     * @param {function} callback - this method will be called when the specific event occurs
      */
     addEventListener(eventName, callback) {
         if (!this.isReady) {

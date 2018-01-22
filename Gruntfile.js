@@ -5,7 +5,7 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
         // uglify: {
         //     options: {
-        //         banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
+        //         banner: '/*! <%= pkg.name %> <%= grunt.template.today('yyyy-mm-dd') %> */\n'
         //     },
         //     build: {
         //         src: 'src/<%= pkg.name %>.js',
@@ -17,11 +17,11 @@ module.exports = function(grunt) {
                 separator: '\n'
             },
             prod: {
-                src: ['src/http.js', 'src/communication.js', 'src/dom.js', 'src/indoornavi.js'],
+                src: ['src/helper/*', 'src/model/*', 'src/*'],
                 dest: 'output/indoorNavi.js'
             },
             test: {
-                src: ['src/indoornavi.js', 'src/communication.js', 'src/dom.js', 'spec/indoornavi.spec.js'],
+                src: ['src/helper/*', 'src/model/*', 'src/*', 'spec/indoornavi.spec.js'],
                 dest: 'output/indoorNavi.spec.js'
             }
         }

@@ -17,16 +17,26 @@
             height: 600
         }
     );
-    navi.load(3).then(function () {
-        document.getElementById('toggle10999').removeAttribute('disabled');
+    // navi.load(3).then(function () {
+    //     document.getElementById('toggle10999').removeAttribute('disabled');
+    //
+    //     navi.addEventListener('area', function(data) {
+    //         console.log(data);
+    //     });
+    //
+    //     navi.addEventListener('coordinates', function(data) {
+    //         console.log(data);
+    //     });
+    // });
 
-        navi.addEventListener('area', function(data) {
-            console.log(data);
-        });
-
-        navi.addEventListener('coordinates', function(data) {
-            console.log(data);
-        });
+    const from = new Date(2017, 10, 1);
+    const to = new Date(2017, 12, 30);
+    const report = new Report('http://localhost:90', 'TestAdmin');
+    report.getCoordinates(2, from, to).then(function(coordinates) {
+        console.log(coordinates);
+    });
+    report.getAreaEvents(2, from, to).then(function(events) {
+       console.log(events);
     });
 
     function toggle10999() {
