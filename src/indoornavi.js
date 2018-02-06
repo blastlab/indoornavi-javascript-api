@@ -41,11 +41,8 @@ class IndoorNavi {
      * @param tagShortId
      */
     toggleTagVisibility(tagShortId) {
-        if (!this.isReady) {
-            throw new Error('IndoorNavi is not ready. Call load() first and then when promise resolves IndoorNavi will be ready.');
-        }
-        const iFrame = DOM.getByTagName('iframe', DOM.getById(this.containerId));
-        Communication.send(iFrame, this.targetHost, {
+      this._checkIsReadyAndActivateIFrame();
+        Communication.send(this._iFrame, this.targetHost, {
             command: 'toggleTagVisibility',
             args: tagShortId
         });
@@ -57,15 +54,33 @@ class IndoorNavi {
      * @param {function} callback - this method will be called when the specific event occurs
      */
     addEventListener(eventName, callback) {
-        if (!this.isReady) {
-            throw new Error('IndoorNavi is not ready. Call load() first and then when promise resolves IndoorNavi will be ready.');
-        }
-        const iFrame = DOM.getByTagName('iframe', DOM.getById(this.containerId));
-        Communication.send(iFrame, this.targetHost, {
+      this._checkIsReadyAndActivateIFrame();
+        Communication.send(this._iFrame, this.targetHost, {
             command: 'addEventListener',
             args: eventName
         });
 
         Communication.listen(eventName, callback);
     }
+
+    /**
+     * Create polyline object
+     * @param id - unique id for the polyline svg group that will be placed on the map as DOM element
+     */
+     createPolyline(id) {
+       this._checkIsReadyAndActivateIFrame();
+       Communication.send(this._iFrame, this.targetHost, {
+           command: 'createPolyline',
+           args: id
+       });
+       // Communication.listen(eventName, object);
+     }
+
+     _checkIsReadyAndActivateIFrame() {
+       if (!this.isReady) {
+           throw new Error('IndoorNavi is not ready. Call load() first and then when promise resolves IndoorNavi will be ready.');
+       }
+      this._iFrame = DOM.getByTagName('iframe', DOM.getById(this.containerId));
+     }
+
 }
