@@ -4,6 +4,7 @@
 </head>
 <body>
 <button disabled id="toggle10999" onclick="toggle10999()">Toggle 10999</button>
+<button disabled id="drawPolyline" onclick="drawPolyline()">Draw Polyline</button>
 <div id="map"></div>
 </body>
 <script src="indoorNavi.js"></script>
@@ -19,6 +20,7 @@
     );
     navi.load(3).then(function () {
         document.getElementById('toggle10999').removeAttribute('disabled');
+        document.getElementById('drawPolyline').removeAttribute('disabled');
 
         navi.addEventListener('area', function(data) {
             console.log(data);
@@ -27,8 +29,6 @@
         navi.addEventListener('coordinates', function(data) {
             console.log(data);
         });
-
-        navi.createPolyline('11');
 
     });
 
@@ -44,6 +44,10 @@
     //
     function toggle10999() {
         navi.toggleTagVisibility(10999);
+    }
+
+    async function drawPolyline () {
+      const polyline = await navi.createObject();
     }
 
 </script>

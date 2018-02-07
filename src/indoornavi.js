@@ -63,19 +63,6 @@ class IndoorNavi {
         Communication.listen(eventName, callback);
     }
 
-    /**
-     * Create polyline object
-     * @param id - unique id for the polyline svg group that will be placed on the map as DOM element
-     */
-     createPolyline(id) {
-       this._checkIsReadyAndActivateIFrame();
-       Communication.send(this._iFrame, this.targetHost, {
-           command: 'createPolyline',
-           args: id
-       });
-       // Communication.listen(eventName, object);
-     }
-
      _checkIsReadyAndActivateIFrame() {
        if (!this.isReady) {
            throw new Error('IndoorNavi is not ready. Call load() first and then when promise resolves IndoorNavi will be ready.');

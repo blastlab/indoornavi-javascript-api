@@ -1,15 +1,16 @@
 class Communication {
     static send(iFrame, host, data) {
-        iFrame.contentWindow.postMessage(data, host);
+      iFrame.contentWindow.postMessage(data, host);
     }
 
-    static listen(eventName, callback) {
-        window.addEventListener('message', function(event) {
-            if ('type' in event.data && event.data.type === eventName) {
-                callback(event.data);
-            }
-        }, false);
-    }
+  static listen(eventName, callback) {
+    window.addEventListener('message', function(event) {
+      if ('type' in event.data && event.data.type === eventName) {
+        callback(event.data);
+      }
+    }, false);
+  }
+
 }
 
 class DOM {
@@ -190,13 +191,12 @@ class IndoorNavi {
      * Create polyline object
      * @param id - unique id for the polyline svg group that will be placed on the map as DOM element
      */
-     createPolyline(id) {
-       this._checkIsReadyAndActivateIFrame();
-       Communication.send(this._iFrame, this.targetHost, {
-           command: 'createPolyline',
-           args: id
-       });
-       // Communication.listen(eventName, object);
+      createObject() {
+        this._checkIsReadyAndActivateIFrame();
+        Communication.send(this._iFrame, this.targetHost, {
+          command: 'createObject'
+        });
+        Communication.listen('createObject', (data) => console.log(data));
      }
 
      _checkIsReadyAndActivateIFrame() {
