@@ -63,12 +63,6 @@ class IndoorNavi {
         Communication.listen(eventName, callback);
     }
 
-    /**
-     * Creates and returns polyline object that has methods for drawing polyline on map in the iframe.
-     * @method .draw() - draws polyline for given @param {array of objects} points - where points is @param {x: integer, y: integer} coordiante - real coordinates(x, y) of the point given in centimeters.
-     * @method .remove() - removes polyline from the map in the iframe.
-     */
-
      _checkIsReadyAndActivateIFrame() {
        if (!this.isReady) {
            throw new Error('IndoorNavi is not ready. Call load() first and then when promise resolves IndoorNavi will be ready.');

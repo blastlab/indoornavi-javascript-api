@@ -5,16 +5,19 @@
 <body>
 <button disabled id="toggle10999" onclick="toggle10999()">Toggle 10999</button>
 <button disabled id="drawPolyline" onclick="drawPolyline()">Draw Polyline</button>
+<button disabled id="removePolyline" onclick="removePolyline()">Remowe Polyline</button>
 <div id="map"></div>
 </body>
 <script src="indoorNavi.js"></script>
 <script>
+    //set poly as global variable to have acces to this from every function,
+    let poly = null;
     const  points = [
-      {x:100, y: 100},
-      {x:200, y: 200},
-      {x:300, y: 300},
-      {x:400, y: 400},
-      {x:500, y: 500}
+      {x:480, y: 480},
+      {x:1020, y: 480},
+      {x:1020, y: 1020},
+      {x:480, y: 1020},
+      {x:750, y: 750}
     ];
     const navi = new IndoorNavi(
         'http://localhost:4200',
@@ -28,6 +31,7 @@
     navi.load(4).then(function () {
         document.getElementById('toggle10999').removeAttribute('disabled');
         document.getElementById('drawPolyline').removeAttribute('disabled');
+        document.getElementById('removePolyline').removeAttribute('disabled');
 
         navi.addEventListener('area', function(data) {
             console.log(data);
@@ -36,7 +40,6 @@
         navi.addEventListener('coordinates', function(data) {
             console.log(data);
         });
-
 
     });
 
@@ -55,11 +58,18 @@
     }
 
     async function drawPolyline() {
-      var poly = new Polyline(navi);
+      poly = new Polyline(navi);
       poly.ready().then(() => {
         poly.draw(points);
-        poly.remove();
       });
+    }
+
+    async function removePolyline() {
+      if(!!poly) {
+        poly.ready().then(() => {
+          poly.remove();
+        });
+      }
     }
 
 </script>
