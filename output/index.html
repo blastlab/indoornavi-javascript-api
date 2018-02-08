@@ -9,6 +9,13 @@
 </body>
 <script src="indoorNavi.js"></script>
 <script>
+    const  points = [
+      {x:100, y: 100},
+      {x:200, y: 200},
+      {x:300, y: 300},
+      {x:400, y: 400},
+      {x:500, y: 500}
+    ];
     const navi = new IndoorNavi(
         'http://localhost:4200',
         'TestAdmin',
@@ -18,7 +25,7 @@
             height: 600
         }
     );
-    navi.load(3).then(function () {
+    navi.load(4).then(function () {
         document.getElementById('toggle10999').removeAttribute('disabled');
         document.getElementById('drawPolyline').removeAttribute('disabled');
 
@@ -29,6 +36,7 @@
         navi.addEventListener('coordinates', function(data) {
             console.log(data);
         });
+
 
     });
 
@@ -46,8 +54,12 @@
         navi.toggleTagVisibility(10999);
     }
 
-    async function drawPolyline () {
-      const polyline = await navi.createObject();
+    async function drawPolyline() {
+      var poly = new Polyline(navi);
+      poly.ready().then(() => {
+        poly.draw(points);
+        poly.remove();
+      });
     }
 
 </script>

@@ -11,4 +11,15 @@ class Communication {
     }, false);
   }
 
+  static listenOnce(eventName, callback, resolve) {
+    function handler(event) {
+      if ('type' in event.data && event.data.type === eventName && event.data.mapObjectId) {
+        window.removeEventListener('message', handler, false)
+        callback(event.data.mapObjectId);
+        resolve();
+      }
+    }
+    window.addEventListener('message', handler, false);
+  }
+
 }

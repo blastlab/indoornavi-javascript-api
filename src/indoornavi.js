@@ -42,7 +42,7 @@ class IndoorNavi {
      */
     toggleTagVisibility(tagShortId) {
       this._checkIsReadyAndActivateIFrame();
-        Communication.send(this._iFrame, this.targetHost, {
+        Communication.send(this.iFrame, this.targetHost, {
             command: 'toggleTagVisibility',
             args: tagShortId
         });
@@ -55,7 +55,7 @@ class IndoorNavi {
      */
     addEventListener(eventName, callback) {
       this._checkIsReadyAndActivateIFrame();
-        Communication.send(this._iFrame, this.targetHost, {
+        Communication.send(this.iFrame, this.targetHost, {
             command: 'addEventListener',
             args: eventName
         });
@@ -63,11 +63,17 @@ class IndoorNavi {
         Communication.listen(eventName, callback);
     }
 
+    /**
+     * Creates and returns polyline object that has methods for drawing polyline on map in the iframe.
+     * @method .draw() - draws polyline for given @param {array of objects} points - where points is @param {x: integer, y: integer} coordiante - real coordinates(x, y) of the point given in centimeters.
+     * @method .remove() - removes polyline from the map in the iframe.
+     */
+
      _checkIsReadyAndActivateIFrame() {
        if (!this.isReady) {
            throw new Error('IndoorNavi is not ready. Call load() first and then when promise resolves IndoorNavi will be ready.');
        }
-      this._iFrame = DOM.getByTagName('iframe', DOM.getById(this.containerId));
+      this.iFrame = DOM.getByTagName('iframe', DOM.getById(this.containerId));
      }
 
 }
