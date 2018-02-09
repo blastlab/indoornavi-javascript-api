@@ -1,7 +1,7 @@
 class Polyline {
   /**
-   * Create the polyline object in iframe that communicates with indoornavi frontend server
-   * @param {IndoorNavi} indornavi - instance of a Polyline class needs the Indornavi class injected to the constractor, to know where Polyline object is going to be created
+   * Creates the polyline object in iframe that communicates with indoornavi frontend server
+   * @param {IndoorNavi} instanceOfAClass - instance of a Polyline class needs the Indornavi class injected to the constractor, to know where Polyline object is going to be created
    */
   constructor(Navi) {
     this.navi = Navi;
@@ -9,7 +9,7 @@ class Polyline {
   }
 
   /**
-  * Returns a promise, that assures that instance of Polyline has been created on the injected Indornavi class, this method should be executed before calling draw() or remove() methods and those methods shuld be executed inside injected callback to after promise is resolved
+  * Returns a promise, that assures that instance of Polyline has been created on the injected Indornavi class, this method should be executed before calling draw() or remove() methods and those methods should to be executed inside callback, after promise is resolved
   */
   ready() {
     const self = this;
@@ -34,7 +34,7 @@ class Polyline {
   }
 
   /**
-   * Draws polyline for given array of points, this method can be executed multiple times and always starts drawing polyline from the last placed point
+   * Drawns polyline for given array of points, this method can be executed multiple times and always starts drawing polyline from the last placed point, if method is executed for the first time starting point is in first given point in the array of points.
    * @param {array} array - array containing points between which lines are going to be drawn, coordinates(x, y) of the point are given in centimeters from real distances (scale 1:1)
    */
   draw (points) {

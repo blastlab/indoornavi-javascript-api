@@ -12,13 +12,18 @@
 <script>
     //set poly as global variable to have acces to this from every function,
     let poly = null;
-    const  points = [
+    const  points0 = [
       {x:480, y: 480},
       {x:1020, y: 480},
       {x:1020, y: 1020},
       {x:480, y: 1020},
       {x:750, y: 750}
     ];
+    const  points1 = [
+      {x:600, y: 600},
+      {x:1100, y: 780}
+    ];
+
     const navi = new IndoorNavi(
         'http://localhost:4200',
         'TestAdmin',
@@ -28,7 +33,7 @@
             height: 600
         }
     );
-    navi.load(4).then(function () {
+    navi.load(5).then(function () {
         document.getElementById('toggle10999').removeAttribute('disabled');
         document.getElementById('drawPolyline').removeAttribute('disabled');
         document.getElementById('removePolyline').removeAttribute('disabled');
@@ -60,7 +65,8 @@
     async function drawPolyline() {
       poly = new Polyline(navi);
       poly.ready().then(() => {
-        poly.draw(points);
+        poly.draw(points0);
+        poly.draw(points1);
       });
     }
 
