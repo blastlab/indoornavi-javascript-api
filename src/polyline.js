@@ -4,8 +4,9 @@ class Polyline {
    * @param {IndoorNavi} instanceOfAClass - instance of a Polyline class needs the Indornavi class injected to the constractor, to know where Polyline object is going to be created
    */
   constructor(Navi) {
-    this.navi = Navi;
+    this._navi = Navi;
     this._id = null;
+    this._navi.checkIsReadyAndActivateIFrame();
   }
 
   /**
@@ -26,7 +27,7 @@ class Polyline {
         // create listener for event that will fire only once
         Communication.listenOnce('createObject', setPolyline.bind(self), resolve);
         // then send message
-        Communication.send(self.navi.iFrame, self.navi.targetHost, {
+        Communication.send(self._navi.iFrame, self._navi.targetHost, {
           command: 'createObject'
         });
       }
@@ -47,7 +48,7 @@ class Polyline {
       }
     });
     if (!!this._id) {
-      Communication.send(this.navi.iFrame, this.navi.targetHost, {
+      Communication.send(this._navi.iFrame, this._navi.targetHost, {
         command: 'drawObject',
         args: {
           type: 'POLYLINE',
@@ -67,7 +68,7 @@ class Polyline {
    */
   remove(){
     if(!!this._id) {
-      Communication.send(this.navi.iFrame, this.navi.targetHost, {
+      Communication.send(this._navi.iFrame, this._navi.targetHost, {
         command: 'removeObject',
         args: {
           type: 'POLYLINE',

@@ -165,9 +165,8 @@ class IndoorNavi {
         DOM.getById(this.containerId).appendChild(iFrame);
         return new Promise(function(resolve) {
             iFrame.onload = function() {
-              this.iFrame = DOM.getByTagName('iframe', DOM.getById(this.containerId));
-              self.isReady = true;
-              resolve();
+                self.isReady = true;
+                resolve();
             }
         });
     }
@@ -177,7 +176,7 @@ class IndoorNavi {
      * @param tagShortId
      */
     toggleTagVisibility(tagShortId) {
-      this._checkIsReady();
+      this.checkIsReadyAndActivateIFrame();
         Communication.send(this.iFrame, this.targetHost, {
             command: 'toggleTagVisibility',
             args: tagShortId
@@ -190,7 +189,7 @@ class IndoorNavi {
      * @param {function} callback - this method will be called when the specific event occurs
      */
     addEventListener(eventName, callback) {
-      this._checkIsReady();
+      this.checkIsReadyAndActivateIFrame();
         Communication.send(this.iFrame, this.targetHost, {
             command: 'addEventListener',
             args: eventName
@@ -199,10 +198,11 @@ class IndoorNavi {
         Communication.listen(eventName, callback);
     }
 
-     _checkIsReady() {
+     checkIsReadyAndActivateIFrame() {
        if (!this.isReady) {
            throw new Error('IndoorNavi is not ready. Call load() first and then when promise resolves IndoorNavi will be ready.');
        }
+      this.iFrame = DOM.getByTagName('iframe', DOM.getById(this.containerId));
      }
 
 }
@@ -214,8 +214,9 @@ class Polyline {
    * @param {IndoorNavi} instanceOfAClass - instance of a Polyline class needs the Indornavi class injected to the constractor, to know where Polyline object is going to be created
    */
   constructor(Navi) {
-    this.navi = Navi;
+    this._navi = Navi;
     this._id = null;
+    this._navi.checkIsReadyAndActivateIFrame();
   }
 
   /**
@@ -236,7 +237,7 @@ class Polyline {
         // create listener for event that will fire only once
         Communication.listenOnce('createObject', setPolyline.bind(self), resolve);
         // then send message
-        Communication.send(self.navi.iFrame, self.navi.targetHost, {
+        Communication.send(self._navi.iFrame, self._navi.targetHost, {
           command: 'createObject'
         });
       }
@@ -257,7 +258,7 @@ class Polyline {
       }
     });
     if (!!this._id) {
-      Communication.send(this.navi.iFrame, this.navi.targetHost, {
+      Communication.send(this._navi.iFrame, this._navi.targetHost, {
         command: 'drawObject',
         args: {
           type: 'POLYLINE',
@@ -277,7 +278,7 @@ class Polyline {
    */
   remove(){
     if(!!this._id) {
-      Communication.send(this.navi.iFrame, this.navi.targetHost, {
+      Communication.send(this._navi.iFrame, this._navi.targetHost, {
         command: 'removeObject',
         args: {
           type: 'POLYLINE',
