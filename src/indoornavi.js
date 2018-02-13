@@ -41,7 +41,8 @@ class IndoorNavi {
      * @param tagShortId
      */
     toggleTagVisibility(tagShortId) {
-      this.checkIsReadyAndActivateIFrame();
+      this.checkIsReady();
+      this.setIFrame();
         Communication.send(this.iFrame, this.targetHost, {
             command: 'toggleTagVisibility',
             args: tagShortId
@@ -54,7 +55,8 @@ class IndoorNavi {
      * @param {function} callback - this method will be called when the specific event occurs
      */
     addEventListener(eventName, callback) {
-      this.checkIsReadyAndActivateIFrame();
+      this.checkIsReady();
+      this.setIFrame();
         Communication.send(this.iFrame, this.targetHost, {
             command: 'addEventListener',
             args: eventName
@@ -63,10 +65,13 @@ class IndoorNavi {
         Communication.listen(eventName, callback);
     }
 
-     checkIsReadyAndActivateIFrame() {
+     checkIsReady() {
        if (!this.isReady) {
            throw new Error('IndoorNavi is not ready. Call load() first and then when promise resolves IndoorNavi will be ready.');
        }
+     }
+
+     setIFrame () {
       this.iFrame = DOM.getByTagName('iframe', DOM.getById(this.containerId));
      }
 
