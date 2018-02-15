@@ -21,4 +21,5 @@ class Communication {
     }
     window.addEventListener('message', handler, false);
   }
+
 }
