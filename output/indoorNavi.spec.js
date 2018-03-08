@@ -21,6 +21,7 @@ class Communication {
     }
     window.addEventListener('message', handler, false);
   }
+
 }
 
 class DOM {
@@ -131,126 +132,19 @@ class Coordinates {
     }
 }
 
-
-class IndoorNavi {
-    /**
-     * Create the IndoorNavi object to communicate with IndoorNavi frontend server
-     * @param {string} targetHost - address to the IndoorNavi server
-     * @param {string} apiKey - the API key created on IndoorNavi server (must be assigned to your domain)
-     * @param {string} containerId of DOM element which will be used to create iframe with map
-     * @param {object} config of the iframe
-     * @param {number} config.width of the iframe
-     * @param {number} config.height of the iframe
-     */
-    constructor(targetHost, apiKey, containerId, config) {
-        this.targetHost = targetHost;
-        this.apiKey = apiKey;
-        this.containerId = containerId;
-        this.isReady = false;
-        this.config = config;
-    }
-
-    /**
-     * Load map with specific id
-     @param {number} mapId
-     @returns {Promise} promise that will resolve when connection to WebSocket will be established
-     */
-    load(mapId) {
-        const self = this;
-        const iFrame = document.createElement('iframe');
-        iFrame.style.width = `${!!this.config.width ? this.config.width : 640}px`;
-        iFrame.style.height = `${!!this.config.height ? this.config.height : 480}px`;
-        iFrame.setAttribute('src', `${this.targetHost}/embedded/${mapId}?api_key=${this.apiKey}`);
-        DOM.getById(this.containerId).appendChild(iFrame);
-        return new Promise(function(resolve) {
-            iFrame.onload = function() {
-                self.isReady = true;
-                resolve();
-            }
-        });
-    }
-
-    /**
-     * Toggle the tag visibility
-     * @param tagShortId
-     */
-    toggleTagVisibility(tagShortId) {
-      this.checkIsReady();
-      this.setIFrame();
-        Communication.send(this.iFrame, this.targetHost, {
-            command: 'toggleTagVisibility',
-            args: tagShortId
-        });
-    }
-
-    /**
-     * Add listener to react when the specific event occurs
-     * @param {string} eventName - name of the specific event (i.e. 'area', 'coordinates')
-     * @param {function} callback - this method will be called when the specific event occurs
-     */
-    addEventListener(eventName, callback) {
-      this.checkIsReady();
-      this.setIFrame();
-        Communication.send(this.iFrame, this.targetHost, {
-            command: 'addEventListener',
-            args: eventName
-        });
-
-        Communication.listen(eventName, callback);
-    }
-
-     checkIsReady() {
-       if (!this.isReady) {
-           throw new Error('IndoorNavi is not ready. Call load() first and then when promise resolves IndoorNavi will be ready.');
-       }
-     }
-
-     setIFrame () {
-      this.iFrame = DOM.getByTagName('iframe', DOM.getById(this.containerId));
-     }
-
-}
-
-
-class Polyline {
+class Polyline extends Geometric {
   /**
-   * Creates the polyline object in iframe that communicates with indoornavi frontend server
-   * @param {Object} navi - instance of a Polyline class needs the Indornavi class injected to the constractor, to know where Polyline object is going to be created
+   * Creates the area object in iframe that communicates with indoornavi frontend server
+   * @extends GeometricObject
+   * @param {Object} navi - instance of a Area class needs the Indoornavi class injected to the constructor, to know where Area object is going to be created
    */
-  constructor(navi) {
-    this._navi = navi;
-    this._id = null;
-    this._navi.checkIsReady();
-    this._navi.setIFrame();
-  }
+   constructor(navi) {
+     super(navi);
+     this._type = 'POLYLINE';
+   }
 
   /**
-  * @returns {Promise} promise that will resolve when connection to WebSocket will be established, assures that instance of Polyline has been created on the injected Indornavi class, this method should be executed before calling draw() or remove() methods and those methods should to be executed inside callback, after promise is resolved
-  */
-  ready() {
-    const self = this;
-    function setPolyline (id) {
-      self._id = id;
-    }
-    if (!!self._id) {
-      // resolve imedietly
-      return new Promise(resolve => {
-        resolve();
-      })
-    }
-    return new Promise(resolve => {
-        // create listener for event that will fire only once
-        Communication.listenOnce('createObject', setPolyline.bind(self), resolve);
-        // then send message
-        Communication.send(self._navi.iFrame, self._navi.targetHost, {
-          command: 'createObject'
-        });
-      }
-    );
-  }
-
-  /**
-   * Drawns polyline for given array of points, this method can be executed multiple times and always starts drawing polyline from the last placed point, if method is executed for the first time starting point is in first given point in the array of points.
+   * Draws polyline for given array of points.
    * @param {array} points - array of points between which lines are going to be drawn, coordinates(x, y) of the point are given in centimeters from real distances (scale 1:1)
    */
   draw (points) {
@@ -266,7 +160,7 @@ class Polyline {
       Communication.send(this._navi.iFrame, this._navi.targetHost, {
         command: 'drawObject',
         args: {
-          type: 'POLYLINE',
+          type: this._type,
           object: {
             id: this._id,
             points: points
@@ -278,23 +172,60 @@ class Polyline {
     }
   }
 
+}
+
+class Area extends Geometric {
   /**
-   * Removes polyline and destroys it instance in the frontend server, but do not destroys Polyline class instance in your app
+   * Creates the area object in iframe that communicates with indoornavi frontend server
+   * @extends GeometricObject
+   * @param {Object} navi - instance of a Area class needs the Indoornavi class injected to the constructor, to know where Area object is going to be created
    */
-  remove(){
-    if(!!this._id) {
+  constructor(navi) {
+    super(navi);
+    this._type = 'AREA';
+  }
+
+  /**
+   * Draws area for given array of points.
+   * @param {array} points - array of points which will describe area to be drawn, coordinates(x, y) of the point are given in centimeters from real distances (scale 1:1). For less than 3 points supplied to this method, area isn't going to be drawn.
+   */
+  draw (points) {
+    let xStart = null;
+    let yStart = null;
+    let xEnd = null;
+    let yEnd = null;
+    if (!Array.isArray(points)) {
+      throw new Error('Given argument is not na array');
+    } else if (points.length < 3) {
+      throw new Error('Not enought points to draw an area');
+    }
+    points.forEach(point => {
+      if(!Number.isInteger(point.x) || !Number.isInteger(point.y)) {
+        throw new Error('Given points are in wrong format or coordianets x an y are not integers');
+      }
+    });
+    if (!!this._id) {
       Communication.send(this._navi.iFrame, this._navi.targetHost, {
-        command: 'removeObject',
+        command: 'drawObject',
         args: {
-          type: 'POLYLINE',
+          type: this._type,
           object: {
-            id: this._id
+            id: this._id,
+            points: points
           }
         }
       });
     } else {
-      throw new Error('Polyline is not created yet, use ready() method before executing draw(), or remove()');
+      throw new Error('Area is not created yet, use ready() method before executing draw(), or remove()');
     }
+  }
+
+  /**
+   * Fills area whit given color.
+   * @param {color} string - string that specifies the color. Supports color in hex format '#AABBCC' and 'rgb(255,255,255)';
+   */
+  setFillColor (color) {
+    this._setColor(color, 'fill');
   }
 
 }
