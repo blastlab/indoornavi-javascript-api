@@ -38,4 +38,8 @@ class Polyline extends Geometric {
     }
   }
 
+  setLineColor(color) {
+    this._setColor(color, 'stroke');
+  }
+
 }

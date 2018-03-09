@@ -75,6 +75,7 @@
         poly = new Polyline(navi);
         poly.ready().then(() => {
         poly.draw(points);
+        poly.setLineColor('#12a3b5');
       });
     }
 
@@ -82,6 +83,7 @@
       if(!!poly) {
         poly.ready().then(() => {
           poly.remove();
+          poly = null;
         });
       }
     }
@@ -94,7 +96,6 @@
         area.ready().then(() => {
         area.draw(points);
         area.setFillColor('rgb(144,224,017)');
-        area.setFillColor('#1200a2');
         area.setOpacity(0.5);
       });
     }
@@ -103,6 +104,7 @@
       if(!!area) {
         area.ready().then(() => {
           area.remove();
+          area = null;
         });
       }
     }

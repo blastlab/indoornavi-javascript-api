@@ -286,6 +286,10 @@ class Polyline extends Geometric {
     }
   }
 
+  setLineColor(color) {
+    this._setColor(color, 'stroke');
+  }
+
 }
 
 class Area extends Geometric {
