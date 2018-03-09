@@ -14,10 +14,6 @@ class Area extends Geometric {
    * @param {array} points - array of points which will describe area to be drawn, coordinates(x, y) of the point are given in centimeters from real distances (scale 1:1). For less than 3 points supplied to this method, area isn't going to be drawn.
    */
   draw (points) {
-    let xStart = null;
-    let yStart = null;
-    let xEnd = null;
-    let yEnd = null;
     if (!Array.isArray(points)) {
       throw new Error('Given argument is not na array');
     } else if (points.length < 3) {

@@ -61,18 +61,18 @@ class Geometric {
     }
   }
 
-  setTransparency(number) {
-    if(!isNaN(number) || number > 1 || number < 0) {
+  setOpacity(value) {
+    if(isNaN(value) || value > 1 || value < 0) {
       throw new Error('Wrong value passed to setTransparency() method, only numbers between 0 and 1 are allowed');
     }
     if(!!this._id) {
       Communication.send(this._navi.iFrame, this._navi.targetHost, {
-        command: 'setTransparency',
+        command: 'setOpacity',
         args: {
           type: this._type,
           object: {
             id: this._id,
-            transparency: number
+            opacity: value
           }
         }
       });

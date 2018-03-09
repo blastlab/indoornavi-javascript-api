@@ -195,18 +195,18 @@ class Geometric {
     }
   }
 
-  setTransparency(number) {
-    if(!isNaN(number) || number > 1 || number < 0) {
+  setOpacity(value) {
+    if(isNaN(value) || value > 1 || value < 0) {
       throw new Error('Wrong value passed to setTransparency() method, only numbers between 0 and 1 are allowed');
     }
     if(!!this._id) {
       Communication.send(this._navi.iFrame, this._navi.targetHost, {
-        command: 'setTransparency',
+        command: 'setOpacity',
         args: {
           type: this._type,
           object: {
             id: this._id,
-            transparency: number
+            opacity: value
           }
         }
       });
@@ -304,10 +304,6 @@ class Area extends Geometric {
    * @param {array} points - array of points which will describe area to be drawn, coordinates(x, y) of the point are given in centimeters from real distances (scale 1:1). For less than 3 points supplied to this method, area isn't going to be drawn.
    */
   draw (points) {
-    let xStart = null;
-    let yStart = null;
-    let xEnd = null;
-    let yEnd = null;
     if (!Array.isArray(points)) {
       throw new Error('Given argument is not na array');
     } else if (points.length < 3) {
