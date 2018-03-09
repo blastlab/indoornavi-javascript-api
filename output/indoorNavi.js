@@ -218,16 +218,16 @@ class Geometric {
 
   _setColor(color, attribute) {
     let hexToSend = null;
-    console.log(color);
-    console.log(typeof color, (/rgb\((\d{1,3}), (\d{1,3}), (\d{1,3})\)/i.test(color)), (/^#[0-9A-F]{6}$/i.test(color)));
+    const isValidColor = /(^[a-zA-Z]+$)|(#(?:[0-9a-f]{2}){2,4}|#[0-9a-f]{3}|(?:rgba?|hsla?)\((?:\d+%?(?:deg|rad|grad|turn)?(?:,|\s)+){2,3}[\s\/]*[\d\.]+%?\))/i.test(color);
+    if (!isValidColor) {
+      throw new Error('Wrong color value or/and type');
+    }
     if (!!this._id) {
-      if (typeof color === 'string' && (/^#[0-9A-F]{6}$/i.test(color))) {
-        hexToSend = color;
-      } else if (typeof color === 'string' && /rgb\((\d{1,3}), (\d{1,3}), (\d{1,3})\)/i.test(color)) {
+      if (/rgb/i.test(color)) {
         const rgb = color.slice(4, color.length - 1).split(',');
         hexToSend = `#${parseInt(rgb[0], 10).toString(16).slice(-2)}${parseInt(rgb[1],10).toString(16).slice(-2)}${parseInt(rgb[2],10).toString(16).slice(-2)}`;
-      } else {
-        throw new Error('Wrong value passed to setColor() method');
+      } else if (/#/i.test(color)) {
+        hexToSend = color;
       }
       Communication.send(this._navi.iFrame, this._navi.targetHost, {
         command: `${attribute}Color`,
