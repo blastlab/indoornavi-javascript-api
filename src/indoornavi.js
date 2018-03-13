@@ -1,6 +1,10 @@
+/**
+* Class representing a IndoorNavi 
+* Create the IndoorNavi object to communicate with IndoorNavi frontend server
+*/
 class IndoorNavi {
     /**
-     * Create the IndoorNavi object to communicate with IndoorNavi frontend server
+     * @constructor
      * @param {string} targetHost - address to the IndoorNavi server
      * @param {string} apiKey - the API key created on IndoorNavi server (must be assigned to your domain)
      * @param {string} containerId of DOM element which will be used to create iframe with map

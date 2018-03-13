@@ -132,12 +132,19 @@ class Coordinates {
     }
 }
 
+/**
+* Abstract class that communicates with indoornavi frontend server to create Geometric objects in iFrame
+*/
+
 class Geometric {
   /**
-   * Creates the geometric object in iframe that communicates with indoornavi frontend server
-   * @param {Object} navi - instance of a Geometric class needs the Indoornavi class injected to the constructor, to know where geometric object is going to be created
+   * @constructor
+   * @param {Object} navi - instance of a Geometric class cennot be created directly, Geometric class is an abstract class.
    */
   constructor(navi) {
+    if (new.target === Geometric) {
+      throw new TypeError("Cannot construct Geometric instances directly");
+    }
     this._navi = navi;
     this._id = null;
     this._type = 'OBJECT'
@@ -146,7 +153,7 @@ class Geometric {
   }
 
   /**
-  * @returns {Promise} promise that will resolve when connection to WebSocket will be established, assures that instance of Geometric has been created on the injected Indornavi class, this method should be executed before calling any method and those method should to be executed inside callback, after promise is resolved
+  * @returns {Promise} Promise that will resolve when connection to WebSocket will be established, assures that instance of Geometric has been created on the injected Indornavi class, this method should be executed before calling any method and those method should to be executed inside callback, after promise is resolved
   */
   ready() {
     const self = this;
@@ -194,6 +201,11 @@ class Geometric {
       throw new Error(`Object ${this._type} is not created yet, use ready() method before executing other methods`);
     }
   }
+
+  /**
+   * Sets opacity percentage
+   * @param {float}
+   */
 
   setOpacity(value) {
     if(isNaN(value) || value > 1 || value < 0) {
@@ -246,10 +258,15 @@ class Geometric {
 
 }
 
+/**
+ * Class representing a Polyline.
+ * Creates the polyline object in iframe that communicates with indoornavi frontend server and draws polyline
+ * @extends Geometric
+ */
+
 class Polyline extends Geometric {
   /**
-   * Creates the area object in iframe that communicates with indoornavi frontend server
-   * @extends GeometricObject
+   * @constructor
    * @param {Object} navi - instance of a Area class needs the Indoornavi class injected to the constructor, to know where Area object is going to be created
    */
    constructor(navi) {
@@ -292,10 +309,15 @@ class Polyline extends Geometric {
 
 }
 
+/**
+* Creates the area object in iframe that communicates with indoornavi frontend server and draws area
+ * Class representing a Area.
+ * @extends Geometric
+ */
+
 class Area extends Geometric {
   /**
-   * Creates the area object in iframe that communicates with indoornavi frontend server
-   * @extends GeometricObject
+   * @constructor
    * @param {Object} navi - instance of a Area class needs the Indoornavi class injected to the constructor, to know where Area object is going to be created
    */
   constructor(navi) {
@@ -305,9 +327,13 @@ class Area extends Geometric {
 
   /**
    * Draws area for given array of points.
-   * @param {array} points - array of points which will describe area to be drawn, coordinates(x, y) of the point are given in centimeters from real distances (scale 1:1). For less than 3 points supplied to this method, area isn't going to be drawn.
+   * @param {array} points - array of points which will describe the area to be drawn, coordinates members such as x and y of the point are given in centimeters as integers from real distances (scale 1:1).
+   * For less than 3 points supplied to this method, area isn't going to be drawn.
    */
   draw (points) {
+    if (arguments.length !== 1) {
+      throw new Error('Wrong number of arguments passed');
+    }
     if (!Array.isArray(points)) {
       throw new Error('Given argument is not na array');
     } else if (points.length < 3) {
@@ -318,6 +344,9 @@ class Area extends Geometric {
         throw new Error('Given points are in wrong format or coordianets x an y are not integers');
       }
     });
+
+    this._points = points;
+
     if (!!this._id) {
       Communication.send(this._navi.iFrame, this._navi.targetHost, {
         command: 'drawObject',
@@ -342,11 +371,44 @@ class Area extends Geometric {
     this._setColor(color, 'fill');
   }
 
+  /**
+  * Checks are given coordinates inside of created area.
+  * @returns {boolean} true if given coordinates are inside the area, false otherwise;
+  * @param {coordinates} object - object with x and y members given as integers;
+  */
+  // Semi-infinite ray horizontally (increasing x, fixed y) out from the test point, and count how many edges it crosses.
+  // At each crossing, the ray switches between inside and outside. This is called the Jordan curve theorem.
+
+  checkIsInside (coordinates) {
+    let inside = false;
+    let intersect = false;
+    let xi, yi, xj, yj = null;
+
+    for (let i = 0, j = this._points.length - 1; i < this._points.length; j = i++) {
+      xi = this._points[i].x;
+      yi = this._points[i].y;
+
+      xj = this._points[j].x;
+      yj = this._points[j].y;
+
+      intersect = ((yi > coordinates.y) !== (yj > coordinates.y)) && (coordinates.x < (xj - xi) * (coordinates.y - yi) / (yj - yi) + xi);
+      if (intersect) {
+        inside = !inside;
+      }
+    }
+    return inside;
+  }
+
+
 }
 
+/**
+* Class representing a IndoorNavi 
+* Create the IndoorNavi object to communicate with IndoorNavi frontend server
+*/
 class IndoorNavi {
     /**
-     * Create the IndoorNavi object to communicate with IndoorNavi frontend server
+     * @constructor
      * @param {string} targetHost - address to the IndoorNavi server
      * @param {string} apiKey - the API key created on IndoorNavi server (must be assigned to your domain)
      * @param {string} containerId of DOM element which will be used to create iframe with map

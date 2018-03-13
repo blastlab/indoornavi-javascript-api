@@ -1,7 +1,12 @@
+/**
+ * Class representing a Polyline.
+ * Creates the polyline object in iframe that communicates with indoornavi frontend server and draws polyline
+ * @extends Geometric
+ */
+
 class Polyline extends Geometric {
   /**
-   * Creates the area object in iframe that communicates with indoornavi frontend server
-   * @extends GeometricObject
+   * @constructor
    * @param {Object} navi - instance of a Area class needs the Indoornavi class injected to the constructor, to know where Area object is going to be created
    */
    constructor(navi) {

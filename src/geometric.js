@@ -1,9 +1,16 @@
+/**
+* Abstract class that communicates with indoornavi frontend server to create Geometric objects in iFrame
+*/
+
 class Geometric {
   /**
-   * Creates the geometric object in iframe that communicates with indoornavi frontend server
-   * @param {Object} navi - instance of a Geometric class needs the Indoornavi class injected to the constructor, to know where geometric object is going to be created
+   * @constructor
+   * @param {Object} navi - instance of a Geometric class cennot be created directly, Geometric class is an abstract class.
    */
   constructor(navi) {
+    if (new.target === Geometric) {
+      throw new TypeError("Cannot construct Geometric instances directly");
+    }
     this._navi = navi;
     this._id = null;
     this._type = 'OBJECT'
@@ -12,7 +19,7 @@ class Geometric {
   }
 
   /**
-  * @returns {Promise} promise that will resolve when connection to WebSocket will be established, assures that instance of Geometric has been created on the injected Indornavi class, this method should be executed before calling any method and those method should to be executed inside callback, after promise is resolved
+  * @returns {Promise} Promise that will resolve when connection to WebSocket will be established, assures that instance of Geometric has been created on the injected Indornavi class, this method should be executed before calling any method and those method should to be executed inside callback, after promise is resolved
   */
   ready() {
     const self = this;
@@ -60,6 +67,11 @@ class Geometric {
       throw new Error(`Object ${this._type} is not created yet, use ready() method before executing other methods`);
     }
   }
+
+  /**
+   * Sets opacity percentage
+   * @param {float}
+   */
 
   setOpacity(value) {
     if(isNaN(value) || value > 1 || value < 0) {
