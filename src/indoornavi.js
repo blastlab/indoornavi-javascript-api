@@ -1,6 +1,6 @@
 /**
-* Class representing a IndoorNavi 
-* Create the IndoorNavi object to communicate with IndoorNavi frontend server
+* Class representing a IndoorNavi,
+* creates the IndoorNavi object to communicate with IndoorNavi frontend server
 */
 class IndoorNavi {
     /**

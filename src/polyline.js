@@ -1,23 +1,27 @@
 /**
- * Class representing a Polyline.
- * Creates the polyline object in iframe that communicates with indoornavi frontend server and draws polyline
+ * Class representing a Polyline,
+ * creates the polyline object in iframe that communicates with indoornavi frontend server and draws polyline
  * @extends Geometric
  */
 
 class Polyline extends Geometric {
   /**
-   * @constructor
-   * @param {Object} navi - instance of a Area class needs the Indoornavi class injected to the constructor, to know where Area object is going to be created
-   */
+  * @constructor
+  * @param {Object} navi - instance of a Polyline class needs the Indoornavi class injected to the constructor, to know where polyline object is going to be created
+  * @example
+  * const poly = new Polyline(navi);
+  */
    constructor(navi) {
      super(navi);
      this._type = 'POLYLINE';
    }
 
   /**
-   * Draws polyline for given array of points.
-   * @param {array} points - array of points between which lines are going to be drawn, coordinates(x, y) of the point are given in centimeters from real distances (scale 1:1)
-   */
+  * Draws polyline for given array of points.
+  * @param {array} points - array of points between which lines are going to be drawn, coordinates(x, y) of the point are given in centimeters as integers from real distances (scale 1:1)
+  * @example
+  * poly.ready().then(() => poly.draw(points));
+  */
   draw (points) {
     if (!Array.isArray(points)) {
       throw new Error('Given argument is not na array');
@@ -43,6 +47,12 @@ class Polyline extends Geometric {
     }
   }
 
+  /**
+   * Sets polyline lines and points color.
+   * @param {color} string - string that specifies the color. Supports color in hex format '#AABBCC' and 'rgb(255,255,255)';
+   * @example
+   * poly.ready().then(() => poly.setLineColor('#AABBCC'));
+   */
   setLineColor(color) {
     this._setColor(color, 'stroke');
   }

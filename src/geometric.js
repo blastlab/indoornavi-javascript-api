@@ -1,11 +1,14 @@
 /**
-* Abstract class that communicates with indoornavi frontend server to create Geometric objects in iFrame
+* Abstract class that communicates with indoornavi frontend server to create Geometric objects in iFrame.
+* @abstract
 */
 
 class Geometric {
   /**
+   * Instance of a Geometric class cennot be created directly, Geometric class is an abstract class.
+   * @abstract
    * @constructor
-   * @param {Object} navi - instance of a Geometric class cennot be created directly, Geometric class is an abstract class.
+   * @param {Indornavi} navi needs the Indoornavi class injected to the constructor, to know where geometric object is going to be created
    */
   constructor(navi) {
     if (new.target === Geometric) {
@@ -51,6 +54,8 @@ class Geometric {
 
   /**
    * Removes object and destroys it instance in the frontend server, but do not destroys object class instance in your app
+   * @example
+   * inheritedClassFromGeometric.ready().then(() => inheritedClassFromGeometric.remove());
    */
   remove(){
     if(!!this._id) {
@@ -66,32 +71,6 @@ class Geometric {
     } else {
       throw new Error(`Object ${this._type} is not created yet, use ready() method before executing other methods`);
     }
-  }
-
-  /**
-   * Sets opacity percentage
-   * @param {float}
-   */
-
-  setOpacity(value) {
-    if(isNaN(value) || value > 1 || value < 0) {
-      throw new Error('Wrong value passed to setTransparency() method, only numbers between 0 and 1 are allowed');
-    }
-    if(!!this._id) {
-      Communication.send(this._navi.iFrame, this._navi.targetHost, {
-        command: 'setOpacity',
-        args: {
-          type: this._type,
-          object: {
-            id: this._id,
-            opacity: value
-          }
-        }
-      });
-    } else {
-      throw new Error(`Object ${this._type} is not created yet, use ready() method before executing other methods`);
-    }
-
   }
 
   _setColor(color, attribute) {
