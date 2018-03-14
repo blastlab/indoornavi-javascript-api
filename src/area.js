@@ -1,15 +1,13 @@
 /**
  * Class representing an Area,
  * creates the area object in iframe that communicates with indoornavi frontend server and draws area
- * @extends Geometric
+ * @extends Geometry
  */
 
-class Area extends Geometric {
+class Area extends Geometry {
   /**
    * @constructor
    * @param {Object} navi - instance of an Area class needs the Indoornavi class injected to the constructor, to know where area object is going to be created
-   * @example
-   * const area = new Area(navi);
    */
   constructor(navi) {
     super(navi);
@@ -21,6 +19,7 @@ class Area extends Geometric {
    * @param {array} points - array of points which will describe the area, coordinates members such as x and y of the point are given in centimeters as integers from real distances (scale 1:1).
    * For less than 3 points supplied to this method, area isn't going to be drawn.
    * @example
+   * const area = new Area(navi);
    * area.ready().then(() => area.draw(points));
    */
   draw (points) {

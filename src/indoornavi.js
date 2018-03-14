@@ -22,8 +22,11 @@ class IndoorNavi {
 
     /**
      * Load map with specific id
-     @param {number} mapId
-     @returns {Promise} promise that will resolve when connection to WebSocket will be established
+     * @param {number} mapId
+     * @returns {Promise} promise that will resolve when connection to WebSocket will be established
+     * @example
+     * const mapId = 2;
+     * navi.load(mapId).then(() => console.log(`Map ${mapId} is loaded`));
      */
     load(mapId) {
         const self = this;
@@ -43,6 +46,9 @@ class IndoorNavi {
     /**
      * Toggle the tag visibility
      * @param tagShortId
+     * @example
+     * const tagShortId = data.coordinates.tagShortId;
+     * navi.toggleTagVisibility(tagShortId);
      */
     toggleTagVisibility(tagShortId) {
       this.checkIsReady();
@@ -57,6 +63,8 @@ class IndoorNavi {
      * Add listener to react when the specific event occurs
      * @param {string} eventName - name of the specific event (i.e. 'area', 'coordinates')
      * @param {function} callback - this method will be called when the specific event occurs
+     * example
+     * navi.addEventListener('coordinates', data => doSomthingWithCoordinates(data.coordinates.point));
      */
     addEventListener(eventName, callback) {
       this.checkIsReady();

@@ -1,18 +1,18 @@
 /**
-* Abstract class that communicates with indoornavi frontend server to create Geometric objects in iFrame.
+* Abstract class that communicates with indoornavi frontend server to create Geometry objects in iFrame.
 * @abstract
 */
 
-class Geometric {
+class Geometry {
   /**
-   * Instance of a Geometric class cennot be created directly, Geometric class is an abstract class.
+   * Instance of a Geometry class cennot be created directly, Geometry class is an abstract class.
    * @abstract
    * @constructor
-   * @param {Indornavi} navi needs the Indoornavi class injected to the constructor, to know where geometric object is going to be created
+   * @param {Indornavi} navi needs the Indoornavi class injected to the constructor, to know where geometry object is going to be created
    */
   constructor(navi) {
-    if (new.target === Geometric) {
-      throw new TypeError("Cannot construct Geometric instances directly");
+    if (new.target === Geometry) {
+      throw new TypeError("Cannot construct Geometry instances directly");
     }
     this._navi = navi;
     this._id = null;
@@ -22,7 +22,7 @@ class Geometric {
   }
 
   /**
-  * @returns {Promise} Promise that will resolve when connection to WebSocket will be established, assures that instance of Geometric has been created on the injected Indornavi class, this method should be executed before calling any method and those method should to be executed inside callback, after promise is resolved
+  * @returns {Promise} Promise that will resolve when connection to WebSocket will be established, assures that instance of Geometry has been created on the injected Indornavi class, this method should be executed before calling any method and those method should to be executed inside callback, after promise is resolved
   */
   ready() {
     const self = this;
@@ -53,9 +53,10 @@ class Geometric {
   draw (points) {}
 
   /**
-   * Removes object and destroys it instance in the frontend server, but do not destroys object class instance in your app
+   * Removes object and destroys it instance in the frontend server, but do not destroys object class instance in your app.
+   * inheritedObjectFromGeometry is a child object of abstract class Geometry
    * @example
-   * inheritedClassFromGeometric.ready().then(() => inheritedClassFromGeometric.remove());
+   * 'inheritedObjectFromGeometry'.ready().then(() => 'inheritedObjectFromGeometry'.remove());
    */
   remove(){
     if(!!this._id) {

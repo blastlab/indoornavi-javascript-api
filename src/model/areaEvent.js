@@ -1,3 +1,7 @@
+/**
+ * Class representing an AreaEvent,
+ */
+
 class AreaEvent {
     static toJSON(eventsArrayString) {
         const events = [];

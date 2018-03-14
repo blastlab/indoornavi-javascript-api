@@ -4,11 +4,11 @@
 </head>
 <body>
 <button disabled id="toggle10999" onclick="toggle10999()">Toggle 10999</button>
-<button disabled id="addListener" onclick="addListener()">Add listener</button>
 <button disabled id="drawPolyline" onclick="drawPolyline()">Draw Polyline</button>
 <button disabled id="removePolyline" onclick="removePolyline()">Remove Polyline</button>
 <button disabled id="drawArea" onclick="drawArea()"> Draw Area</button>
 <button disabled id="removeArea" onclick="removeArea()">Remove Area</button>
+<button disabled id="addListener" onclick="addListener()">Add listener</button>
 
 <div id="map"></div>
 </body>
@@ -20,9 +20,9 @@
     let area = null;
     const  points = [
       {x:480, y: 480},
-      {x:1020, y: 480},
-      {x:1020, y: 1020},
-      {x:480, y: 1020},
+      {x:1220, y: 480},
+      {x:1220, y: 1220},
+      {x:480, y: 1220},
       {x:750, y: 750}
     ];
 
@@ -39,7 +39,6 @@
         document.getElementById('toggle10999').removeAttribute('disabled');
         document.getElementById('drawPolyline').removeAttribute('disabled');
         document.getElementById('removePolyline').removeAttribute('disabled');
-        document.getElementById('addListener').removeAttribute('disabled');
         document.getElementById('drawArea').removeAttribute('disabled');
         document.getElementById('removeArea').removeAttribute('disabled');
     });
@@ -63,8 +62,16 @@
 
       });
 
-      navi.addEventListener('coordinates', function(data) {
-        console.log(data);
+      navi.addEventListener('coordinates', data => {
+        console.log(data.coordinates.point);
+        if (!!area) {
+          const tagInsideArea = area.checkIsInside({x: Math.round(data.coordinates.point.x), y: Math.round(data.coordinates.point.y)});
+          if (tagInsideArea) {
+            console.log(`Tag ${data.coordinates.tagShortId} INSIDE`);
+          } else {
+            console.log(`Tag ${data.coordinates.tagShortId} OUTSIDE`);
+          }
+        }
       });
     }
 
@@ -99,6 +106,7 @@
         area.setOpacity(0.5);
         console.log(area.checkIsInside({x: 740, y: 750}));
         console.log(area.checkIsInside({x: 750, y: 750}));
+        document.getElementById('addListener').removeAttribute('disabled');
       });
     }
 
@@ -107,6 +115,7 @@
         area.ready().then(() => {
           area.remove();
           area = null;
+          document.getElementById('addListener').setAttribute('disabled', true);
         });
       }
     }

@@ -71,6 +71,10 @@ class Http {
     }
 }
 
+/**
+ * Class representing an AreaEvent,
+ */
+
 class AreaEvent {
     static toJSON(eventsArrayString) {
         const events = [];
@@ -102,6 +106,10 @@ class AreaEvent {
         this.mode = mode;
     }
 }
+
+/**
+ * Class representing a Coordinates,
+ */
 
 class Coordinates {
     static toJSON(coordinatesArrayString) {
@@ -135,15 +143,13 @@ class Coordinates {
 /**
  * Class representing a Polyline,
  * creates the polyline object in iframe that communicates with indoornavi frontend server and draws polyline
- * @extends Geometric
+ * @extends Geometry
  */
 
-class Polyline extends Geometric {
+class Polyline extends Geometry {
   /**
   * @constructor
   * @param {Object} navi - instance of a Polyline class needs the Indoornavi class injected to the constructor, to know where polyline object is going to be created
-  * @example
-  * const poly = new Polyline(navi);
   */
    constructor(navi) {
      super(navi);
@@ -154,6 +160,7 @@ class Polyline extends Geometric {
   * Draws polyline for given array of points.
   * @param {array} points - array of points between which lines are going to be drawn, coordinates(x, y) of the point are given in centimeters as integers from real distances (scale 1:1)
   * @example
+  * const poly = new Polyline(navi);
   * poly.ready().then(() => poly.draw(points));
   */
   draw (points) {
@@ -196,15 +203,13 @@ class Polyline extends Geometric {
 /**
  * Class representing an Area,
  * creates the area object in iframe that communicates with indoornavi frontend server and draws area
- * @extends Geometric
+ * @extends Geometry
  */
 
-class Area extends Geometric {
+class Area extends Geometry {
   /**
    * @constructor
    * @param {Object} navi - instance of an Area class needs the Indoornavi class injected to the constructor, to know where area object is going to be created
-   * @example
-   * const area = new Area(navi);
    */
   constructor(navi) {
     super(navi);
@@ -216,6 +221,7 @@ class Area extends Geometric {
    * @param {array} points - array of points which will describe the area, coordinates members such as x and y of the point are given in centimeters as integers from real distances (scale 1:1).
    * For less than 3 points supplied to this method, area isn't going to be drawn.
    * @example
+   * const area = new Area(navi);
    * area.ready().then(() => area.draw(points));
    */
   draw (points) {

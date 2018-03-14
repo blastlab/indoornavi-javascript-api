@@ -71,6 +71,10 @@ class Http {
     }
 }
 
+/**
+ * Class representing an AreaEvent,
+ */
+
 class AreaEvent {
     static toJSON(eventsArrayString) {
         const events = [];
@@ -103,6 +107,10 @@ class AreaEvent {
     }
 }
 
+/**
+ * Class representing a Coordinates,
+ */
+
 class Coordinates {
     static toJSON(coordinatesArrayString) {
         const coordinates = [];
@@ -133,20 +141,20 @@ class Coordinates {
 }
 
 /**
-* Abstract class that communicates with indoornavi frontend server to create Geometric objects in iFrame.
+* Abstract class that communicates with indoornavi frontend server to create Geometry objects in iFrame.
 * @abstract
 */
 
-class Geometric {
+class Geometry {
   /**
-   * Instance of a Geometric class cennot be created directly, Geometric class is an abstract class.
+   * Instance of a Geometry class cennot be created directly, Geometry class is an abstract class.
    * @abstract
    * @constructor
-   * @param {Indornavi} navi needs the Indoornavi class injected to the constructor, to know where geometric object is going to be created
+   * @param {Indornavi} navi needs the Indoornavi class injected to the constructor, to know where geometry object is going to be created
    */
   constructor(navi) {
-    if (new.target === Geometric) {
-      throw new TypeError("Cannot construct Geometric instances directly");
+    if (new.target === Geometry) {
+      throw new TypeError("Cannot construct Geometry instances directly");
     }
     this._navi = navi;
     this._id = null;
@@ -156,7 +164,7 @@ class Geometric {
   }
 
   /**
-  * @returns {Promise} Promise that will resolve when connection to WebSocket will be established, assures that instance of Geometric has been created on the injected Indornavi class, this method should be executed before calling any method and those method should to be executed inside callback, after promise is resolved
+  * @returns {Promise} Promise that will resolve when connection to WebSocket will be established, assures that instance of Geometry has been created on the injected Indornavi class, this method should be executed before calling any method and those method should to be executed inside callback, after promise is resolved
   */
   ready() {
     const self = this;
@@ -187,9 +195,10 @@ class Geometric {
   draw (points) {}
 
   /**
-   * Removes object and destroys it instance in the frontend server, but do not destroys object class instance in your app
+   * Removes object and destroys it instance in the frontend server, but do not destroys object class instance in your app.
+   * inheritedObjectFromGeometry is a child object of abstract class Geometry
    * @example
-   * inheritedClassFromGeometric.ready().then(() => inheritedClassFromGeometric.remove());
+   * 'inheritedObjectFromGeometry'.ready().then(() => 'inheritedObjectFromGeometry'.remove());
    */
   remove(){
     if(!!this._id) {
@@ -240,15 +249,13 @@ class Geometric {
 /**
  * Class representing a Polyline,
  * creates the polyline object in iframe that communicates with indoornavi frontend server and draws polyline
- * @extends Geometric
+ * @extends Geometry
  */
 
-class Polyline extends Geometric {
+class Polyline extends Geometry {
   /**
   * @constructor
   * @param {Object} navi - instance of a Polyline class needs the Indoornavi class injected to the constructor, to know where polyline object is going to be created
-  * @example
-  * const poly = new Polyline(navi);
   */
    constructor(navi) {
      super(navi);
@@ -259,6 +266,7 @@ class Polyline extends Geometric {
   * Draws polyline for given array of points.
   * @param {array} points - array of points between which lines are going to be drawn, coordinates(x, y) of the point are given in centimeters as integers from real distances (scale 1:1)
   * @example
+  * const poly = new Polyline(navi);
   * poly.ready().then(() => poly.draw(points));
   */
   draw (points) {
@@ -301,15 +309,13 @@ class Polyline extends Geometric {
 /**
  * Class representing an Area,
  * creates the area object in iframe that communicates with indoornavi frontend server and draws area
- * @extends Geometric
+ * @extends Geometry
  */
 
-class Area extends Geometric {
+class Area extends Geometry {
   /**
    * @constructor
    * @param {Object} navi - instance of an Area class needs the Indoornavi class injected to the constructor, to know where area object is going to be created
-   * @example
-   * const area = new Area(navi);
    */
   constructor(navi) {
     super(navi);
@@ -321,6 +327,7 @@ class Area extends Geometric {
    * @param {array} points - array of points which will describe the area, coordinates members such as x and y of the point are given in centimeters as integers from real distances (scale 1:1).
    * For less than 3 points supplied to this method, area isn't going to be drawn.
    * @example
+   * const area = new Area(navi);
    * area.ready().then(() => area.draw(points));
    */
   draw (points) {
@@ -451,8 +458,11 @@ class IndoorNavi {
 
     /**
      * Load map with specific id
-     @param {number} mapId
-     @returns {Promise} promise that will resolve when connection to WebSocket will be established
+     * @param {number} mapId
+     * @returns {Promise} promise that will resolve when connection to WebSocket will be established
+     * @example
+     * const mapId = 2;
+     * navi.load(mapId).then(() => console.log(`Map ${mapId} is loaded`));
      */
     load(mapId) {
         const self = this;
@@ -472,6 +482,9 @@ class IndoorNavi {
     /**
      * Toggle the tag visibility
      * @param tagShortId
+     * @example
+     * const tagShortId = data.coordinates.tagShortId;
+     * navi.toggleTagVisibility(tagShortId);
      */
     toggleTagVisibility(tagShortId) {
       this.checkIsReady();
@@ -486,6 +499,8 @@ class IndoorNavi {
      * Add listener to react when the specific event occurs
      * @param {string} eventName - name of the specific event (i.e. 'area', 'coordinates')
      * @param {function} callback - this method will be called when the specific event occurs
+     * example
+     * navi.addEventListener('coordinates', data => doSomthingWithCoordinates(data.coordinates.point));
      */
     addEventListener(eventName, callback) {
       this.checkIsReady();
