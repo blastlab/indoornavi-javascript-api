@@ -7,7 +7,7 @@
 class Polyline extends Geometry {
   /**
   * @constructor
-  * @param {Object} navi - instance of a Polyline class needs the Indoornavi class injected to the constructor, to know where polyline object is going to be created
+  * @param {Object} navi - instance of a Polyline class needs the Indoornavi instance object injected to the constructor, to know where polyline object is going to be created
   */
    constructor(navi) {
      super(navi);

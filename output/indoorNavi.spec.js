@@ -149,7 +149,7 @@ class Coordinates {
 class Polyline extends Geometry {
   /**
   * @constructor
-  * @param {Object} navi - instance of a Polyline class needs the Indoornavi class injected to the constructor, to know where polyline object is going to be created
+  * @param {Object} navi - instance of a Polyline class needs the Indoornavi instance object injected to the constructor, to know where polyline object is going to be created
   */
    constructor(navi) {
      super(navi);
@@ -209,7 +209,7 @@ class Polyline extends Geometry {
 class Area extends Geometry {
   /**
    * @constructor
-   * @param {Object} navi - instance of an Area class needs the Indoornavi class injected to the constructor, to know where area object is going to be created
+   * @param {Object} navi - instance of an Area class needs the Indoornavi instance object injected to the constructor, to know where area object is going to be created
    */
   constructor(navi) {
     super(navi);
@@ -269,7 +269,7 @@ class Area extends Geometry {
 
   /**
    * Sets opacity.
-   * @param {float} float, float between 1.0 and 0. Set it to 1.0 for no oppacity, 0 for maximum opacity.
+   * @param {float} float. Float between 1.0 and 0. Set it to 1.0 for no oppacity, 0 for maximum opacity.
    * @example
    * area.ready().then(() => area.setOpacity(0.3));
    */
@@ -296,7 +296,7 @@ class Area extends Geometry {
   }
 
   /**
-  * Check is point of given coordinates inside of the created area.
+  * Checks, is point of given coordinates inside of the created area.
   * @returns {boolean} true if given coordinates are inside the area, false otherwise;
   * @param {coordinates} object - object with x and y members given as integers;
   * @example

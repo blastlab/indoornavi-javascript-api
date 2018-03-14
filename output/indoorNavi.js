@@ -141,7 +141,7 @@ class Coordinates {
 }
 
 /**
-* Abstract class that communicates with indoornavi frontend server to create Geometry objects in iFrame.
+* Abstract class that communicates with indoornavi frontend server to create Geometry object in iFrame.
 * @abstract
 */
 
@@ -150,7 +150,7 @@ class Geometry {
    * Instance of a Geometry class cennot be created directly, Geometry class is an abstract class.
    * @abstract
    * @constructor
-   * @param {Indornavi} navi needs the Indoornavi class injected to the constructor, to know where geometry object is going to be created
+   * @param {Indornavi} navi needs the Indoornavi instance object injected to the constructor, to know where geometry object is going to be created
    */
   constructor(navi) {
     if (new.target === Geometry) {
@@ -164,7 +164,9 @@ class Geometry {
   }
 
   /**
-  * @returns {Promise} Promise that will resolve when connection to WebSocket will be established, assures that instance of Geometry has been created on the injected Indornavi class, this method should be executed before calling any method and those method should to be executed inside callback, after promise is resolved
+  * @returns {Promise} Promise that will resolve when connection to WebSocket will be established, assures that instance of Geometry has been created on the injected Indornavi class, this method should be executed before calling any other method. Those methods should to be executed inside callback, after promise is resolved
+  * @exapmle
+  * 'inheritedObjectFromGeometry'.ready().then(() => 'inheritedObjectFromGeometry'.'method()');
   */
   ready() {
     const self = this;
@@ -255,7 +257,7 @@ class Geometry {
 class Polyline extends Geometry {
   /**
   * @constructor
-  * @param {Object} navi - instance of a Polyline class needs the Indoornavi class injected to the constructor, to know where polyline object is going to be created
+  * @param {Object} navi - instance of a Polyline class needs the Indoornavi instance object injected to the constructor, to know where polyline object is going to be created
   */
    constructor(navi) {
      super(navi);
@@ -315,7 +317,7 @@ class Polyline extends Geometry {
 class Area extends Geometry {
   /**
    * @constructor
-   * @param {Object} navi - instance of an Area class needs the Indoornavi class injected to the constructor, to know where area object is going to be created
+   * @param {Object} navi - instance of an Area class needs the Indoornavi instance object injected to the constructor, to know where area object is going to be created
    */
   constructor(navi) {
     super(navi);
@@ -375,7 +377,7 @@ class Area extends Geometry {
 
   /**
    * Sets opacity.
-   * @param {float} float, float between 1.0 and 0. Set it to 1.0 for no oppacity, 0 for maximum opacity.
+   * @param {float} float. Float between 1.0 and 0. Set it to 1.0 for no oppacity, 0 for maximum opacity.
    * @example
    * area.ready().then(() => area.setOpacity(0.3));
    */
@@ -402,7 +404,7 @@ class Area extends Geometry {
   }
 
   /**
-  * Check is point of given coordinates inside of the created area.
+  * Checks, is point of given coordinates inside of the created area.
   * @returns {boolean} true if given coordinates are inside the area, false otherwise;
   * @param {coordinates} object - object with x and y members given as integers;
   * @example
@@ -462,6 +464,7 @@ class IndoorNavi {
      * @returns {Promise} promise that will resolve when connection to WebSocket will be established
      * @example
      * const mapId = 2;
+     * const navi = new IndoorNavi( 'http://localhost:4200', 'TestAdmin', 'map', { width: 800, height: 600});
      * navi.load(mapId).then(() => console.log(`Map ${mapId} is loaded`));
      */
     load(mapId) {

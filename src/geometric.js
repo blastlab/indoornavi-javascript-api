@@ -1,5 +1,5 @@
 /**
-* Abstract class that communicates with indoornavi frontend server to create Geometry objects in iFrame.
+* Abstract class that communicates with indoornavi frontend server to create Geometry object in iFrame.
 * @abstract
 */
 
@@ -8,7 +8,7 @@ class Geometry {
    * Instance of a Geometry class cennot be created directly, Geometry class is an abstract class.
    * @abstract
    * @constructor
-   * @param {Indornavi} navi needs the Indoornavi class injected to the constructor, to know where geometry object is going to be created
+   * @param {Indornavi} navi needs the Indoornavi instance object injected to the constructor, to know where geometry object is going to be created
    */
   constructor(navi) {
     if (new.target === Geometry) {
@@ -22,7 +22,9 @@ class Geometry {
   }
 
   /**
-  * @returns {Promise} Promise that will resolve when connection to WebSocket will be established, assures that instance of Geometry has been created on the injected Indornavi class, this method should be executed before calling any method and those method should to be executed inside callback, after promise is resolved
+  * @returns {Promise} Promise that will resolve when connection to WebSocket will be established, assures that instance of Geometry has been created on the injected Indornavi class, this method should be executed before calling any other method. Those methods should to be executed inside callback, after promise is resolved
+  * @exapmle
+  * 'inheritedObjectFromGeometry'.ready().then(() => 'inheritedObjectFromGeometry'.'method()');
   */
   ready() {
     const self = this;

@@ -26,6 +26,7 @@ class IndoorNavi {
      * @returns {Promise} promise that will resolve when connection to WebSocket will be established
      * @example
      * const mapId = 2;
+     * const navi = new IndoorNavi( 'http://localhost:4200', 'TestAdmin', 'map', { width: 800, height: 600});
      * navi.load(mapId).then(() => console.log(`Map ${mapId} is loaded`));
      */
     load(mapId) {

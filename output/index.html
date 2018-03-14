@@ -65,7 +65,7 @@
       navi.addEventListener('coordinates', data => {
         console.log(data.coordinates.point);
         if (!!area) {
-          const tagInsideArea = area.checkIsInside({x: Math.round(data.coordinates.point.x), y: Math.round(data.coordinates.point.y)});
+          const tagInsideArea = area.checkIsInside(data.coordinates.point);
           if (tagInsideArea) {
             console.log(`Tag ${data.coordinates.tagShortId} INSIDE`);
           } else {
