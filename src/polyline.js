@@ -25,6 +25,7 @@ class Polyline extends Geometry {
     if (!Array.isArray(points)) {
       throw new Error('Given argument is not na array');
     }
+    this._points = points;
     points.forEach(point => {
       if(!Number.isInteger(point.x) || !Number.isInteger(point.y)) {
         throw new Error('Given points are in wrong format or coordianets x an y are not integers')
@@ -54,6 +55,10 @@ class Polyline extends Geometry {
    */
   setLineColor(color) {
     this._setColor(color, 'stroke');
+  }
+
+  isWithin (point) {
+    throw new Error('Method not implemented yet for polyline');
   }
 
 }
