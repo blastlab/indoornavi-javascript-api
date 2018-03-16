@@ -77,11 +77,11 @@ class Geometry {
   }
 
   /**
-  * Checks, is point of given coordinates inside of the created area.
-  * @returns {boolean} true if given coordinates are inside the area, false otherwise;
+  * Checks, is point of given coordinates inside of the created object.
+  * @returns {boolean} true if given coordinates are inside the object, false otherwise;
   * @param {coordinates} object - object with x and y members given as integers;
   * @example
-  * area.ready().then(() => area.checkIsInside({x: 100, y: 50}));
+  * 'inheritedObjectFromGeometry.ready().then(() => 'inheritedObjectFromGeometry.isWithin({x: 100, y: 50}));
   */
   // Semi-infinite ray horizontally (increasing x, fixed y) out from the test point, and count how many edges it crosses.
   // At each crossing, the ray switches between inside and outside. This is called the Jordan curve theorem.

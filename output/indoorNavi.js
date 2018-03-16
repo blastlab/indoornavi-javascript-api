@@ -218,6 +218,36 @@ class Geometry {
     }
   }
 
+  /**
+  * Checks, is point of given coordinates inside of the created object.
+  * @returns {boolean} true if given coordinates are inside the object, false otherwise;
+  * @param {coordinates} object - object with x and y members given as integers;
+  * @example
+  * 'inheritedObjectFromGeometry.ready().then(() => 'inheritedObjectFromGeometry.isWithin({x: 100, y: 50}));
+  */
+  // Semi-infinite ray horizontally (increasing x, fixed y) out from the test point, and count how many edges it crosses.
+  // At each crossing, the ray switches between inside and outside. This is called the Jordan curve theorem.
+
+  isWithin (coordinates) {
+    let inside = false;
+    let intersect = false;
+    let xi, yi, xj, yj = null;
+
+    for (let i = 0, j = this._points.length - 1; i < this._points.length; j = i++) {
+      xi = this._points[i].x;
+      yi = this._points[i].y;
+
+      xj = this._points[j].x;
+      yj = this._points[j].y;
+
+      intersect = ((yi > coordinates.y) !== (yj > coordinates.y)) && (coordinates.x < (xj - xi) * (coordinates.y - yi) / (yj - yi) + xi);
+      if (intersect) {
+        inside = !inside;
+      }
+    }
+    return inside;
+  }
+
   _setColor(color, attribute) {
     let hexToSend = null;
     const isValidColor = /(^[a-zA-Z]+$)|(#(?:[0-9a-f]{2}){2,4}|#[0-9a-f]{3}|(?:rgba?|hsla?)\((?:\d+%?(?:deg|rad|grad|turn)?(?:,|\s)+){2,3}[\s\/]*[\d\.]+%?\))/i.test(color);
@@ -275,6 +305,7 @@ class Polyline extends Geometry {
     if (!Array.isArray(points)) {
       throw new Error('Given argument is not na array');
     }
+    this._points = points;
     points.forEach(point => {
       if(!Number.isInteger(point.x) || !Number.isInteger(point.y)) {
         throw new Error('Given points are in wrong format or coordianets x an y are not integers')
@@ -304,6 +335,10 @@ class Polyline extends Geometry {
    */
   setLineColor(color) {
     this._setColor(color, 'stroke');
+  }
+
+  isWithin (point) {
+    throw new Error('Method not implemented yet for polyline');
   }
 
 }
@@ -402,37 +437,6 @@ class Area extends Geometry {
     }
 
   }
-
-  /**
-  * Checks, is point of given coordinates inside of the created area.
-  * @returns {boolean} true if given coordinates are inside the area, false otherwise;
-  * @param {coordinates} object - object with x and y members given as integers;
-  * @example
-  * area.ready().then(() => area.checkIsInside({x: 100, y: 50}));
-  */
-  // Semi-infinite ray horizontally (increasing x, fixed y) out from the test point, and count how many edges it crosses.
-  // At each crossing, the ray switches between inside and outside. This is called the Jordan curve theorem.
-
-  checkIsInside (coordinates) {
-    let inside = false;
-    let intersect = false;
-    let xi, yi, xj, yj = null;
-
-    for (let i = 0, j = this._points.length - 1; i < this._points.length; j = i++) {
-      xi = this._points[i].x;
-      yi = this._points[i].y;
-
-      xj = this._points[j].x;
-      yj = this._points[j].y;
-
-      intersect = ((yi > coordinates.y) !== (yj > coordinates.y)) && (coordinates.x < (xj - xi) * (coordinates.y - yi) / (yj - yi) + xi);
-      if (intersect) {
-        inside = !inside;
-      }
-    }
-    return inside;
-  }
-
 
 }
 
