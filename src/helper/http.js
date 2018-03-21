@@ -1,4 +1,4 @@
-class Http {
+class INHttp {
 
     constructor() {
         this.authHeader = null;
@@ -17,17 +17,17 @@ class Http {
     }
 
     doRequest(url, method, body, callback) {
-        const xmlHttp = new XMLHttpRequest();
-        xmlHttp.onreadystatechange = function() {
-            if (xmlHttp.readyState === 4 && xmlHttp.status === 200)
-                callback(xmlHttp.responseText);
+        const xmlINHttp = new XMLINHttpRequest();
+        xmlINHttp.onreadystatechange = function() {
+            if (xmlINHttp.readyState === 4 && xmlINHttp.status === 200)
+                callback(xmlINHttp.responseText);
         };
-        xmlHttp.open(method, url, true); // true for asynchronous
+        xmlINHttp.open(method, url, true); // true for asynchronous
         if (!!this.authHeader) {
-            xmlHttp.setRequestHeader('Authorization', this.authHeader);
+            xmlINHttp.setRequestHeader('Authorization', this.authHeader);
         }
-        xmlHttp.setRequestHeader('Content-Type', 'application/json');
-        xmlHttp.setRequestHeader('Accept', 'application/json');
-        xmlHttp.send(JSON.stringify(body));
+        xmlINHttp.setRequestHeader('Content-Type', 'application/json');
+        xmlINHttp.setRequestHeader('Accept', 'application/json');
+        xmlINHttp.send(JSON.stringify(body));
     }
 }

@@ -22,9 +22,37 @@ npm run test
 
 ## Create documentation
 
-1. install globally https://github.com/jsdoc3/jsdoc
+1. [install globally](https://github.com/jsdoc3/jsdoc)
 2. then run this command:
 
 ```
 jsdoc path_to_indoorNavi.js
 ```
+
+## Rules for developing this API:
+
+### Naming:
+
+1. All classes should have a prefix "In" before them to avoid conflicts between libraries.
+For example use: ```INPolyline```
+In prefix simply means that class belongs to IndorNavi API, and as such will be interpreted by API user.
+
+2. Methods naming should fallow below schema: ```actionTarget```
+
+Which means it is mandatory to use camel case notation starting from small letter, then each next word that is a part of method name should start from the capital letter.
+First word describes action that is going to be taken - a verb.
+Second word describes a target of taken action - a noun.
+
+3. Arguments in methods are always a noun and starts from small letter.
+
+### Fluent API:
+
+1. API should be written fallowing the "soft rule" of [fluent API](https://www.tutorialspoint.com/entity_framework/entity_framework_fluent_api.html), and by "soft rule" is meant to not force this API to be fluent in every end point of this API.
+
+2. For methods that are returning values or API sensitive informations it is recommended to avoid fluent API rule by all means.
+
+Example of cases where fluid API is not recommended: ```area.isWithin(point);``` as it returns boolean value that answers the question is given point within area  that method is called upon.
+
+3. For methods that are not returning values or API sensitive informations it is recommended to use fluent API rule.
+
+Example of cases where fluid API is recommended: ```area.setOpacity();``` as it do not returns any value.

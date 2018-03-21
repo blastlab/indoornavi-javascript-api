@@ -4,10 +4,10 @@
 </head>
 <body>
 <button disabled id="toggle10999" onclick="toggle10999()">Toggle 10999</button>
-<button disabled id="drawPolyline" onclick="drawPolyline()">Draw Polyline</button>
-<button disabled id="removePolyline" onclick="removePolyline()">Remove Polyline</button>
-<button disabled id="drawArea" onclick="drawArea()"> Draw Area</button>
-<button disabled id="removeArea" onclick="removeArea()">Remove Area</button>
+<button disabled id="drawINPolyline" onclick="drawINPolyline()">Draw INPolyline</button>
+<button disabled id="removeINPolyline" onclick="removeINPolyline()">Remove INPolyline</button>
+<button disabled id="drawINArea" onclick="drawINArea()"> Draw INArea</button>
+<button disabled id="removeINArea" onclick="removeINArea()">Remove INArea</button>
 <button disabled id="addListener" onclick="addListener()">Add listener</button>
 
 <div id="map"></div>
@@ -16,8 +16,8 @@
 <script>
     //set poly as global variable to have access to this from every function,
     let poly = null;
-    //set area as global variable to have access to this from every function,
-    let area = null;
+    //set INArea as global variable to have access to this from every function,
+    let inArea = null;
     const  points = [
       {x:480, y: 480},
       {x:1220, y: 480},
@@ -26,7 +26,7 @@
       {x:750, y: 750}
     ];
 
-    const navi = new IndoorNavi(
+    const navi = new INMap(
         'http://localhost:4200',
         'TestAdmin',
         'map',
@@ -37,19 +37,19 @@
     );
     navi.load(2).then(function () {
         document.getElementById('toggle10999').removeAttribute('disabled');
-        document.getElementById('drawPolyline').removeAttribute('disabled');
-        document.getElementById('removePolyline').removeAttribute('disabled');
-        document.getElementById('drawArea').removeAttribute('disabled');
-        document.getElementById('removeArea').removeAttribute('disabled');
+        document.getElementById('drawINPolyline').removeAttribute('disabled');
+        document.getElementById('removeINPolyline').removeAttribute('disabled');
+        document.getElementById('drawINArea').removeAttribute('disabled');
+        document.getElementById('removeINArea').removeAttribute('disabled');
     });
 
     // const from = new Date(2017, 10, 1);
     // const to = new Date(2017, 12, 30);
     // const report = new Report('http://localhost:90', 'TestAdmin');
-    // report.getCoordinates(2, from, to).then(function(coordinates) {
+    // report.getINCoordinates(2, from, to).then(function(coordinates) {
     //     console.log(coordinates);
     // });
-    // report.getAreaEvents(2, from, to).then(function(events) {
+    // report.getINAreaEvents(2, from, to).then(function(events) {
     //    console.log(events);
     // });
     //
@@ -58,15 +58,15 @@
     }
 
     function addListener() {
-      navi.addEventListener('area', function(data) {
+      navi.addEventListener('INArea', function(data) {
 
       });
 
       navi.addEventListener('coordinates', data => {
         console.log(data.coordinates.point);
-        if (!!area) {
-          const tagInsideArea = area.isWithin(data.coordinates.point);
-          if (tagInsideArea) {
+        if (!!inArea) {
+          const tagInsideINArea = inArea.isWithin(data.coordinates.point);
+          if (tagInsideINArea) {
             console.log(`Tag ${data.coordinates.tagShortId} INSIDE`);
           } else {
             console.log(`Tag ${data.coordinates.tagShortId} OUTSIDE`);
@@ -75,18 +75,18 @@
       });
     }
 
-    function drawPolyline() {
+    function drawINPolyline() {
       if(!!poly) {
         return;
       }
-        poly = new Polyline(navi);
+        poly = new INPolyline(navi);
         poly.ready().then(() => {
         poly.draw(points);
         poly.setLineColor('#12a3b5');
       });
     }
 
-    function removePolyline() {
+    function removeINPolyline() {
       if(!!poly) {
         poly.ready().then(() => {
           poly.remove();
@@ -95,26 +95,26 @@
       }
     }
 
-    function drawArea() {
-      if(!!area){
+    function drawINArea() {
+      if(!!inArea){
         return;
       }
-        area = new Area(navi);
-        area.ready().then(() => {
-        area.draw(points);
-        area.setFillColor('rgb(144,224,017)');
-        area.setOpacity(0.5);
-        console.log(area.isWithin({x: 740, y: 750}));
-        console.log(area.isWithin({x: 750, y: 750}));
+        inArea = new INArea(navi);
+        inArea.ready().then(() => {
+        inArea.draw(points);
+        inArea.setFillColor('rgb(144,224,017)');
+        inArea.setOpacity(0.5);
+        console.log(inArea.isWithin({x: 740, y: 750}));
+        console.log(inArea.isWithin({x: 750, y: 750}));
         document.getElementById('addListener').removeAttribute('disabled');
       });
     }
 
-    function removeArea() {
-      if(!!area) {
-        area.ready().then(() => {
-          area.remove();
-          area = null;
+    function removeINArea() {
+      if(!!inArea) {
+        inArea.ready().then(() => {
+          inArea.remove();
+          inArea = null;
           document.getElementById('addListener').setAttribute('disabled', true);
         });
       }

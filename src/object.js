@@ -1,18 +1,18 @@
 /**
-* Abstract class that communicates with indoornavi frontend server to create Geometry object in iFrame.
+* Abstract class that communicates with indoornavi frontend server to create INMapObject object in iFrame.
 * @abstract
 */
 
-class Geometry {
+class INMapObject {
   /**
-   * Instance of a Geometry class cennot be created directly, Geometry class is an abstract class.
+   * Instance of a INMapObject class cennot be created directly, INMapObject class is an abstract class.
    * @abstract
    * @constructor
-   * @param {Indornavi} navi needs the Indoornavi instance object injected to the constructor, to know where geometry object is going to be created
+   * @param {Indornavi} navi needs the Indoornavi instance object injected to the constructor, to know where INMapObject is going to be created
    */
   constructor(navi) {
-    if (new.target === Geometry) {
-      throw new TypeError("Cannot construct Geometry instances directly");
+    if (new.target === INMapObject) {
+      throw new TypeError("Cannot construct INMapObject instances directly");
     }
     this._navi = navi;
     this._id = null;
@@ -22,9 +22,9 @@ class Geometry {
   }
 
   /**
-  * @returns {Promise} Promise that will resolve when connection to WebSocket will be established, assures that instance of Geometry has been created on the injected Indornavi class, this method should be executed before calling any other method. Those methods should to be executed inside callback, after promise is resolved
+  * @returns {Promise} Promise that will resolve when connection to WebSocket will be established, assures that instance of INMapObject has been created on the injected Indornavi class, this method should be executed before calling any other method. Those methods should to be executed inside callback, after promise is resolved
   * @exapmle
-  * 'inheritedObjectFromGeometry'.ready().then(() => 'inheritedObjectFromGeometry'.'method()');
+  * 'inheritedObjectFromINMapObject'.ready().then(() => 'inheritedObjectFromINMapObject'.'method()');
   */
   ready() {
     const self = this;
@@ -39,9 +39,9 @@ class Geometry {
     }
     return new Promise(resolve => {
         // create listener for event that will fire only once
-        Communication.listenOnce('createObject', setObject.bind(self), resolve);
+        INCommunication.listenOnce('createObject', setObject.bind(self), resolve);
         // then send message
-        Communication.send(self._navi.iFrame, self._navi.targetHost, {
+        INCommunication.send(self._navi.iFrame, self._navi.targetHost, {
           command: 'createObject'
         });
       }
@@ -56,13 +56,13 @@ class Geometry {
 
   /**
    * Removes object and destroys it instance in the frontend server, but do not destroys object class instance in your app.
-   * inheritedObjectFromGeometry is a child object of abstract class Geometry
+   * inheritedObjectFromINMapObject is a child object of abstract class INMapObject
    * @example
-   * 'inheritedObjectFromGeometry'.ready().then(() => 'inheritedObjectFromGeometry'.remove());
+   * 'inheritedObjectFromINMapObject'.ready().then(() => 'inheritedObjectFromINMapObject'.remove());
    */
   remove(){
     if(!!this._id) {
-      Communication.send(this._navi.iFrame, this._navi.targetHost, {
+      INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
         command: 'removeObject',
         args: {
           type: this._type,
@@ -81,7 +81,7 @@ class Geometry {
   * @returns {boolean} true if given coordinates are inside the object, false otherwise;
   * @param {coordinates} object - object with x and y members given as integers;
   * @example
-  * 'inheritedObjectFromGeometry.ready().then(() => 'inheritedObjectFromGeometry.isWithin({x: 100, y: 50}));
+  * 'inheritedObjectFromINMapObject.ready().then(() => 'inheritedObjectFromINMapObject.isWithin({x: 100, y: 50}));
   */
   // Semi-infinite ray horizontally (increasing x, fixed y) out from the test point, and count how many edges it crosses.
   // At each crossing, the ray switches between inside and outside. This is called the Jordan curve theorem.
@@ -119,7 +119,7 @@ class Geometry {
       } else if (/#/i.test(color)) {
         hexToSend = color;
       }
-      Communication.send(this._navi.iFrame, this._navi.targetHost, {
+      INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
         command: `${attribute}Color`,
         args: {
           type: this._type,

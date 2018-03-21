@@ -1,16 +1,16 @@
 /**
- * Class representing an AreaEvent,
+ * Class representing an INAreaEvent,
  */
 
-class AreaEvent {
+class INAreaEvent {
     static toJSON(eventsArrayString) {
         const events = [];
         JSON.parse(eventsArrayString).forEach(function(_events) {
-            events.push(new AreaEvent(
+            events.push(new INAreaEvent(
                 _events['tagId'],
                 new Date(_events['date']),
-                _events['areaId'],
-                _events['areaName'],
+                _events['INAreaId'],
+                _events['INAreaName'],
                 _events['mode']
             ));
         });
@@ -18,18 +18,18 @@ class AreaEvent {
     };
 
     /**
-     * AreaEvent object
-     * @param {number} tagId short id of the tag that entered/left this area
-     * @param {Date} date when tag appeared in this area
-     * @param {number} areaId
-     * @param {string} areaName
+     * INAreaEvent object
+     * @param {number} tagId short id of the tag that entered/left this INArea
+     * @param {Date} date when tag appeared in this INArea
+     * @param {number} INAreaId
+     * @param {string} INAreaName
      * @param {string} mode can be ON_LEAVE or ON_ENTER
      */
-    constructor(tagId, date, areaId, areaName, mode) {
+    constructor(tagId, date, INAreaId, INAreaName, mode) {
         this.tagId = tagId;
         this.date = date;
-        this.areaId = areaId;
-        this.areaName = areaName;
+        this.INAreaId = INAreaId;
+        this.INAreaName = INAreaName;
         this.mode = mode;
     }
 }

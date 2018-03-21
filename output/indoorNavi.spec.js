@@ -1,4 +1,4 @@
-class Communication {
+class INCommunication {
     static send(iFrame, host, data) {
       iFrame.contentWindow.postMessage(data, host);
     }
@@ -24,7 +24,7 @@ class Communication {
 
 }
 
-class DOM {
+class INDOM {
     static getById(id) {
         return document.getElementById(id);
     }
@@ -37,7 +37,7 @@ class DOM {
     }
 }
 
-class Http {
+class INHttp {
 
     constructor() {
         this.authHeader = null;
@@ -56,34 +56,34 @@ class Http {
     }
 
     doRequest(url, method, body, callback) {
-        const xmlHttp = new XMLHttpRequest();
-        xmlHttp.onreadystatechange = function() {
-            if (xmlHttp.readyState === 4 && xmlHttp.status === 200)
-                callback(xmlHttp.responseText);
+        const xmlINHttp = new XMLINHttpRequest();
+        xmlINHttp.onreadystatechange = function() {
+            if (xmlINHttp.readyState === 4 && xmlINHttp.status === 200)
+                callback(xmlINHttp.responseText);
         };
-        xmlHttp.open(method, url, true); // true for asynchronous
+        xmlINHttp.open(method, url, true); // true for asynchronous
         if (!!this.authHeader) {
-            xmlHttp.setRequestHeader('Authorization', this.authHeader);
+            xmlINHttp.setRequestHeader('Authorization', this.authHeader);
         }
-        xmlHttp.setRequestHeader('Content-Type', 'application/json');
-        xmlHttp.setRequestHeader('Accept', 'application/json');
-        xmlHttp.send(JSON.stringify(body));
+        xmlINHttp.setRequestHeader('Content-Type', 'application/json');
+        xmlINHttp.setRequestHeader('Accept', 'application/json');
+        xmlINHttp.send(JSON.stringify(body));
     }
 }
 
 /**
- * Class representing an AreaEvent,
+ * Class representing an INAreaEvent,
  */
 
-class AreaEvent {
+class INAreaEvent {
     static toJSON(eventsArrayString) {
         const events = [];
         JSON.parse(eventsArrayString).forEach(function(_events) {
-            events.push(new AreaEvent(
+            events.push(new INAreaEvent(
                 _events['tagId'],
                 new Date(_events['date']),
-                _events['areaId'],
-                _events['areaName'],
+                _events['INAreaId'],
+                _events['INAreaName'],
                 _events['mode']
             ));
         });
@@ -91,31 +91,31 @@ class AreaEvent {
     };
 
     /**
-     * AreaEvent object
-     * @param {number} tagId short id of the tag that entered/left this area
-     * @param {Date} date when tag appeared in this area
-     * @param {number} areaId
-     * @param {string} areaName
+     * INAreaEvent object
+     * @param {number} tagId short id of the tag that entered/left this INArea
+     * @param {Date} date when tag appeared in this INArea
+     * @param {number} INAreaId
+     * @param {string} INAreaName
      * @param {string} mode can be ON_LEAVE or ON_ENTER
      */
-    constructor(tagId, date, areaId, areaName, mode) {
+    constructor(tagId, date, INAreaId, INAreaName, mode) {
         this.tagId = tagId;
         this.date = date;
-        this.areaId = areaId;
-        this.areaName = areaName;
+        this.INAreaId = INAreaId;
+        this.INAreaName = INAreaName;
         this.mode = mode;
     }
 }
 
 /**
- * Class representing a Coordinates,
+ * Class representing a INCoordinates,
  */
 
-class Coordinates {
+class INCoordinates {
     static toJSON(coordinatesArrayString) {
         const coordinates = [];
         JSON.parse(coordinatesArrayString).forEach(function(_coordinates) {
-            coordinates.push(new Coordinates(
+            coordinates.push(new INCoordinates(
                _coordinates['point']['x'],
                _coordinates['point']['y'],
                _coordinates['tagShortId'],
@@ -126,7 +126,7 @@ class Coordinates {
     };
 
     /**
-     * Coordinates object
+     * INCoordinates object
      * @param {number} x
      * @param {number} y
      * @param {number} tagId short id of the tag
@@ -141,163 +141,139 @@ class Coordinates {
 }
 
 /**
- * Class representing a Polyline,
- * creates the polyline object in iframe that communicates with indoornavi frontend server and draws polyline
- * @extends Geometry
- */
+* Abstract class that communicates with indoornavi frontend server to create INMapObject object in iFrame.
+* @abstract
+*/
 
-class Polyline extends Geometry {
+class INMapObject {
   /**
-  * @constructor
-  * @param {Object} navi - instance of a Polyline class needs the Indoornavi instance object injected to the constructor, to know where polyline object is going to be created
-  */
-   constructor(navi) {
-     super(navi);
-     this._type = 'POLYLINE';
-   }
-
-  /**
-  * Draws polyline for given array of points.
-  * @param {array} points - array of points between which lines are going to be drawn, coordinates(x, y) of the point are given in centimeters as integers from real distances (scale 1:1)
-  * @example
-  * const poly = new Polyline(navi);
-  * poly.ready().then(() => poly.draw(points));
-  */
-  draw (points) {
-    if (!Array.isArray(points)) {
-      throw new Error('Given argument is not na array');
-    }
-    this._points = points;
-    points.forEach(point => {
-      if(!Number.isInteger(point.x) || !Number.isInteger(point.y)) {
-        throw new Error('Given points are in wrong format or coordianets x an y are not integers')
-      }
-    });
-    if (!!this._id) {
-      Communication.send(this._navi.iFrame, this._navi.targetHost, {
-        command: 'drawObject',
-        args: {
-          type: this._type,
-          object: {
-            id: this._id,
-            points: points
-          }
-        }
-      });
-    } else {
-      throw new Error('Polyline is not created yet, use ready() method before executing draw(), or remove()');
-    }
-  }
-
-  /**
-   * Sets polyline lines and points color.
-   * @param {color} string - string that specifies the color. Supports color in hex format '#AABBCC' and 'rgb(255,255,255)';
-   * @example
-   * poly.ready().then(() => poly.setLineColor('#AABBCC'));
-   */
-  setLineColor(color) {
-    this._setColor(color, 'stroke');
-  }
-
-  isWithin (point) {
-    throw new Error('Method not implemented yet for polyline');
-  }
-
-}
-
-/**
- * Class representing an Area,
- * creates the area object in iframe that communicates with indoornavi frontend server and draws area
- * @extends Geometry
- */
-
-class Area extends Geometry {
-  /**
+   * Instance of a INMapObject class cennot be created directly, INMapObject class is an abstract class.
+   * @abstract
    * @constructor
-   * @param {Object} navi - instance of an Area class needs the Indoornavi instance object injected to the constructor, to know where area object is going to be created
+   * @param {Indornavi} navi needs the Indoornavi instance object injected to the constructor, to know where INMapObject is going to be created
    */
   constructor(navi) {
-    super(navi);
-    this._type = 'AREA';
+    if (new.target === INMapObject) {
+      throw new TypeError("Cannot construct INMapObject instances directly");
+    }
+    this._navi = navi;
+    this._id = null;
+    this._type = 'OBJECT'
+    this._navi.checkIsReady();
+    this._navi.setIFrame();
   }
 
   /**
-   * Draws area for given array of points.
-   * @param {array} points - array of points which will describe the area, coordinates members such as x and y of the point are given in centimeters as integers from real distances (scale 1:1).
-   * For less than 3 points supplied to this method, area isn't going to be drawn.
-   * @example
-   * const area = new Area(navi);
-   * area.ready().then(() => area.draw(points));
-   */
-  draw (points) {
-    if (arguments.length !== 1) {
-      throw new Error('Wrong number of arguments passed');
+  * @returns {Promise} Promise that will resolve when connection to WebSocket will be established, assures that instance of INMapObject has been created on the injected Indornavi class, this method should be executed before calling any other method. Those methods should to be executed inside callback, after promise is resolved
+  * @exapmle
+  * 'inheritedObjectFromINMapObject'.ready().then(() => 'inheritedObjectFromINMapObject'.'method()');
+  */
+  ready() {
+    const self = this;
+    function setObject (id) {
+      self._id = id;
     }
-    if (!Array.isArray(points)) {
-      throw new Error('Given argument is not na array');
-    } else if (points.length < 3) {
-      throw new Error('Not enought points to draw an area');
+    if (!!self._id) {
+      // resolve immediately
+      return new Promise(resolve => {
+        resolve();
+      })
     }
-    points.forEach(point => {
-      if(!Number.isInteger(point.x) || !Number.isInteger(point.y)) {
-        throw new Error('Given points are in wrong format or coordianets x an y are not integers');
+    return new Promise(resolve => {
+        // create listener for event that will fire only once
+        INCommunication.listenOnce('createObject', setObject.bind(self), resolve);
+        // then send message
+        INCommunication.send(self._navi.iFrame, self._navi.targetHost, {
+          command: 'createObject'
+        });
       }
-    });
-
-    this._points = points;
-
-    if (!!this._id) {
-      Communication.send(this._navi.iFrame, this._navi.targetHost, {
-        command: 'drawObject',
-        args: {
-          type: this._type,
-          object: {
-            id: this._id,
-            points: points
-          }
-        }
-      });
-    } else {
-      throw new Error('Area is not created yet, use ready() method before executing draw(), or remove()');
-    }
+    );
   }
 
   /**
-   * Fills area whit given color.
-   * @param {color} string - string that specifies the color. Supports color in hex format '#AABBCC' and 'rgb(255,255,255)';
-   * @example
-   * area.ready().then(() => area.setFillColor('#AABBCC'));
+   * Draws object for given array of points.
+   * @param {array} points - array of points between which lines are going to be drawn, coordinates(x, y) of the point are given in centimeters from real distances (scale 1:1)
    */
-  setFillColor (color) {
-    this._setColor(color, 'fill');
-  }
+  draw (points) {}
 
   /**
-   * Sets opacity.
-   * @param {float} float. Float between 1.0 and 0. Set it to 1.0 for no oppacity, 0 for maximum opacity.
+   * Removes object and destroys it instance in the frontend server, but do not destroys object class instance in your app.
+   * inheritedObjectFromINMapObject is a child object of abstract class INMapObject
    * @example
-   * area.ready().then(() => area.setOpacity(0.3));
+   * 'inheritedObjectFromINMapObject'.ready().then(() => 'inheritedObjectFromINMapObject'.remove());
    */
-
-  setOpacity(value) {
-    if(isNaN(value) || value > 1 || value < 0) {
-      throw new Error('Wrong value passed to setTransparency() method, only numbers between 0 and 1 are allowed');
-    }
+  remove(){
     if(!!this._id) {
-      Communication.send(this._navi.iFrame, this._navi.targetHost, {
-        command: 'setOpacity',
+      INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
+        command: 'removeObject',
         args: {
           type: this._type,
           object: {
-            id: this._id,
-            opacity: value
+            id: this._id
           }
         }
       });
     } else {
       throw new Error(`Object ${this._type} is not created yet, use ready() method before executing other methods`);
     }
+  }
 
+  /**
+  * Checks, is point of given coordinates inside of the created object.
+  * @returns {boolean} true if given coordinates are inside the object, false otherwise;
+  * @param {coordinates} object - object with x and y members given as integers;
+  * @example
+  * 'inheritedObjectFromINMapObject.ready().then(() => 'inheritedObjectFromINMapObject.isWithin({x: 100, y: 50}));
+  */
+  // Semi-infinite ray horizontally (increasing x, fixed y) out from the test point, and count how many edges it crosses.
+  // At each crossing, the ray switches between inside and outside. This is called the Jordan curve theorem.
+
+  isWithin (coordinates) {
+    let inside = false;
+    let intersect = false;
+    let xi, yi, xj, yj = null;
+
+    for (let i = 0, j = this._points.length - 1; i < this._points.length; j = i++) {
+      xi = this._points[i].x;
+      yi = this._points[i].y;
+
+      xj = this._points[j].x;
+      yj = this._points[j].y;
+
+      intersect = ((yi > coordinates.y) !== (yj > coordinates.y)) && (coordinates.x < (xj - xi) * (coordinates.y - yi) / (yj - yi) + xi);
+      if (intersect) {
+        inside = !inside;
+      }
+    }
+    return inside;
+  }
+
+  _setColor(color, attribute) {
+    let hexToSend = null;
+    const isValidColor = /(^[a-zA-Z]+$)|(#(?:[0-9a-f]{2}){2,4}|#[0-9a-f]{3}|(?:rgba?|hsla?)\((?:\d+%?(?:deg|rad|grad|turn)?(?:,|\s)+){2,3}[\s\/]*[\d\.]+%?\))/i.test(color);
+    if (!isValidColor) {
+      throw new Error('Wrong color value or/and type');
+    }
+    if (!!this._id) {
+      if (/rgb/i.test(color)) {
+        const rgb = color.slice(4, color.length - 1).split(',');
+        hexToSend = `#${parseInt(rgb[0], 10).toString(16).slice(-2)}${parseInt(rgb[1],10).toString(16).slice(-2)}${parseInt(rgb[2],10).toString(16).slice(-2)}`;
+      } else if (/#/i.test(color)) {
+        hexToSend = color;
+      }
+      INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
+        command: `${attribute}Color`,
+        args: {
+          type: this._type,
+          object: {
+            id: this._id,
+            color: hexToSend
+          }
+        }
+      });
+    } else {
+      throw new Error(`Object ${this._type} is not created yet, use ready() method before executing other methods`);
+    }
   }
 
 }
@@ -310,14 +286,14 @@ class Report {
 
     /**
      * Report object containing methods to retrieve historical data
-     * @param {string} targetHost - address to the IndoorNavi backend server
-     * @param {string} apiKey - the API key created on IndoorNavi server (must be assigned to your domain)
+     * @param {string} targetHost - address to the INMap backend server
+     * @param {string} apiKey - the API key created on INMap server (must be assigned to your domain)
      */
     constructor(targetHost, apiKey) {
         const authHeader = 'Token ' + apiKey;
         this.targetHost = targetHost;
         this.baseUrl = '/rest/v1/reports';
-        this.http = new Http();
+        this.http = new INHttp();
         this.http.setAuthorization(authHeader);
     }
 
@@ -326,35 +302,35 @@ class Report {
      * @param {number} floorId id of the floor you want to get coordinates from
      * @param {Date} from starting closed range
      * @param {Date} to ending closed range
-     * @return {Promise} promise that will be resolved when {@link Coordinates} list is retrieved
+     * @return {Promise} promise that will be resolved when {@link INCoordinates} list is retrieved
      */
-    getCoordinates(floorId, from, to) {
+    getINCoordinates(floorId, from, to) {
         return new Promise((function(resolve) {
             this.http.doPost(`${this.targetHost}${this.baseUrl}/coordinates`, {floorId: floorId, from: Report.parseDate(from), to: Report.parseDate(to)}, function (data) {
-                resolve(Coordinates.toJSON(data));
+                resolve(INCoordinates.toJSON(data));
             });
         }).bind(this));
     }
 
     /**
-     * Get list of historical area events
-     * @param {number} floorId id of the floor you want to get area events from
+     * Get list of historical INArea events
+     * @param {number} floorId id of the floor you want to get INArea events from
      * @param {Date} from starting closed range
      * @param {Date} to ending closed range
-     * @return {Promise} promise that will be resolved when {@link AreaEvent} list is retrieved
+     * @return {Promise} promise that will be resolved when {@link INAreaEvent} list is retrieved
      */
-    getAreaEvents(floorId, from, to) {
+    getINAreaEvents(floorId, from, to) {
         return new Promise((function(resolve) {
             this.http.doPost(`${this.targetHost}${this.baseUrl}/events`, {floorId: floorId, from: Report.parseDate(from), to: Report.parseDate(to)}, function (data) {
-                resolve(AreaEvent.toJSON(data));
+                resolve(INAreaEvent.toJSON(data));
             });
         }).bind(this));
     }
 }
-describe('IndoorNavi main module tests', function () {
+describe('INMap main module tests', function () {
     it('Should throw an error when you try to toggle tag visibility when iFrame is not ready', function () {
         // given
-        let indoorNavi = new IndoorNavi();
+        let indoorNavi = new INMap();
 
         // when
         const toTest = function () {
@@ -362,55 +338,82 @@ describe('IndoorNavi main module tests', function () {
         };
 
         // then
-        expect(toTest).toThrow(new Error('IndoorNavi is not ready. Call load() first and then when promise resolves IndoorNavi will be ready.'));
+        expect(toTest).toThrow(new Error('INMap is not ready. Call load() first and then when promise resolves INMap will be ready.'));
     });
 
     it('Should send message to iFrame when iFrame is ready and toggle tag is called', function() {
         // given
-        let indoorNavi = new IndoorNavi();
+        let indoorNavi = new INMap();
         indoorNavi.isReady = true;
-        spyOn(Communication, 'send').and.stub();
-        spyOn(DOM, 'getById').and.stub();
-        spyOn(DOM, 'getByTagName').and.stub();
+        spyOn(INCommunication, 'send').and.stub();
+        spyOn(INDOM, 'getById').and.stub();
+        spyOn(INDOM, 'getByTagName').and.stub();
 
         // when
         indoorNavi.toggleTagVisibility(1);
 
         // then
-        expect(Communication.send).toHaveBeenCalled();
-        expect(DOM.getById).toHaveBeenCalled();
-        expect(DOM.getByTagName).toHaveBeenCalled();
+        expect(INCommunication.send).toHaveBeenCalled();
+        expect(INDOM.getById).toHaveBeenCalled();
+        expect(INDOM.getByTagName).toHaveBeenCalled();
     });
 
     it('Should throw an error when you try to add event listener when iFrame is not ready', function() {
         // given
-        let indoorNavi = new IndoorNavi();
+        let indoorNavi = new INMap();
 
         // when
         const toTest = function () {
-            indoorNavi.addEventListener('area', function() {});
+            indoorNavi.addEventListener('INArea', function() {});
         };
 
         // then
-        expect(toTest).toThrow(new Error('IndoorNavi is not ready. Call load() first and then when promise resolves IndoorNavi will be ready.'));
+        expect(toTest).toThrow(new Error('INMap is not ready. Call load() first and then when promise resolves INMap will be ready.'));
     });
 
     it('Should send message to iFrame and start listening on events when iFrame is ready and add event listener is called', function() {
         // given
-        let indoorNavi = new IndoorNavi();
+        let indoorNavi = new INMap();
         indoorNavi.isReady = true;
-        spyOn(Communication, 'send').and.stub();
-        spyOn(DOM, 'getById').and.stub();
-        spyOn(DOM, 'getByTagName').and.stub();
-        spyOn(Communication, 'listen').and.stub();
+        spyOn(INCommunication, 'send').and.stub();
+        spyOn(INDOM, 'getById').and.stub();
+        spyOn(INDOM, 'getByTagName').and.stub();
+        spyOn(INCommunication, 'listen').and.stub();
 
         // when
-        indoorNavi.addEventListener('area', function() {});
+        indoorNavi.addEventListener('INArea', function() {});
 
         // then
-        expect(Communication.send).toHaveBeenCalled();
-        expect(DOM.getById).toHaveBeenCalled();
-        expect(DOM.getByTagName).toHaveBeenCalled();
-        expect(Communication.listen).toHaveBeenCalled();
+        expect(INCommunication.send).toHaveBeenCalled();
+        expect(INDOM.getById).toHaveBeenCalled();
+        expect(INDOM.getByTagName).toHaveBeenCalled();
+        expect(INCommunication.listen).toHaveBeenCalled();
+    });
+
+    it('Should throw an error when You try to create an INMapObject instance', () => {
+      // given
+      let indoorNavi = new INMap();
+      indoorNavi.isReady = true;
+      //then
+      const marker = new INMapObject(indoorNavi);
+      // expect
+
+      expect(marker).toThrow(new TypeError("Cannot construct INMapObject instances directly"));
+    });
+
+    it('Should create marker and comunicate with IFrame', () => {
+      // given
+      let indoorNavi = new INMap();
+      indoorNavi.isReady = true;
+      spyOn(INCommunication, 'send').and.stub();
+
+      //then
+      const marker = new Marker(indoorNavi);
+
+      // expect
+
+      marker.ready(() => {
+        expect(INCommunication.send).toHaveBeenCalled();
+      });
     });
 });

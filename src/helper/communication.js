@@ -1,4 +1,4 @@
-class Communication {
+class INCommunication {
     static send(iFrame, host, data) {
       iFrame.contentWindow.postMessage(data, host);
     }

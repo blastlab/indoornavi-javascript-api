@@ -1,25 +1,25 @@
 /**
- * Class representing an Area,
- * creates the area object in iframe that communicates with indoornavi frontend server and draws area
- * @extends Geometry
+ * Class representing an INArea,
+ * creates the INArea object in iframe that communicates with indoornavi frontend server and draws INArea
+ * @extends INMapObject
  */
 
-class Area extends Geometry {
+class INArea extends INMapObject {
   /**
    * @constructor
-   * @param {Object} navi - instance of an Area class needs the Indoornavi instance object injected to the constructor, to know where area object is going to be created
+   * @param {Object} navi - instance of an INArea class needs the Indoornavi instance object injected to the constructor, to know where INArea object is going to be created
    */
   constructor(navi) {
     super(navi);
-    this._type = 'AREA';
+    this._type = 'INArea';
   }
 
   /**
-   * Draws area for given array of points.
-   * @param {array} points - array of points which will describe the area, coordinates members such as x and y of the point are given in centimeters as integers from real distances (scale 1:1).
-   * For less than 3 points supplied to this method, area isn't going to be drawn.
+   * Draws INArea for given array of points.
+   * @param {array} points - array of points which will describe the INArea, coordinates members such as x and y of the point are given in centimeters as integers from real distances (scale 1:1).
+   * For less than 3 points supplied to this method, INArea isn't going to be drawn.
    * @example
-   * const area = new Area(navi);
+   * const area = new INArea(navi);
    * area.ready().then(() => area.draw(points));
    */
   draw (points) {
@@ -29,7 +29,7 @@ class Area extends Geometry {
     if (!Array.isArray(points)) {
       throw new Error('Given argument is not na array');
     } else if (points.length < 3) {
-      throw new Error('Not enought points to draw an area');
+      throw new Error('Not enought points to draw an INArea');
     }
     points.forEach(point => {
       if(!Number.isInteger(point.x) || !Number.isInteger(point.y)) {
@@ -40,7 +40,7 @@ class Area extends Geometry {
     this._points = points;
 
     if (!!this._id) {
-      Communication.send(this._navi.iFrame, this._navi.targetHost, {
+      INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
         command: 'drawObject',
         args: {
           type: this._type,
@@ -51,12 +51,12 @@ class Area extends Geometry {
         }
       });
     } else {
-      throw new Error('Area is not created yet, use ready() method before executing draw(), or remove()');
+      throw new Error('INArea is not created yet, use ready() method before executing draw(), or remove()');
     }
   }
 
   /**
-   * Fills area whit given color.
+   * Fills INArea whit given color.
    * @param {color} string - string that specifies the color. Supports color in hex format '#AABBCC' and 'rgb(255,255,255)';
    * @example
    * area.ready().then(() => area.setFillColor('#AABBCC'));
@@ -77,7 +77,7 @@ class Area extends Geometry {
       throw new Error('Wrong value passed to setTransparency() method, only numbers between 0 and 1 are allowed');
     }
     if(!!this._id) {
-      Communication.send(this._navi.iFrame, this._navi.targetHost, {
+      INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
         command: 'setOpacity',
         args: {
           type: this._type,
