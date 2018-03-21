@@ -4,20 +4,23 @@
 </head>
 <body>
 <button disabled id="toggle10999" onclick="toggle10999()">Toggle 10999</button>
-<button disabled id="drawINPolyline" onclick="drawINPolyline()">Draw INPolyline</button>
-<button disabled id="removeINPolyline" onclick="removeINPolyline()">Remove INPolyline</button>
-<button disabled id="drawINArea" onclick="drawINArea()"> Draw INArea</button>
-<button disabled id="removeINArea" onclick="removeINArea()">Remove INArea</button>
-<button disabled id="addListener" onclick="addListener()">Add listener</button>
+<button disabled id="drawINPolyline" onclick="drawINPolyline()">Draw Polyline</button>
+<button disabled id="removeINPolyline" onclick="removeINPolyline()">Remove Polyline</button>
+<button disabled id="drawINArea" onclick="drawINArea()"> Draw Area</button>
+<button disabled id="removeINArea" onclick="removeINArea()">Remove Area</button>
+<button disabled id="addListener" onclick="addListener()">Add Area listener</button>
+<button disabled id="addINMarker" onclick="addINMarker()">Add Marker</button>
 
 <div id="map"></div>
 </body>
 <script src="indoorNavi.js"></script>
 <script>
-    //set poly as global variable to have access to this from every function,
+    //set poly as global variable
     let poly = null;
-    //set INArea as global variable to have access to this from every function,
+    //set INArea as global variable
     let inArea = null;
+    // set INMarker as global variable
+    let inMarker = null;
     const  points = [
       {x:480, y: 480},
       {x:1220, y: 480},
@@ -41,6 +44,7 @@
         document.getElementById('removeINPolyline').removeAttribute('disabled');
         document.getElementById('drawINArea').removeAttribute('disabled');
         document.getElementById('removeINArea').removeAttribute('disabled');
+        document.getElementById('addINMarker').removeAttribute('disabled');
     });
 
     // const from = new Date(2017, 10, 1);
@@ -118,6 +122,17 @@
           document.getElementById('addListener').setAttribute('disabled', true);
         });
       }
+    }
+
+    function addINMarker() {
+      if(!!inMarker) {
+        return;
+      }
+      inMarker = new INMarker(navi);
+      inMarker.ready().then(() => {
+        inMarker.draw(points[3]);
+
+      });
     }
 
 </script>

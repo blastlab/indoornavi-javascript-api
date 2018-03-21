@@ -30,18 +30,19 @@ class INMap {
      * navi.load(mapId).then(() => console.log(`Map ${mapId} is loaded`));
      */
     load(mapId) {
-        const self = this;
-        const iFrame = document.createElement('iframe');
-        iFrame.style.width = `${!!this.config.width ? this.config.width : 640}px`;
-        iFrame.style.height = `${!!this.config.height ? this.config.height : 480}px`;
-        iFrame.setAttribute('src', `${this.targetHost}/embedded/${mapId}?api_key=${this.apiKey}`);
-        INDOM.getById(this.containerId).appendChild(iFrame);
-        return new Promise(function(resolve) {
-            iFrame.onload = function() {
-                self.isReady = true;
-                resolve();
-            }
-        });
+      const self = this;
+      const iFrame = document.createElement('iframe');
+      iFrame.style.width = `${!!this.config.width ? this.config.width : 640}px`;
+      iFrame.style.height = `${!!this.config.height ? this.config.height : 480}px`;
+      iFrame.setAttribute('src', `${this.targetHost}/embedded/${mapId}?api_key=${this.apiKey}`);
+      INDOM.getById(this.containerId).appendChild(iFrame);
+      return new Promise(function(resolve) {
+          iFrame.onload = function() {
+              self.isReady = true;
+              resolve();
+          }
+      });
+      return this;
     }
 
     /**
@@ -58,6 +59,7 @@ class INMap {
             command: 'toggleTagVisibility',
             args: tagShortId
         });
+      return this;
     }
 
     /**
@@ -74,8 +76,8 @@ class INMap {
             command: 'addEventListener',
             args: eventName
         });
-
-        INCommunication.listen(eventName, callback);
+      INCommunication.listen(eventName, callback);
+      return this;
     }
 
      checkIsReady() {
@@ -86,6 +88,7 @@ class INMap {
 
      setIFrame () {
       this.iFrame = INDOM.getByTagName('iframe', INDOM.getById(this.containerId));
+      return this;
      }
 
 }

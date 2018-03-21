@@ -194,7 +194,9 @@ class INMapObject {
    * Draws object for given array of points.
    * @param {array} points - array of points between which lines are going to be drawn, coordinates(x, y) of the point are given in centimeters from real distances (scale 1:1)
    */
-  draw (points) {}
+  draw (points) {
+    return this;
+  }
 
   /**
    * Removes object and destroys it instance in the frontend server, but do not destroys object class instance in your app.
@@ -325,6 +327,7 @@ class INPolyline extends INMapObject {
     } else {
       throw new Error('INPolyline is not created yet, use ready() method before executing draw(), or remove()');
     }
+    return this;
   }
 
   /**
@@ -335,6 +338,7 @@ class INPolyline extends INMapObject {
    */
   setLineColor(color) {
     this._setColor(color, 'stroke');
+    return this;
   }
 
   isWithin (point) {
@@ -380,6 +384,7 @@ class INArea extends INMapObject {
       if(!Number.isInteger(point.x) || !Number.isInteger(point.y)) {
         throw new Error('Given points are in wrong format or coordianets x an y are not integers');
       }
+      return this;
     });
 
     this._points = points;
@@ -398,6 +403,7 @@ class INArea extends INMapObject {
     } else {
       throw new Error('INArea is not created yet, use ready() method before executing draw(), or remove()');
     }
+    return this;
   }
 
   /**
@@ -408,6 +414,7 @@ class INArea extends INMapObject {
    */
   setFillColor (color) {
     this._setColor(color, 'fill');
+    return this;
   }
 
   /**
@@ -435,7 +442,7 @@ class INArea extends INMapObject {
     } else {
       throw new Error(`Object ${this._type} is not created yet, use ready() method before executing other methods`);
     }
-
+    return this;
   }
 
 }
@@ -498,6 +505,7 @@ class INMarker extends INMapObject {
         }
       }
     });
+    return this;
   }
 
   /**
@@ -517,6 +525,7 @@ class INMarker extends INMapObject {
         }
       }
     });
+    return this;
   }
 
   /**
@@ -545,6 +554,7 @@ class INMarker extends INMapObject {
         }
       }
     });
+    return this;
   }
 
   /**
@@ -564,6 +574,7 @@ class INMarker extends INMapObject {
         }
       }
     });
+    return this;
   }
 
   /**
@@ -592,6 +603,7 @@ class INMarker extends INMapObject {
     } else {
       throw new Error('Marker is not created yet, use ready() method before executing any other method');
     }
+    return this;
   }
 
   /**
@@ -621,6 +633,7 @@ class INMarker extends INMapObject {
     } else {
       throw new Error('Marker is not created yet, use ready() method before executing any other method');
     }
+    return this;
   }
 
   _validateURL(url) {
@@ -672,18 +685,19 @@ class INMap {
      * navi.load(mapId).then(() => console.log(`Map ${mapId} is loaded`));
      */
     load(mapId) {
-        const self = this;
-        const iFrame = document.createElement('iframe');
-        iFrame.style.width = `${!!this.config.width ? this.config.width : 640}px`;
-        iFrame.style.height = `${!!this.config.height ? this.config.height : 480}px`;
-        iFrame.setAttribute('src', `${this.targetHost}/embedded/${mapId}?api_key=${this.apiKey}`);
-        INDOM.getById(this.containerId).appendChild(iFrame);
-        return new Promise(function(resolve) {
-            iFrame.onload = function() {
-                self.isReady = true;
-                resolve();
-            }
-        });
+      const self = this;
+      const iFrame = document.createElement('iframe');
+      iFrame.style.width = `${!!this.config.width ? this.config.width : 640}px`;
+      iFrame.style.height = `${!!this.config.height ? this.config.height : 480}px`;
+      iFrame.setAttribute('src', `${this.targetHost}/embedded/${mapId}?api_key=${this.apiKey}`);
+      INDOM.getById(this.containerId).appendChild(iFrame);
+      return new Promise(function(resolve) {
+          iFrame.onload = function() {
+              self.isReady = true;
+              resolve();
+          }
+      });
+      return this;
     }
 
     /**
@@ -700,6 +714,7 @@ class INMap {
             command: 'toggleTagVisibility',
             args: tagShortId
         });
+      return this;
     }
 
     /**
@@ -716,8 +731,8 @@ class INMap {
             command: 'addEventListener',
             args: eventName
         });
-
-        INCommunication.listen(eventName, callback);
+      INCommunication.listen(eventName, callback);
+      return this;
     }
 
      checkIsReady() {
@@ -728,6 +743,7 @@ class INMap {
 
      setIFrame () {
       this.iFrame = INDOM.getByTagName('iframe', INDOM.getById(this.containerId));
+      return this;
      }
 
 }

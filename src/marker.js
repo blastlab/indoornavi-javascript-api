@@ -56,6 +56,7 @@ class INMarker extends INMapObject {
         }
       }
     });
+    return this;
   }
 
   /**
@@ -75,6 +76,7 @@ class INMarker extends INMapObject {
         }
       }
     });
+    return this;
   }
 
   /**
@@ -103,6 +105,7 @@ class INMarker extends INMapObject {
         }
       }
     });
+    return this;
   }
 
   /**
@@ -122,6 +125,7 @@ class INMarker extends INMapObject {
         }
       }
     });
+    return this;
   }
 
   /**
@@ -150,6 +154,7 @@ class INMarker extends INMapObject {
     } else {
       throw new Error('Marker is not created yet, use ready() method before executing any other method');
     }
+    return this;
   }
 
   /**
@@ -179,6 +184,7 @@ class INMarker extends INMapObject {
     } else {
       throw new Error('Marker is not created yet, use ready() method before executing any other method');
     }
+    return this;
   }
 
   _validateURL(url) {

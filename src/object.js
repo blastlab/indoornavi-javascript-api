@@ -52,7 +52,9 @@ class INMapObject {
    * Draws object for given array of points.
    * @param {array} points - array of points between which lines are going to be drawn, coordinates(x, y) of the point are given in centimeters from real distances (scale 1:1)
    */
-  draw (points) {}
+  draw (points) {
+    return this;
+  }
 
   /**
    * Removes object and destroys it instance in the frontend server, but do not destroys object class instance in your app.

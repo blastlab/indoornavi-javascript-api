@@ -45,6 +45,7 @@ class INPolyline extends INMapObject {
     } else {
       throw new Error('INPolyline is not created yet, use ready() method before executing draw(), or remove()');
     }
+    return this;
   }
 
   /**
@@ -55,6 +56,7 @@ class INPolyline extends INMapObject {
    */
   setLineColor(color) {
     this._setColor(color, 'stroke');
+    return this;
   }
 
   isWithin (point) {

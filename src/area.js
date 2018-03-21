@@ -35,6 +35,7 @@ class INArea extends INMapObject {
       if(!Number.isInteger(point.x) || !Number.isInteger(point.y)) {
         throw new Error('Given points are in wrong format or coordianets x an y are not integers');
       }
+      return this;
     });
 
     this._points = points;
@@ -53,6 +54,7 @@ class INArea extends INMapObject {
     } else {
       throw new Error('INArea is not created yet, use ready() method before executing draw(), or remove()');
     }
+    return this;
   }
 
   /**
@@ -63,6 +65,7 @@ class INArea extends INMapObject {
    */
   setFillColor (color) {
     this._setColor(color, 'fill');
+    return this;
   }
 
   /**
@@ -90,7 +93,7 @@ class INArea extends INMapObject {
     } else {
       throw new Error(`Object ${this._type} is not created yet, use ready() method before executing other methods`);
     }
-
+    return this;
   }
 
 }
