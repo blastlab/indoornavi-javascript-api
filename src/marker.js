@@ -177,7 +177,7 @@ class INMarker extends INMapObject {
           type: this._type,
           object: {
             id: this._id,
-            points: point
+            points: [point]
           }
         }
       });

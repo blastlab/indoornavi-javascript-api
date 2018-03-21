@@ -11,7 +11,7 @@ class INArea extends INMapObject {
    */
   constructor(navi) {
     super(navi);
-    this._type = 'INArea';
+    this._type = 'AREA';
   }
 
   /**

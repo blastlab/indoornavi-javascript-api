@@ -293,7 +293,7 @@ class INPolyline extends INMapObject {
   */
    constructor(navi) {
      super(navi);
-     this._type = 'INPolyline';
+     this._type = 'POLYLINE';
    }
 
   /**
@@ -360,7 +360,7 @@ class INArea extends INMapObject {
    */
   constructor(navi) {
     super(navi);
-    this._type = 'INArea';
+    this._type = 'AREA';
   }
 
   /**
@@ -626,7 +626,7 @@ class INMarker extends INMapObject {
           type: this._type,
           object: {
             id: this._id,
-            points: point
+            points: [point]
           }
         }
       });

@@ -11,7 +11,7 @@ class INPolyline extends INMapObject {
   */
    constructor(navi) {
      super(navi);
-     this._type = 'INPolyline';
+     this._type = 'POLYLINE';
    }
 
   /**
