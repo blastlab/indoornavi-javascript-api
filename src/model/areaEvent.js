@@ -1,5 +1,5 @@
 /**
- * Class representing an INAreaEvent,
+ * Class representing an areaEvent,
  */
 
 class INAreaEvent {

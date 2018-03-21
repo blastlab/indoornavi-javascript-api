@@ -1,13 +1,13 @@
 /**
  * Class representing a Marker,
- * creates the INPolyline object in iframe that communicates with indoornavi frontend server and draws INPolyline
+ * creates the INMarker object in iframe that communicates with indoornavi frontend server and draws INMarker.
  * @extends INMapObject
  */
 
 class INMarker extends INMapObject {
   /**
   * @constructor
-  * @param {Object} navi - instance of a Marker class needs the Indoornavi instance object injected to the constructor, to know where INPolyline object is going to be created
+  * @param {Object} navi - instance of a Marker class needs the Indoornavi instance object injected to the constructor, to know where INMarker object is going to be created
   */
   constructor(navi) {
     super(navi);
@@ -25,21 +25,22 @@ class INMarker extends INMapObject {
   }
 
   /**
-  * Sets marker info window and position. Use of this method is optional. If not used
+  * Sets marker info window and position. Use of this method is optional.
   * @param {string} - string of data or html template in string format that will be passed in to info window as text.
+  * To reset label to a new content call this method again passing new content as a string.
   * @param {INPolyline.positionEnum.'POSITION'} - enum property representing infowindow position.
-  * Avaliable positon settings: TOP, LEFT, RIGHT, BOTTOM, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT.
+  * Avaliable POSITION settings: TOP, LEFT, RIGHT, BOTTOM, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT.
   * @example
   * const marker = new Marker(navi);
   * marker.ready().then(() => marker.setInfoWindow('<p>text in paragraf</p>', poly.positionEnum.TOP));
   */
 
   setInfoWindow(content, position) {
-    if (!Number.isInteger(position) || position < 0 || position > 7){
-      throw new Error('Wrong argument passed for info window position')
+    if (typeof content === 'string') {
+      throw new Error('Wrong argument passed for info window content');
     }
-    if (dataString typeof !== 'string') {
-      throw new Error('Wrong argument passed for info window content')
+    if (!Number.isInteger(position) || position < 0 || position > 7) {
+      throw new Error('Wrong argument passed for info window position');
     }
     const dto = {
       content: content,
@@ -79,7 +80,7 @@ class INMarker extends INMapObject {
   /**
   * Sets marker label. Use of this method is optional.
   * @param {string} - string that will be used as a marker label. If label method isn't used than no label is going to be displayed.
-  * To reset label to new string call this method again passing new label as a string.
+  * To reset label to a new string call this method again passing new label as a string.
   * @example
   * const marker = new Marker(navi);
   * marker.ready().then(() => marker.setLable(label));
@@ -87,7 +88,7 @@ class INMarker extends INMapObject {
 
   setLable(label) {
     let labelDto;
-    if (label typeof === 'string') {
+    if (typeof label === 'string') {
       labelDto = label;
     } else {
       labelDto = null;
@@ -178,6 +179,7 @@ class INMarker extends INMapObject {
     } else {
       throw new Error('Marker is not created yet, use ready() method before executing any other method');
     }
+  }
 
   _validateURL(url) {
       var pattern = new RegExp('^(https?:\/\/)?'+

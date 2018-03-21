@@ -15,7 +15,7 @@ class INPolyline extends INMapObject {
    }
 
   /**
-  * Draws INPolyline for given array of points.
+  * Draws polyline for given array of points.
   * @param {array} points - array of points between which lines are going to be drawn, coordinates(x, y) of the point are given in centimeters as integers from real distances (scale 1:1)
   * @example
   * const poly = new INPolyline(navi);
@@ -48,7 +48,7 @@ class INPolyline extends INMapObject {
   }
 
   /**
-   * Sets INPolyline lines and points color.
+   * Sets polyline lines and points color.
    * @param {color} string - string that specifies the color. Supports color in hex format '#AABBCC' and 'rgb(255,255,255)';
    * @example
    * poly.ready().then(() => poly.setLineColor('#AABBCC'));

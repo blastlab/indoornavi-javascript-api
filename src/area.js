@@ -15,9 +15,9 @@ class INArea extends INMapObject {
   }
 
   /**
-   * Draws INArea for given array of points.
-   * @param {array} points - array of points which will describe the INArea, coordinates members such as x and y of the point are given in centimeters as integers from real distances (scale 1:1).
-   * For less than 3 points supplied to this method, INArea isn't going to be drawn.
+   * Draws Area for given array of points.
+   * @param {array} points - array of points which will describe the Area, coordinates members such as x and y of the point are given in centimeters as integers from real distances (scale 1:1).
+   * For less than 3 points supplied to this method, Area isn't going to be drawn.
    * @example
    * const area = new INArea(navi);
    * area.ready().then(() => area.draw(points));
@@ -56,7 +56,7 @@ class INArea extends INMapObject {
   }
 
   /**
-   * Fills INArea whit given color.
+   * Fills Area whit given color.
    * @param {color} string - string that specifies the color. Supports color in hex format '#AABBCC' and 'rgb(255,255,255)';
    * @example
    * area.ready().then(() => area.setFillColor('#AABBCC'));
@@ -66,7 +66,7 @@ class INArea extends INMapObject {
   }
 
   /**
-   * Sets opacity.
+   * Sets Area opacity.
    * @param {float} float. Float between 1.0 and 0. Set it to 1.0 for no oppacity, 0 for maximum opacity.
    * @example
    * area.ready().then(() => area.setOpacity(0.3));
