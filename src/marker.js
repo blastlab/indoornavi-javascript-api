@@ -30,13 +30,14 @@ class INMarker extends INMapObject {
   * To reset label to a new content call this method again passing new content as a string.
   * @param {INPolyline.positionEnum.'POSITION'} - enum property representing infowindow position.
   * Avaliable POSITION settings: TOP, LEFT, RIGHT, BOTTOM, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT.
+  * @return {this} - returns INMarker instace class;
   * @example
   * const marker = new Marker(navi);
-  * marker.ready().then(() => marker.setInfoWindow('<p>text in paragraf</p>', poly.positionEnum.TOP));
+  * marker.ready().then(() => marker.setInfoWindow('<p>text in paragraf</p>', marker.positionEnum.TOP));
   */
 
   setInfoWindow(content, position) {
-    if (typeof content === 'string') {
+    if (typeof content !== 'string') {
       throw new Error('Wrong argument passed for info window content');
     }
     if (!Number.isInteger(position) || position < 0 || position > 7) {
@@ -61,6 +62,7 @@ class INMarker extends INMapObject {
 
   /**
   * Removes marker info window.
+  * @return {this} - returns INMarker instace class;
   * @example
   * marker.ready().then(() => marker.removeInfoWindow());
   */
@@ -83,6 +85,7 @@ class INMarker extends INMapObject {
   * Sets marker label. Use of this method is optional.
   * @param {string} - string that will be used as a marker label. If label method isn't used than no label is going to be displayed.
   * To reset label to a new string call this method again passing new label as a string.
+  * @return {this} - returns INMarker instace class;
   * @example
   * const marker = new Marker(navi);
   * marker.ready().then(() => marker.setLable(label));
@@ -96,7 +99,7 @@ class INMarker extends INMapObject {
       labelDto = null;
     }
     INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
-      command: 'setMarkerLabel',
+      command: 'setLabel',
       args: {
         type: this._type,
         object: {
@@ -110,13 +113,14 @@ class INMarker extends INMapObject {
 
   /**
   * Removes marker label.
+  * @return {this} - returns INMarker instace class;
   * @example
   * marker.ready().then(() => marker.removeLabel());
   */
 
   removeLabel() {
     INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
-      command: 'deleteMarkerLabel',
+      command: 'deleteLabel',
       args: {
         type: this._type,
         object: {
@@ -130,24 +134,35 @@ class INMarker extends INMapObject {
 
   /**
   * Sets marker icon. Use of this method is optional.
-  * @param {string} - url path to the icon that is going to be used as a marker. If this comment isn't used default icon is going to be used.
+  * @param {string} - icon as a svg path;
+  * @param {object} - point {x: number, y: number} where x and y are integers representing point on box containing an icon, where marker position is pined to. Point is releted to the top - left corner which is {x: 0, y: 0} of the box.
+  * @return {this} - returns INMarker instace class;
   * @example
+  * const path = '<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"></path>'
+  * const point = {x: 12, y: 22};
   * const marker = new Marker(navi);
-  * marker.ready().then(() => marker.useIcon(url));
+  * marker.ready().then(() => marker.useIcon(icon, point));
   */
 
-  useIcon(url) {
-    if (!this._validateURL(url)) {
-      throw new Error('please specify valid url.');
+  useIcon(path, point) {
+    if (typeof path !== 'string') {
+      throw new Error('Invalid value supplied as an icon path argument');
+    }
+    if(!Number.isInteger(point.x) || !Number.isInteger(point.y)) {
+      throw new Error('Given point is in wrong format or coordianets x an y are not integers');
     }
     if (!!this._id) {
+      const iconDto = {
+        path: path,
+        point: point
+      }
       INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
-        command: 'setMarkerIcon',
+        command: 'setIcon',
         args: {
           type: this._type,
           object: {
             id: this._id,
-            url: url
+            icon: iconDto
           }
         }
       });
@@ -160,7 +175,8 @@ class INMarker extends INMapObject {
   /**
   * Draws marker at given point.
   * @param {object} point - object holding { x: int, y: int } representing marker position
-  * Marker will be cliped to the point int the bottom center of marker icon
+  * Marker will be cliped to the point int the bottom center of marker icon.
+  * @return {this} - returns INMarker instace class;
   * @example
   * const marker = new Marker(navi);
   * marker.ready().then(() => marker.draw(point));
@@ -168,7 +184,7 @@ class INMarker extends INMapObject {
   draw (point) {
     this._point = point;
     if(!Number.isInteger(point.x) || !Number.isInteger(point.y)) {
-      throw new Error('Given points are in wrong format or coordianets x an y are not integers')
+      throw new Error('Given point is in wrong format or coordianets x an y are not integers');
     }
     if (!!this._id) {
       INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
@@ -186,20 +202,5 @@ class INMarker extends INMapObject {
     }
     return this;
   }
-
-  _validateURL(url) {
-      var pattern = new RegExp('^(https?:\/\/)?'+
-        '((([a-z\d]([a-z\d-]*[a-z\d])*)\.)+[a-z]{2,}|'+
-        '((\d{1,3}\.){3}\d{1,3}))'+
-        '(\:\d+)?(\/[-a-z\d%_.~+]*)*'+
-        '(\?[;&a-z\d%_.~+=-]*)?'+
-        '(\#[-a-z\d_]*)?$','i');
-      if(!pattern.test(url)) {
-        return false;
-      } else {
-        return true;
-      }
-    }
-
 
  }

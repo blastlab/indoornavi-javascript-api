@@ -9,7 +9,10 @@
 <button disabled id="drawINArea" onclick="drawINArea()"> Draw Area</button>
 <button disabled id="removeINArea" onclick="removeINArea()">Remove Area</button>
 <button disabled id="addListener" onclick="addListener()">Add Area listener</button>
-<button disabled id="addINMarker" onclick="addINMarker()">Add Marker</button>
+<button disabled id="addINMarker_1" onclick="addINMarker_1()">Add Marker 1</button>
+<button disabled id="removeINMarker_1" onclick="removeINMarker_1()">Remove Marker 1</button>
+<button disabled id="addINMarker_2" onclick="addINMarker_2()">Add Marker 2</button>
+<button disabled id="removeINMarker_2" onclick="removeINMarker_2()">Remove Marker 2</button>
 
 <div id="map"></div>
 </body>
@@ -20,7 +23,10 @@
     //set INArea as global variable
     let inArea = null;
     // set INMarker as global variable
-    let inMarker = null;
+    let inMarker1 = null;
+    let inMarker2 = null;
+    let markerIcon = '<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"></path>';
+    let infoWindowContent = "<div> Hello from info window, this is window that conatains no valiuable information so please enjoy this content as this is all what you can have got for now. tadam, an bye bye. </div>";
     const  points = [
       {x:480, y: 480},
       {x:1220, y: 480},
@@ -44,7 +50,10 @@
         document.getElementById('removeINPolyline').removeAttribute('disabled');
         document.getElementById('drawINArea').removeAttribute('disabled');
         document.getElementById('removeINArea').removeAttribute('disabled');
-        document.getElementById('addINMarker').removeAttribute('disabled');
+        document.getElementById('addINMarker_1').removeAttribute('disabled');
+        document.getElementById('removeINMarker_1').removeAttribute('disabled');
+        document.getElementById('addINMarker_2').removeAttribute('disabled');
+        document.getElementById('removeINMarker_2').removeAttribute('disabled');
     });
 
     // const from = new Date(2017, 10, 1);
@@ -124,15 +133,47 @@
       }
     }
 
-    function addINMarker() {
-      if(!!inMarker) {
+    function addINMarker_1() {
+      if(!!inMarker1) {
         return;
       }
-      inMarker = new INMarker(navi);
-      inMarker.ready().then(() => {
-        inMarker.draw(points[3]);
+      inMarker1 = new INMarker(navi);
+      inMarker1.ready().then(() => {
+        inMarker1.draw(points[2]).useIcon(markerIcon, {x: 12, y: 22}).setLable('Marker 1').setInfoWindow(infoWindowContent, inMarker1.positionEnum.TOP);
       });
     }
+
+    function addINMarker_2() {
+      if(!!inMarker2) {
+        return;
+      }
+      inMarker2 = new INMarker(navi);
+      inMarker2.ready().then(() => {
+        inMarker2.draw(points[3]);
+      });
+    }
+
+    function removeINMarker_1() {
+      if(!inMarker1) {
+        return;
+      }
+      inMarker1.ready().then(() => {
+        inMarker1.remove();
+        inMarker1 = null;
+      });
+    }
+
+    function removeINMarker_2() {
+      if(!inMarker2) {
+        return;
+      }
+      inMarker2.ready().then(() => {
+        inMarker2.remove();
+        inMarker2 = null;
+      });
+    }
+
+
 
 </script>
 </html>
