@@ -139,7 +139,7 @@
       }
       inMarker1 = new INMarker(navi);
       inMarker1.ready().then(() => {
-        inMarker1.useIcon(markerIcon, {x: 12, y: 0}).draw(points[2]);
+        inMarker1.draw(points[2]).useIcon(markerIcon, {x: 12, y: 0}).setLabel('this is label 1');
       });
     }
 
@@ -149,7 +149,7 @@
       }
       inMarker2 = new INMarker(navi);
       inMarker2.ready().then(() => {
-        inMarker2.draw(points[2]).useIcon(markerIcon, {x: 12, y: 22}).draw(points[2]);
+        inMarker2.setLabel('this is label 2').useIcon(markerIcon, {x: 12, y: 22}).draw(points[2]);
       });
     }
 
