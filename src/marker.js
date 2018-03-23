@@ -134,6 +134,8 @@ class INMarker extends INMapObject {
 
   /**
   * Sets marker icon. Use of this method is optional.
+  * Method does not place icon or draws marker on the map, it simply changes the icon for the marker for the next draw() method call.
+  * To change marker icon appirance on the map You need to call draw(point) method again.
   * @param {string} - icon as a svg path;
   * @param {object} - point {x: number, y: number} where x and y are integers representing point on box containing an icon, where marker position is pined to. Point is releted to the top - left corner which is {x: 0, y: 0} of the box.
   * @return {this} - returns INMarker instace class;
@@ -141,7 +143,7 @@ class INMarker extends INMapObject {
   * const path = '<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"></path>'
   * const point = {x: 12, y: 22};
   * const marker = new Marker(navi);
-  * marker.ready().then(() => marker.useIcon(icon, point));
+  * marker.ready().then(() => marker.useIcon(icon, point).draw(point));
   */
 
   useIcon(path, point) {
