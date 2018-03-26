@@ -25,7 +25,7 @@
     // set INMarker as global variable
     let inMarker1 = null;
     let inMarker2 = null;
-    let markerIcon = '<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"></path>';
+    let markerIcon = 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png';
     let infoWindowContent = "<div> Hello from info window, this is window that conatains no valiuable information so please enjoy this content as this is all what you can have got for now. tadam, an bye bye. </div>";
     const  points = [
       {x:480, y: 480},
@@ -139,7 +139,7 @@
       }
       inMarker1 = new INMarker(navi);
       inMarker1.ready().then(() => {
-        inMarker1.draw(points[2]).useIcon(markerIcon, {x: 12, y: 0}).setLabel('this is label 1');
+        inMarker1.draw(points[2]).setLabel('this is label 1').useIcon(markerIcon);
       });
     }
 
@@ -149,7 +149,7 @@
       }
       inMarker2 = new INMarker(navi);
       inMarker2.ready().then(() => {
-        inMarker2.setLabel('this is label 2').useIcon(markerIcon, {x: 12, y: 22}).draw(points[2]);
+        inMarker2.setLabel('this is label 2').useIcon(markerIcon).draw(points[2]);
       });
     }
 

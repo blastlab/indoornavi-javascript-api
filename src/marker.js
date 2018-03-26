@@ -105,19 +105,22 @@ class INMarker extends INMapObject {
 
   setLabel(label, point) {
     let labelDto;
-    let points = [];
-    if (!!point) {
+    const points = [];
+    if (typeof label === 'string' && !!point) {
       points.push(point);
-    }
-    if (typeof label === 'string') {
       labelDto = {
         label: label,
-        points = points
+        points: points
+      };
+    } else if (typeof label === 'string'){
+      labelDto = {
+        label: label,
+        points: points
       };
     } else {
       labelDto = {
         label: null,
-        points = points
+        points: points
       };
     }
     INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
@@ -157,41 +160,31 @@ class INMarker extends INMapObject {
   /**
   * Sets marker icon. Use of this method is optional.
   * Method does not place icon or draws marker on the map, it simply changes the icon for the marker for the next draw({x: 100, y: 100}) method call.
-  * If draw({x: 100, y: 100}) method has been called before than icon will be redrawn when useIcon(icon, point) method is called;
-  * @param {string} - icon as a svg path;
-  * @param {object} - point {x: number, y: number} where x and y are integers representing point on box containing an icon, where marker position is pined to. Point is releted to the top - left corner which is {x: 0, y: 0} of the box.
+  * If draw({x: 100, y: 100}) method has been called before than icon will be redrawn when useIcon(icon) method is called;
+  * @param {string} - url path to your icon;
   * @return {this} - returns INMarker instace class;
   * @example
-  * const path = '<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"></path>'
-  * const point = {x: 12, y: 22};
+  * const path = 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png'
   * const marker = new Marker(navi);
-  * marker.ready().then(() => marker.useIcon(icon, point).draw({x: 100, y: 100})));
+  * marker.ready().then(() => marker.useIcon(icon).draw({x: 100, y: 100})));
   * @example
-  * const path = '<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"></path>'
-  * const point = {x: 12, y: 22};
+  * const path = 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png'
   * const marker = new Marker(navi);
-  * marker.ready().then(() => marker.draw({x: 100, y: 100})).useIcon(icon, point));
+  * marker.ready().then(() => marker.draw({x: 100, y: 100})).useIcon(icon));
   */
 
-  useIcon(path, point) {
+  useIcon(path) {
     if (typeof path !== 'string') {
       throw new Error('Invalid value supplied as an icon path argument');
     }
-    if(!Number.isInteger(point.x) || !Number.isInteger(point.y)) {
-      throw new Error('Given point is in wrong format or coordianets, x an y are not integers');
-    }
     if (!!this._id) {
-      const iconDto = {
-        path: path,
-        point: point
-      }
       INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
         command: 'setIcon',
         args: {
           type: this._type,
           object: {
             id: this._id,
-            icon: iconDto
+            icon: path
           }
         }
       });
