@@ -91,37 +91,21 @@ class INMarker extends INMapObject {
   * Method does not draws marker on the map, it simply changes the lebel for the marker for the next draw({x: 100, y: 100}) method call.
   * If draw({x: 100, y: 100}) method has been called before than label will be reset when setLable('label to display') method is called;
   * @param {string} - string that will be used as a marker label. If label method isn't used than no label is going to be displayed.
-  * @param {object} - point {x: number, y: number} where x and y are integers representing distance from marker placment point where text should to start. This is optional, if argument is not specified label text will start {x: 5 , y: 5} pixels below the marker placment point.
   * To reset label to a new string call this method again passing new label as a string.
   * @return {this} - returns INMarker instace class;
   * @example
   * const marker = new Marker(navi);
-  * marker.ready().then(() => marker.setLable('label to display', {x: -15 , y: 15}).draw({x: 100, y: 100}));
+  * marker.ready().then(() => marker.setLable('label to display').draw({x: 100, y: 100}));
   * @example
   * const marker = new Marker(navi);
   * marker.ready().then(() => marker.draw({x: 100, y: 100}).setLable('label to display'));
   *
   */
 
-  setLabel(label, point) {
-    let labelDto;
-    const points = [];
-    if (typeof label === 'string' && !!point) {
-      points.push(point);
-      labelDto = {
-        label: label,
-        points: points
-      };
-    } else if (typeof label === 'string'){
-      labelDto = {
-        label: label,
-        points: points
-      };
-    } else {
-      labelDto = {
-        label: null,
-        points: points
-      };
+  setLabel(value) {
+    let label = null;
+    if (typeof value === 'string' || typeof value === 'number') {
+      label = value;
     }
     INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
       command: 'setLabel',
@@ -129,7 +113,7 @@ class INMarker extends INMapObject {
         type: this._type,
         object: {
           id: this._id,
-          labelDto: labelDto
+          label: label
         }
       }
     });
