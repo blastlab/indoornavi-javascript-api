@@ -139,8 +139,7 @@
       }
       inMarker1 = new INMarker(navi);
       inMarker1.ready().then(() => {
-        console.log(inMarker1);
-        inMarker1.draw(points[4]).setLabel('this is label 1').useIcon(markerIcon);
+        inMarker1.draw(points[4]).useIcon(markerIcon).setLabel('this is label 1');
       });
     }
 
@@ -150,7 +149,6 @@
       }
       inMarker2 = new INMarker(navi);
       inMarker2.ready().then(() => {
-        console.log(inMarker2);
         inMarker2.setLabel('this is label 2').useIcon(markerIcon).draw(points[2]);
       });
     }
