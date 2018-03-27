@@ -633,7 +633,7 @@ class INMarker extends INMapObject {
 
   /**
    * Add listener to react when icon is clicked.
-   * @param {INPolyline.eventsEnum.'EVENT'} - enum property representing event to listen to. Avaliable events are: ONCLICK, ONMOUSEOVER ...
+   * @param {INMarker.eventsEnum.'EVENT'} - enum property representing event to listen to. Avaliable events are: ONCLICK, ONMOUSEOVER ...
    * @param {function} callback - this method will be called when the specific event occurs
    * example
    * marker.addEventListener('coordinates', data => marker.setInfoWindow('<p>text in paragraf</p>', marker.positionEnum.TOP));
@@ -641,9 +641,15 @@ class INMarker extends INMapObject {
 
   addEventListener(eventName, callback) {
     if (!!this._id) {
-      INCommunication.send(this.iFrame, this.targetHost, {
+      INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
           command: 'addMarkerEventListener',
-          args: eventName
+          args: {
+            type: this._type,
+            object: {
+              id: this._id,
+              eventName: eventName
+            }
+          }
       });
     INCommunication.listen(eventName, callback);
     }

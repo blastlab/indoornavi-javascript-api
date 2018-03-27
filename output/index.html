@@ -139,7 +139,7 @@
       }
       inMarker1 = new INMarker(navi);
       inMarker1.ready().then(() => {
-        inMarker1.draw(points[4]).useIcon(markerIcon).setLabel('this is label 1');
+        inMarker1.draw(points[4]).useIcon(markerIcon).setLabel('this is label 1').addEventListener(inMarker1.eventsEnum.ONCLICK);
       });
     }
 
