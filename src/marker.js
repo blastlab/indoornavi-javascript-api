@@ -34,7 +34,7 @@ class INMarker extends INMapObject {
   * If draw({x: 100, y: 100}) method has been called before than info window will be reset when setInfoWindow('<p>text in paragraf</p>', marker.positionEnum.TOP) method is called;
   * @param {string} - string of data or html template in string format that will be passed in to info window as text.
   * To reset label to a new content call this method again passing new content as a string.
-  * @param {INPolyline.positionEnum.'POSITION'} - enum property representing infowindow position.
+  * @param {INPolyline.positionEnum.'POSITION'} enum - property representing infowindow position.
   * Avaliable POSITION settings: TOP, LEFT, RIGHT, BOTTOM, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT.
   * @return {this} - returns INMarker instace class;
   * @example

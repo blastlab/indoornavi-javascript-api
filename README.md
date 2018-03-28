@@ -29,6 +29,22 @@ npm run test
 jsdoc path_to_indoorNavi.js
 ```
 
+## Serve index html
+
+You need to have python3 installed on your system. Click on link to get new [Python3](https://www.python.org/downloads/)
+
+Install virtual environment in project root folder: ``` pip install virtualenv```
+
+Create virtual environment: ```virtualenv my_venv_name```
+
+Start virtual environment: ```source my_venv_name/bin/activate```
+
+Install flask web server framework: ```pip install flask```
+
+Run server: ```python main.py```
+
+This is going to start server at http://127.0.0.1:3000
+
 ## Rules for developing this API:
 
 ### Naming:
