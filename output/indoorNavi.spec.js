@@ -468,6 +468,13 @@ class INMarker extends INMapObject {
   constructor(navi) {
     super(navi);
     this._type = 'MARKER';
+    this._icon = null;
+    this._infoWindow = {
+      content: null,
+      position: null
+    };
+    this._label = null;
+    this._events = new Set();
     this.positionEnum = {
       TOP: 0,
       RIGHT: 1,
@@ -479,8 +486,8 @@ class INMarker extends INMapObject {
       BOTTOM_LEFT: 7
     };
     this.eventsEnum = {
-      ONCLICK: 0,
-      ONMOUSEOVER:1,
+      CLICK: 0,
+      MOUSEOVER:1,
     }
   }
 
@@ -508,41 +515,25 @@ class INMarker extends INMapObject {
     if (!Number.isInteger(position) || position < 0 || position > 7) {
       throw new Error('Wrong argument passed for info window position');
     }
-    const dto = {
+    this._infoWindow = {
       content: content,
       positon: position
-    }
-    INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
-      command: 'setInfoWindow',
-      args: {
-        type: this._type,
-        object: {
-          id: this._id,
-          infoWindow: dto
-        }
-      }
-    });
+    };
     return this;
   }
 
   /**
   * Removes marker info window.
-  * @return {Promise} - returns;
-  * @example
-  * marker.ready().then(() => marker.removeInfoWindow());
+   * @return {INMarker} - returns INMarker instance class;
+   * @example
+   * marker.ready().then(() => marker.removeInfoWindow());
   */
 
   removeInfoWindow() {
-    INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
-      command: 'removeInfoWindow',
-      args: {
-        type: this._type,
-        object: {
-          id: this._id,
-          infoWindow: null
-        }
-      }
-    });
+    this._infoWindow = {
+        content: null,
+        position: null
+    };
     return this;
   }
 
@@ -563,20 +554,9 @@ class INMarker extends INMapObject {
   */
 
   setLabel(value) {
-    let label = null;
     if (typeof value === 'string' || typeof value === 'number') {
-      label = value;
+      this._label = value;
     }
-    INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
-      command: 'setLabel',
-      args: {
-        type: this._type,
-        object: {
-          id: this._id,
-          label: label
-        }
-      }
-    });
     return this;
   }
 
@@ -588,16 +568,7 @@ class INMarker extends INMapObject {
   */
 
   removeLabel() {
-    INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
-      command: 'deleteLabel',
-      args: {
-        type: this._type,
-        object: {
-          id: this._id,
-          label: null
-        }
-      }
-    });
+    this._label = null;
     return this;
   }
 
@@ -617,57 +588,32 @@ class INMarker extends INMapObject {
   * marker.ready().then(() => marker.draw({x: 100, y: 100})).useIcon(icon));
   */
 
-  useIcon(path) {
+  setIcon(path) {
     if (typeof path !== 'string') {
       throw new Error('Invalid value supplied as an icon path argument');
     }
-    if (!!this._id) {
-      INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
-        command: 'setIcon',
-        args: {
-          type: this._type,
-          object: {
-            id: this._id,
-            icon: path
-          }
-        }
-      });
-    } else {
-      throw new Error('Marker is not created yet, use ready() method before executing any other method');
-    }
+    this._icon = path;
     return this;
   }
 
   /**
    * Add listener to react when icon is clicked.
-   * @param {number} eventName - as INMarker.eventsEnum.'EVENT' property representing event to listen to. Available events are: ONCLICK, ONMOUSEOVER ...
+   * @param {number} event - as INMarker.eventsEnum.'EVENT' property representing event to listen to. Available events are: ONCLICK, ONMOUSEOVER ...
    * @param {function} callback - this method will be called when the specific event occurs
    * example
-   * marker.addEventListener('coordinates', data => marker.setInfoWindow('<p>text in paragraf</p>', marker.positionEnum.TOP));
+   * marker.addEventListener('coordinates', data => marker.setInfoWindow('<p>text in paragraf</p>', marker.eventsEnum.CLICK));
    */
 
-  addEventListener(eventName, callback) {
-    if (!!this._id) {
-      INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
-          command: 'addMarkerEventListener',
-          args: {
-            type: this._type,
-            object: {
-              id: this._id,
-              eventName: eventName
-            }
-          }
-      });
-    INCommunication.listen(eventName, callback);
-    }
+  addEventListener(event, callback) {
+    this._events.add(event);
+    INCommunication.listen(event, callback);
     return this;
   }
 
   /**
-  * Draws marker at given point.
+  * Place marker at given point.
   * @param {object} point -object { x: int, y: int } representing marker position
   * Marker will be clipped to the point int the bottom center of marker icon.
-  * @return {INMarker} - returns INMarker instance class;
   * @example
   * const marker = new Marker(navi);
   * marker.ready().then(() => marker.draw({x: 100, y: 100})));
@@ -684,10 +630,11 @@ class INMarker extends INMapObject {
   * marker.ready().then(() => {
   * marker.draw({x: 100, y: 100}));
   * // if something is going to happen then:
+  * // add new settings there
   * marker.draw({x: 200, y: 200}); // redraws marker in given point with all settings it already has
   * });
   */
-  draw ([point]) {
+  place (point) {
     this.point = point;
     if(!Number.isInteger(point.x) || !Number.isInteger(point.y)) {
       throw new Error('Given point is in wrong format or coordinates x an y are not integers');
@@ -699,14 +646,13 @@ class INMarker extends INMapObject {
           type: this._type,
           object: {
             id: this._id,
-            points: [point]
+            data: 'all data here'
           }
         }
       });
     } else {
       throw new Error('Marker is not created yet, use ready() method before executing any other method');
     }
-    return this;
   }
 
  }
