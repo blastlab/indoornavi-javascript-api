@@ -36,7 +36,7 @@
     ];
 
     const navi = new INMap(
-        'http://localhost:4200',
+        'http://127.0.0.1:4200',
         'TestAdmin',
         'map',
         {
@@ -89,6 +89,7 @@
     }
 
     function drawINPolyline() {
+        console.log(poly);
       if(!!poly) {
         return;
       }
@@ -128,7 +129,7 @@
         inArea.ready().then(() => {
           inArea.remove();
           inArea = null;
-          document.getElementById('addListener').setAttribute('disabled', true);
+          document.getElementById('addListener').setAttribute('disabled', 'true');
         });
       }
     }
@@ -172,8 +173,6 @@
         inMarker2 = null;
       });
     }
-
-
 
 </script>
 </html>

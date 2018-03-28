@@ -50,7 +50,7 @@ class INPolyline extends INMapObject {
 
   /**
    * Sets polyline lines and points color.
-   * @param {color} string - string that specifies the color. Supports color in hex format '#AABBCC' and 'rgb(255,255,255)';
+   * @param {string} color - string that specifies the color. Supports color in hex format '#AABBCC' and 'rgb(255,255,255)';
    * @example
    * poly.ready().then(() => poly.setLineColor('#AABBCC'));
    */
@@ -60,7 +60,10 @@ class INPolyline extends INMapObject {
   }
 
   isWithin (point) {
-    throw new Error('Method not implemented yet for INPolyline');
+    if (this._type === 'INPolyline') {
+        throw new Error('Method not implemented yet for INPolyline');
+    }
+    return false;
   }
 
 }

@@ -150,7 +150,7 @@ class INMapObject {
    * Instance of a INMapObject class cennot be created directly, INMapObject class is an abstract class.
    * @abstract
    * @constructor
-   * @param {Indornavi} navi needs the Indoornavi instance object injected to the constructor, to know where INMapObject is going to be created
+   * @param {Object} navi - needs the Indoornavi instance object injected to the constructor, to know where INMapObject is going to be created
    */
   constructor(navi) {
     if (new.target === INMapObject) {
@@ -158,9 +158,10 @@ class INMapObject {
     }
     this._navi = navi;
     this._id = null;
-    this._type = 'OBJECT'
+    this._type = 'OBJECT';
     this._navi.checkIsReady();
     this._navi.setIFrame();
+    this._points = null;
   }
 
   /**
@@ -223,7 +224,7 @@ class INMapObject {
   /**
   * Checks, is point of given coordinates inside of the created object.
   * @returns {boolean} true if given coordinates are inside the object, false otherwise;
-  * @param {coordinates} object - object with x and y members given as integers;
+  * @param {object} coordinates - object with x and y members given as integers;
   * @example
   * 'inheritedObjectFromINMapObject.ready().then(() => 'inheritedObjectFromINMapObject.isWithin({x: 100, y: 50}));
   */
@@ -235,6 +236,9 @@ class INMapObject {
     let intersect = false;
     let xi, yi, xj, yj = null;
 
+    if(this._points === null) {
+      throw new Error('points of the object are null');
+    }
     for (let i = 0, j = this._points.length - 1; i < this._points.length; j = i++) {
       xi = this._points[i].x;
       yi = this._points[i].y;
@@ -252,7 +256,7 @@ class INMapObject {
 
   _setColor(color, attribute) {
     let hexToSend = null;
-    const isValidColor = /(^[a-zA-Z]+$)|(#(?:[0-9a-f]{2}){2,4}|#[0-9a-f]{3}|(?:rgba?|hsla?)\((?:\d+%?(?:deg|rad|grad|turn)?(?:,|\s)+){2,3}[\s\/]*[\d\.]+%?\))/i.test(color);
+    const isValidColor = /(^[a-zA-Z]+$)|(#(?:[0-9a-f]{2}){2,4}|#[0-9a-f]{3}|(?:rgba?|hsla?)\((?:\d+%?(?:deg|rad|grad|turn)?(?:,|\s)+){2,3}[\s\/]*[\d]+%?\))/i.test(color);
     if (!isValidColor) {
       throw new Error('Wrong color value or/and type');
     }
@@ -332,7 +336,7 @@ class INPolyline extends INMapObject {
 
   /**
    * Sets polyline lines and points color.
-   * @param {color} string - string that specifies the color. Supports color in hex format '#AABBCC' and 'rgb(255,255,255)';
+   * @param {string} color - string that specifies the color. Supports color in hex format '#AABBCC' and 'rgb(255,255,255)';
    * @example
    * poly.ready().then(() => poly.setLineColor('#AABBCC'));
    */
@@ -342,7 +346,10 @@ class INPolyline extends INMapObject {
   }
 
   isWithin (point) {
-    throw new Error('Method not implemented yet for INPolyline');
+    if (this._type === 'INPolyline') {
+        throw new Error('Method not implemented yet for INPolyline');
+    }
+    return false;
   }
 
 }
@@ -408,7 +415,7 @@ class INArea extends INMapObject {
 
   /**
    * Fills Area whit given color.
-   * @param {color} string - string that specifies the color. Supports color in hex format '#AABBCC' and 'rgb(255,255,255)';
+   * @param {string} color - string that specifies the color. Supports color in hex format '#AABBCC' and 'rgb(255,255,255)';
    * @example
    * area.ready().then(() => area.setFillColor('#AABBCC'));
    */
@@ -419,7 +426,7 @@ class INArea extends INMapObject {
 
   /**
    * Sets Area opacity.
-   * @param {float} float. Float between 1.0 and 0. Set it to 1.0 for no oppacity, 0 for maximum opacity.
+   * @param {number} value. Float between 1.0 and 0. Set it to 1.0 for no opacity, 0 for maximum opacity.
    * @example
    * area.ready().then(() => area.setOpacity(0.3));
    */
@@ -481,11 +488,11 @@ class INMarker extends INMapObject {
   * Sets marker info window and position. Use of this method is optional.
   * Method does not draws marker on the map, it simply changes the info window set for the marker for the next draw({x: 100, y: 100}) method call.
   * If draw({x: 100, y: 100}) method has been called before than info window will be reset when setInfoWindow('<p>text in paragraf</p>', marker.positionEnum.TOP) method is called;
-  * @param {string} - string of data or html template in string format that will be passed in to info window as text.
+  * @param {string} content - of data or html template in string format that will be passed in to info window as text.
   * To reset label to a new content call this method again passing new content as a string.
-  * @param {INPolyline.positionEnum.'POSITION'} - enum property representing infowindow position.
+  * @param {number} position - given as INMarker.positionEnum.'POSITION' property representing info window position.
   * Avaliable POSITION settings: TOP, LEFT, RIGHT, BOTTOM, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT.
-  * @return {this} - returns INMarker instace class;
+  * @return {INMarker} - returns INMarker instance class;
   * @example
   * const marker = new Marker(navi);
   * marker.ready().then(() => marker.setInfoWindow('<p>text in paragraf</p>', marker.positionEnum.TOP).draw({x: 100, y: 100}}));
@@ -543,15 +550,15 @@ class INMarker extends INMapObject {
   * Sets marker label. Use of this method is optional.
   * Method does not draws marker on the map, it simply changes the lebel for the marker for the next draw({x: 100, y: 100}) method call.
   * If draw({x: 100, y: 100}) method has been called before than label will be reset when setLable('label to display') method is called;
-  * @param {string} - string that will be used as a marker label. If label method isn't used than no label is going to be displayed.
+  * @param {string} value - string that will be used as a marker label. If label method isn't used than no label is going to be displayed.
   * To reset label to a new string call this method again passing new label as a string.
-  * @return {this} - returns INMarker instace class;
+  * @return {INMarker} - returns INMarker instance class;
   * @example
   * const marker = new Marker(navi);
-  * marker.ready().then(() => marker.setLable('label to display').draw({x: 100, y: 100}));
+  * marker.ready().then(() => marker.setLabel('label to display').draw({x: 100, y: 100}));
   * @example
   * const marker = new Marker(navi);
-  * marker.ready().then(() => marker.draw({x: 100, y: 100}).setLable('label to display'));
+  * marker.ready().then(() => marker.draw({x: 100, y: 100}).setLabel('label to display'));
   *
   */
 
@@ -575,7 +582,7 @@ class INMarker extends INMapObject {
 
   /**
   * Removes marker label.
-  * @return {this} - returns INMarker instace class;
+  * @return {INMarker} - returns INMarker instance class;
   * @example
   * marker.ready().then(() => marker.removeLabel());
   */
@@ -598,8 +605,8 @@ class INMarker extends INMapObject {
   * Sets marker icon. Use of this method is optional.
   * Method does not place icon or draws marker on the map, it simply changes the icon for the marker for the next draw({x: 100, y: 100}) method call.
   * If draw({x: 100, y: 100}) method has been called before than icon will be redrawn when useIcon(icon) method is called;
-  * @param {string} - url path to your icon;
-  * @return {this} - returns INMarker instace class;
+  * @param {string} path - url path to your icon;
+  * @return {INMarker} - returns INMarker instance class;
   * @example
   * const path = 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png'
   * const marker = new Marker(navi);
@@ -633,7 +640,7 @@ class INMarker extends INMapObject {
 
   /**
    * Add listener to react when icon is clicked.
-   * @param {INMarker.eventsEnum.'EVENT'} - enum property representing event to listen to. Avaliable events are: ONCLICK, ONMOUSEOVER ...
+   * @param {number} eventName - as INMarker.eventsEnum.'EVENT' property representing event to listen to. Available events are: ONCLICK, ONMOUSEOVER ...
    * @param {function} callback - this method will be called when the specific event occurs
    * example
    * marker.addEventListener('coordinates', data => marker.setInfoWindow('<p>text in paragraf</p>', marker.positionEnum.TOP));
@@ -658,9 +665,9 @@ class INMarker extends INMapObject {
 
   /**
   * Draws marker at given point.
-  * @param {object} point - object holding { x: int, y: int } representing marker position
-  * Marker will be cliped to the point int the bottom center of marker icon.
-  * @return {this} - returns INMarker instace class;
+  * @param {object} point -object { x: int, y: int } representing marker position
+  * Marker will be clipped to the point int the bottom center of marker icon.
+  * @return {INMarker} - returns INMarker instance class;
   * @example
   * const marker = new Marker(navi);
   * marker.ready().then(() => marker.draw({x: 100, y: 100})));
@@ -668,7 +675,7 @@ class INMarker extends INMapObject {
   * const marker = new Marker(navi);
   * marker.ready().then(() => {
   * marker.draw({x: 100, y: 100}));
-  * // if something is going to happend then:
+  * // if something is going to happen then:
   * marker.remove();
   * });
   * marker.ready().then(() => marker.draw({x: 120, y: 120})); // draws a new marker in given point with default settings
@@ -676,14 +683,14 @@ class INMarker extends INMapObject {
   * const marker = new Marker(navi);
   * marker.ready().then(() => {
   * marker.draw({x: 100, y: 100}));
-  * // if something is going to happend then:
-  * marker.draw({x: 200, y: 200}); // redraws marker in givent point with all settings it arleady has
+  * // if something is going to happen then:
+  * marker.draw({x: 200, y: 200}); // redraws marker in given point with all settings it already has
   * });
   */
-  draw (point) {
-    this._point = point;
+  draw ([point]) {
+    this.point = point;
     if(!Number.isInteger(point.x) || !Number.isInteger(point.y)) {
-      throw new Error('Given point is in wrong format or coordianets x an y are not integers');
+      throw new Error('Given point is in wrong format or coordinates x an y are not integers');
     }
     if (!!this._id) {
       INCommunication.send(this._navi.iFrame, this._navi.targetHost, {

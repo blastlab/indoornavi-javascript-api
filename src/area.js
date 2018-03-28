@@ -59,7 +59,7 @@ class INArea extends INMapObject {
 
   /**
    * Fills Area whit given color.
-   * @param {color} string - string that specifies the color. Supports color in hex format '#AABBCC' and 'rgb(255,255,255)';
+   * @param {string} color - string that specifies the color. Supports color in hex format '#AABBCC' and 'rgb(255,255,255)';
    * @example
    * area.ready().then(() => area.setFillColor('#AABBCC'));
    */
@@ -70,7 +70,7 @@ class INArea extends INMapObject {
 
   /**
    * Sets Area opacity.
-   * @param {float} float. Float between 1.0 and 0. Set it to 1.0 for no oppacity, 0 for maximum opacity.
+   * @param {number} value. Float between 1.0 and 0. Set it to 1.0 for no opacity, 0 for maximum opacity.
    * @example
    * area.ready().then(() => area.setOpacity(0.3));
    */

@@ -32,11 +32,11 @@ class INMarker extends INMapObject {
   * Sets marker info window and position. Use of this method is optional.
   * Method does not draws marker on the map, it simply changes the info window set for the marker for the next draw({x: 100, y: 100}) method call.
   * If draw({x: 100, y: 100}) method has been called before than info window will be reset when setInfoWindow('<p>text in paragraf</p>', marker.positionEnum.TOP) method is called;
-  * @param {string} - string of data or html template in string format that will be passed in to info window as text.
+  * @param {string} content - of data or html template in string format that will be passed in to info window as text.
   * To reset label to a new content call this method again passing new content as a string.
-  * @param {INPolyline.positionEnum.'POSITION'} enum - property representing infowindow position.
+  * @param {number} position - given as INMarker.positionEnum.'POSITION' property representing info window position.
   * Avaliable POSITION settings: TOP, LEFT, RIGHT, BOTTOM, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT.
-  * @return {this} - returns INMarker instace class;
+  * @return {INMarker} - returns INMarker instance class;
   * @example
   * const marker = new Marker(navi);
   * marker.ready().then(() => marker.setInfoWindow('<p>text in paragraf</p>', marker.positionEnum.TOP).draw({x: 100, y: 100}}));
@@ -94,15 +94,15 @@ class INMarker extends INMapObject {
   * Sets marker label. Use of this method is optional.
   * Method does not draws marker on the map, it simply changes the lebel for the marker for the next draw({x: 100, y: 100}) method call.
   * If draw({x: 100, y: 100}) method has been called before than label will be reset when setLable('label to display') method is called;
-  * @param {string} - string that will be used as a marker label. If label method isn't used than no label is going to be displayed.
+  * @param {string} value - string that will be used as a marker label. If label method isn't used than no label is going to be displayed.
   * To reset label to a new string call this method again passing new label as a string.
-  * @return {this} - returns INMarker instace class;
+  * @return {INMarker} - returns INMarker instance class;
   * @example
   * const marker = new Marker(navi);
-  * marker.ready().then(() => marker.setLable('label to display').draw({x: 100, y: 100}));
+  * marker.ready().then(() => marker.setLabel('label to display').draw({x: 100, y: 100}));
   * @example
   * const marker = new Marker(navi);
-  * marker.ready().then(() => marker.draw({x: 100, y: 100}).setLable('label to display'));
+  * marker.ready().then(() => marker.draw({x: 100, y: 100}).setLabel('label to display'));
   *
   */
 
@@ -126,7 +126,7 @@ class INMarker extends INMapObject {
 
   /**
   * Removes marker label.
-  * @return {this} - returns INMarker instace class;
+  * @return {INMarker} - returns INMarker instance class;
   * @example
   * marker.ready().then(() => marker.removeLabel());
   */
@@ -149,8 +149,8 @@ class INMarker extends INMapObject {
   * Sets marker icon. Use of this method is optional.
   * Method does not place icon or draws marker on the map, it simply changes the icon for the marker for the next draw({x: 100, y: 100}) method call.
   * If draw({x: 100, y: 100}) method has been called before than icon will be redrawn when useIcon(icon) method is called;
-  * @param {string} - url path to your icon;
-  * @return {this} - returns INMarker instace class;
+  * @param {string} path - url path to your icon;
+  * @return {INMarker} - returns INMarker instance class;
   * @example
   * const path = 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png'
   * const marker = new Marker(navi);
@@ -184,7 +184,7 @@ class INMarker extends INMapObject {
 
   /**
    * Add listener to react when icon is clicked.
-   * @param {INMarker.eventsEnum.'EVENT'} - enum property representing event to listen to. Avaliable events are: ONCLICK, ONMOUSEOVER ...
+   * @param {number} eventName - as INMarker.eventsEnum.'EVENT' property representing event to listen to. Available events are: ONCLICK, ONMOUSEOVER ...
    * @param {function} callback - this method will be called when the specific event occurs
    * example
    * marker.addEventListener('coordinates', data => marker.setInfoWindow('<p>text in paragraf</p>', marker.positionEnum.TOP));
@@ -209,9 +209,9 @@ class INMarker extends INMapObject {
 
   /**
   * Draws marker at given point.
-  * @param {object} point - object holding { x: int, y: int } representing marker position
-  * Marker will be cliped to the point int the bottom center of marker icon.
-  * @return {this} - returns INMarker instace class;
+  * @param {object} point -object { x: int, y: int } representing marker position
+  * Marker will be clipped to the point int the bottom center of marker icon.
+  * @return {INMarker} - returns INMarker instance class;
   * @example
   * const marker = new Marker(navi);
   * marker.ready().then(() => marker.draw({x: 100, y: 100})));
@@ -219,7 +219,7 @@ class INMarker extends INMapObject {
   * const marker = new Marker(navi);
   * marker.ready().then(() => {
   * marker.draw({x: 100, y: 100}));
-  * // if something is going to happend then:
+  * // if something is going to happen then:
   * marker.remove();
   * });
   * marker.ready().then(() => marker.draw({x: 120, y: 120})); // draws a new marker in given point with default settings
@@ -227,14 +227,14 @@ class INMarker extends INMapObject {
   * const marker = new Marker(navi);
   * marker.ready().then(() => {
   * marker.draw({x: 100, y: 100}));
-  * // if something is going to happend then:
-  * marker.draw({x: 200, y: 200}); // redraws marker in givent point with all settings it arleady has
+  * // if something is going to happen then:
+  * marker.draw({x: 200, y: 200}); // redraws marker in given point with all settings it already has
   * });
   */
-  draw (point) {
-    this._point = point;
+  draw ([point]) {
+    this.point = point;
     if(!Number.isInteger(point.x) || !Number.isInteger(point.y)) {
-      throw new Error('Given point is in wrong format or coordianets x an y are not integers');
+      throw new Error('Given point is in wrong format or coordinates x an y are not integers');
     }
     if (!!this._id) {
       INCommunication.send(this._navi.iFrame, this._navi.targetHost, {

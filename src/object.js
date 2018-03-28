@@ -8,7 +8,7 @@ class INMapObject {
    * Instance of a INMapObject class cennot be created directly, INMapObject class is an abstract class.
    * @abstract
    * @constructor
-   * @param {Indornavi} navi needs the Indoornavi instance object injected to the constructor, to know where INMapObject is going to be created
+   * @param {Object} navi - needs the Indoornavi instance object injected to the constructor, to know where INMapObject is going to be created
    */
   constructor(navi) {
     if (new.target === INMapObject) {
@@ -16,9 +16,10 @@ class INMapObject {
     }
     this._navi = navi;
     this._id = null;
-    this._type = 'OBJECT'
+    this._type = 'OBJECT';
     this._navi.checkIsReady();
     this._navi.setIFrame();
+    this._points = null;
   }
 
   /**
@@ -81,7 +82,7 @@ class INMapObject {
   /**
   * Checks, is point of given coordinates inside of the created object.
   * @returns {boolean} true if given coordinates are inside the object, false otherwise;
-  * @param {coordinates} object - object with x and y members given as integers;
+  * @param {object} coordinates - object with x and y members given as integers;
   * @example
   * 'inheritedObjectFromINMapObject.ready().then(() => 'inheritedObjectFromINMapObject.isWithin({x: 100, y: 50}));
   */
@@ -93,6 +94,9 @@ class INMapObject {
     let intersect = false;
     let xi, yi, xj, yj = null;
 
+    if(this._points === null) {
+      throw new Error('points of the object are null');
+    }
     for (let i = 0, j = this._points.length - 1; i < this._points.length; j = i++) {
       xi = this._points[i].x;
       yi = this._points[i].y;
@@ -110,7 +114,7 @@ class INMapObject {
 
   _setColor(color, attribute) {
     let hexToSend = null;
-    const isValidColor = /(^[a-zA-Z]+$)|(#(?:[0-9a-f]{2}){2,4}|#[0-9a-f]{3}|(?:rgba?|hsla?)\((?:\d+%?(?:deg|rad|grad|turn)?(?:,|\s)+){2,3}[\s\/]*[\d\.]+%?\))/i.test(color);
+    const isValidColor = /(^[a-zA-Z]+$)|(#(?:[0-9a-f]{2}){2,4}|#[0-9a-f]{3}|(?:rgba?|hsla?)\((?:\d+%?(?:deg|rad|grad|turn)?(?:,|\s)+){2,3}[\s\/]*[\d]+%?\))/i.test(color);
     if (!isValidColor) {
       throw new Error('Wrong color value or/and type');
     }
