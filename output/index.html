@@ -143,7 +143,7 @@
             inMarker1.coordinates(points[4])
                 .setIcon(markerIcon)
                 .setLabel('this is label 1')
-                .addEventListener(inMarker1.eventsEnum.CLICK, 'aaa')
+                .addEventListener(inMarker1.eventsEnum.CLICK, () => console.log('1'))
                 .setInfoWindow(infoWindowContent, inMarker1.positionEnum.TOP)
                 .place();
 
@@ -160,7 +160,7 @@
         inMarker2 = new INMarker(navi);
         inMarker2.ready().then(() => {
             inMarker2.setLabel('this is label 2')
-                .addEventListener(inMarker2.eventsEnum.CLICK, 'aaa')
+                .addEventListener(inMarker2.eventsEnum.CLICK, () => console.log('2'))
                 .coordinates(points[2])
                 .place();
         });

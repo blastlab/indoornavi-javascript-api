@@ -135,7 +135,7 @@ class INMarker extends INMapObject {
 
     addEventListener(event, callback) {
         this._events.add(event);
-        INCommunication.listen(event, callback);
+        INCommunication.listen(`${event.toString(10)}-${this._id}`, callback);
         return this;
     }
 

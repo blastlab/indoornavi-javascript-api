@@ -1,26 +1,27 @@
 class INCommunication {
     static send(iFrame, host, data) {
-      iFrame.contentWindow.postMessage(data, host);
+        iFrame.contentWindow.postMessage(data, host);
     }
 
-  static listen(eventName, callback) {
-    window.addEventListener('message', function(event) {
-      if ('type' in event.data && event.data.type === eventName) {
-        callback(event.data);
-      }
-    }, false);
-  }
-
-  static listenOnce(eventName, callback, resolve) {
-    function handler(event) {
-      if ('type' in event.data && event.data.type === eventName && event.data.mapObjectId) {
-        window.removeEventListener('message', handler, false)
-        callback(event.data.mapObjectId);
-        resolve();
-      }
+    static listen(eventName, callback) {
+        window.addEventListener('message', function (event) {
+            if ('type' in event.data && event.data.type === eventName) {
+                callback(event.data);
+            }
+        }, false);
     }
-    window.addEventListener('message', handler, false);
-  }
+
+    static listenOnce(eventName, callback, resolve) {
+        function handler(event) {
+            if ('type' in event.data && event.data.type === eventName && !!event.data.mapObjectId) {
+                window.removeEventListener('message', handler, false);
+                callback(event.data.mapObjectId);
+                resolve();
+            }
+        }
+
+        window.addEventListener('message', handler, false);
+    }
 
 }
 
@@ -591,7 +592,7 @@ class INMarker extends INMapObject {
 
     addEventListener(event, callback) {
         this._events.add(event);
-        INCommunication.listen(event, callback);
+        INCommunication.listen(`${event.toString(10)}-${this._id}`, callback);
         return this;
     }
 
