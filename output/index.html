@@ -27,12 +27,12 @@
     let inMarker2 = null;
     let markerIcon = 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png';
     let infoWindowContent = "<div> Hello from info window, this is window that conatains no valiuable information so please enjoy this content as this is all what you can have got for now. tadam, an bye bye. </div>";
-    const  points = [
-      {x:480, y: 480},
-      {x:1220, y: 480},
-      {x:1220, y: 1220},
-      {x:480, y: 1220},
-      {x:750, y: 750}
+    const points = [
+        {x: 480, y: 480},
+        {x: 1220, y: 480},
+        {x: 1220, y: 1220},
+        {x: 480, y: 1220},
+        {x: 750, y: 750}
     ];
 
     const navi = new INMap(
@@ -71,107 +71,119 @@
     }
 
     function addListener() {
-      navi.addEventListener('INArea', function(data) {
+        navi.addEventListener('INArea', function (data) {
 
-      });
+        });
 
-      navi.addEventListener('coordinates', data => {
-        console.log(data.coordinates.point);
-        if (!!inArea) {
-          const tagInsideINArea = inArea.isWithin(data.coordinates.point);
-          if (tagInsideINArea) {
-            console.log(`Tag ${data.coordinates.tagShortId} INSIDE`);
-          } else {
-            console.log(`Tag ${data.coordinates.tagShortId} OUTSIDE`);
-          }
-        }
-      });
+        navi.addEventListener('coordinates', data => {
+            console.log(data.coordinates.point);
+            if (!!inArea) {
+                const tagInsideINArea = inArea.isWithin(data.coordinates.point);
+                if (tagInsideINArea) {
+                    console.log(`Tag ${data.coordinates.tagShortId} INSIDE`);
+                } else {
+                    console.log(`Tag ${data.coordinates.tagShortId} OUTSIDE`);
+                }
+            }
+        });
     }
 
     function drawINPolyline() {
         console.log(poly);
-      if(!!poly) {
-        return;
-      }
+        if (!!poly) {
+            return;
+        }
         poly = new INPolyline(navi);
         poly.ready().then(() => {
-        poly.draw(points);
-        poly.setLineColor('#12a3b5');
-      });
+            poly.draw(points);
+            poly.setLineColor('#12a3b5');
+        });
     }
 
     function removeINPolyline() {
-      if(!!poly) {
-        poly.ready().then(() => {
-          poly.remove();
-          poly = null;
-        });
-      }
+        if (!!poly) {
+            poly.ready().then(() => {
+                poly.remove();
+                poly = null;
+            });
+        }
     }
 
     function drawINArea() {
-      if(!!inArea){
-        return;
-      }
+        if (!!inArea) {
+            return;
+        }
         inArea = new INArea(navi);
         inArea.ready().then(() => {
-        inArea.draw(points);
-        inArea.setFillColor('rgb(144,224,017)');
-        inArea.setOpacity(0.5);
-        console.log(inArea.isWithin({x: 740, y: 750}));
-        console.log(inArea.isWithin({x: 750, y: 750}));
-        document.getElementById('addListener').removeAttribute('disabled');
-      });
+            inArea.draw(points);
+            inArea.setFillColor('rgb(144,224,017)');
+            inArea.setOpacity(0.5);
+            console.log(inArea.isWithin({x: 740, y: 750}));
+            console.log(inArea.isWithin({x: 750, y: 750}));
+            document.getElementById('addListener').removeAttribute('disabled');
+        });
     }
 
     function removeINArea() {
-      if(!!inArea) {
-        inArea.ready().then(() => {
-          inArea.remove();
-          inArea = null;
-          document.getElementById('addListener').setAttribute('disabled', 'true');
-        });
-      }
+        if (!!inArea) {
+            inArea.ready().then(() => {
+                inArea.remove();
+                inArea = null;
+                document.getElementById('addListener').setAttribute('disabled', 'true');
+            });
+        }
     }
 
     function addINMarker_1() {
-      if(!!inMarker1) {
-        return;
-      }
-      inMarker1 = new INMarker(navi);
-      inMarker1.ready().then(() => {
-        inMarker1.draw([points[4]]).useIcon(markerIcon).setLabel('this is label 1').addEventListener(inMarker1.eventsEnum.CLICK, 'aaa');
-      });
+        if (!!inMarker1) {
+            return;
+        }
+        inMarker1 = new INMarker(navi);
+        inMarker1.ready().then(() => {
+            inMarker1.coordinates(points[4])
+                .setIcon(markerIcon)
+                .setLabel('this is label 1')
+                .addEventListener(inMarker1.eventsEnum.CLICK, 'aaa')
+                .setInfoWindow(infoWindowContent, inMarker1.positionEnum.TOP)
+                .place();
+
+            inMarker1.removeLabel()
+                .removeInfoWindow()
+                .removeEventListener();
+        });
     }
 
     function addINMarker_2() {
-      if(!!inMarker2) {
-        return;
-      }
-      inMarker2 = new INMarker(navi);
-      inMarker2.ready().then(() => {
-        inMarker2.setLabel('this is label 2').addEventListener(inMarker2.eventsEnum.CLICK, 'aaa').draw([points[2]]);
-      });
+        if (!!inMarker2) {
+            return;
+        }
+        inMarker2 = new INMarker(navi);
+        inMarker2.ready().then(() => {
+            inMarker2.setLabel('this is label 2')
+                .addEventListener(inMarker2.eventsEnum.CLICK, 'aaa')
+                .coordinates(points[2])
+                .place();
+        });
     }
 
     function removeINMarker_1() {
-      if(!inMarker1) {
-        return;
-      }
-      inMarker1.ready().then(() => {
-        inMarker1.remove();
-        inMarker1 = null;
-      });
+        if (!inMarker1) {
+            return;
+        }
+        inMarker1.ready().then(() => {
+            inMarker1.remove();
+            inMarker1 = null;
+        });
     }
 
     function removeINMarker_2() {
-      if(!inMarker2) {
-        return;
-      }
-      inMarker2.ready().then(() => {
-        inMarker2.remove();
-        inMarker2 = null;
-      });
+        if (!inMarker2) {
+            return;
+        }
+        inMarker2.ready().then(() => {
+            inMarker2.remove();
+            inMarker2 = null;
+        });
     }
 
 </script>
