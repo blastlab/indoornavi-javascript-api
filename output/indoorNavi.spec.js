@@ -604,9 +604,8 @@ class INMarker extends INMapObject {
      */
 
     removeEventListener(event) {
-        const eventName = this._events.get(event);
-        if (!!eventName) {
-            INCommunication.remove(eventName)
+        if (this._events.has(event)) {
+            INCommunication.remove(event)
         }
         return this;
     }
@@ -642,6 +641,8 @@ class INMarker extends INMapObject {
             throw new Error('No point for marker placement has been specified');
         }
         if (!!this._id) {
+            const events = [];
+            this._events.forEach(event => events.push(event));
             INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
                 command: 'drawObject',
                 args: {
@@ -652,7 +653,7 @@ class INMarker extends INMapObject {
                         icon: this._icon,
                         label: this._label,
                         infoWindow: this._infoWindow,
-                        events: this._events
+                        events: events
                     }
                 }
             });
