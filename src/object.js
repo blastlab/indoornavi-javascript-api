@@ -5,7 +5,7 @@
 
 class INMapObject {
   /**
-   * Instance of a INMapObject class cennot be created directly, INMapObject class is an abstract class.
+   * Instance of a INMapObject class cannot be created directly, INMapObject class is an abstract class.
    * @abstract
    * @constructor
    * @param {Object} navi - needs the Indoornavi instance object injected to the constructor, to know where INMapObject is going to be created
@@ -24,7 +24,7 @@ class INMapObject {
 
   /**
   * @returns {Promise} Promise that will resolve when connection to WebSocket will be established, assures that instance of INMapObject has been created on the injected Indornavi class, this method should be executed before calling any other method. Those methods should to be executed inside callback, after promise is resolved
-  * @exapmle
+  * @example
   * 'inheritedObjectFromINMapObject'.ready().then(() => 'inheritedObjectFromINMapObject'.'method()');
   */
   ready() {

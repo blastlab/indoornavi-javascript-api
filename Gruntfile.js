@@ -5,11 +5,11 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
         // uglify: {
         //     options: {
-        //         banner: '/*! <%= pkg.name %> <%= grunt.template.today('yyyy-mm-dd') %> */\n'
+        //         banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n',
         //     },
         //     build: {
-        //         src: 'src/<%= pkg.name %>.js',
-        //         dest: 'build/<%= pkg.name %>.min.js'
+        //         src: ['src/helper/*', 'src/model/*', 'src/object.js', 'src/polyline.js', 'src/area.js', 'src/marker.js', 'src/indoornavi.js', 'src/report.js'],
+        //         dest: 'build/indoorNavi.min.js'
         //     }
         // },
         concat: {
