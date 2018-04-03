@@ -201,10 +201,11 @@ class INMapObject {
         }
         return new Promise(resolve => {
                 // create listener for event that will fire only once
-                INCommunication.listenOnce('createObject', setObject.bind(self), resolve);
+                INCommunication.listenOnce(`createObject-${this._type}`, setObject.bind(self), resolve);
                 // then send message
                 INCommunication.send(self._navi.iFrame, self._navi.targetHost, {
-                    command: 'createObject'
+                    command: 'createObject',
+                    object: this._type
                 });
             }
         );
