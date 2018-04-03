@@ -142,146 +142,164 @@ class INCoordinates {
 }
 
 /**
-* Abstract class that communicates with indoornavi frontend server to create INMapObject object in iFrame.
-* @abstract
-*/
+ * Abstract class that communicates with indoornavi frontend server to create INMapObject object in iFrame.
+ * @abstract
+ */
 
 class INMapObject {
-  /**
-   * Instance of a INMapObject class cennot be created directly, INMapObject class is an abstract class.
-   * @abstract
-   * @constructor
-   * @param {Object} navi - needs the Indoornavi instance object injected to the constructor, to know where INMapObject is going to be created
-   */
-  constructor(navi) {
-    if (new.target === INMapObject) {
-      throw new TypeError("Cannot construct INMapObject instances directly");
-    }
-    this._navi = navi;
-    this._id = null;
-    this._type = 'OBJECT';
-    this._navi.checkIsReady();
-    this._navi.setIFrame();
-    this._points = null;
-  }
-
-  /**
-  * @returns {Promise} Promise that will resolve when connection to WebSocket will be established, assures that instance of INMapObject has been created on the injected Indornavi class, this method should be executed before calling any other method. Those methods should to be executed inside callback, after promise is resolved
-  * @exapmle
-  * 'inheritedObjectFromINMapObject'.ready().then(() => 'inheritedObjectFromINMapObject'.'method()');
-  */
-  ready() {
-    const self = this;
-    function setObject (id) {
-      self._id = id;
-    }
-    if (!!self._id) {
-      // resolve immediately
-      return new Promise(resolve => {
-        resolve();
-      })
-    }
-    return new Promise(resolve => {
-        // create listener for event that will fire only once
-        INCommunication.listenOnce('createObject', setObject.bind(self), resolve);
-        // then send message
-        INCommunication.send(self._navi.iFrame, self._navi.targetHost, {
-          command: 'createObject'
-        });
-      }
-    );
-  }
-
-  /**
-   * Draws object for given array of points.
-   * @param {array} points - array of points between which lines are going to be drawn, coordinates(x, y) of the point are given in centimeters from real distances (scale 1:1)
-   */
-  draw (points) {
-    return this;
-  }
-
-  /**
-   * Removes object and destroys it instance in the frontend server, but do not destroys object class instance in your app.
-   * inheritedObjectFromINMapObject is a child object of abstract class INMapObject
-   * @example
-   * 'inheritedObjectFromINMapObject'.ready().then(() => 'inheritedObjectFromINMapObject'.remove());
-   */
-  remove(){
-    if(!!this._id) {
-      INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
-        command: 'removeObject',
-        args: {
-          type: this._type,
-          object: {
-            id: this._id
-          }
+    /**
+     * Instance of a INMapObject class cannot be created directly, INMapObject class is an abstract class.
+     * @abstract
+     * @constructor
+     * @param {Object} navi - needs the Indoornavi instance object injected to the constructor, to know where INMapObject is going to be created
+     */
+    constructor(navi) {
+        if (new.target === INMapObject) {
+            throw new TypeError("Cannot construct INMapObject instances directly");
         }
-      });
-    } else {
-      throw new Error(`Object ${this._type} is not created yet, use ready() method before executing other methods`);
+        this._navi = navi;
+        this._id = null;
+        this._type = 'OBJECT';
+        this._navi.checkIsReady();
+        this._navi.setIFrame();
+        this._points = null;
     }
-  }
 
-  /**
-  * Checks, is point of given coordinates inside of the created object.
-  * @returns {boolean} true if given coordinates are inside the object, false otherwise;
-  * @param {object} coordinates - object with x and y members given as integers;
-  * @example
-  * 'inheritedObjectFromINMapObject.ready().then(() => 'inheritedObjectFromINMapObject.isWithin({x: 100, y: 50}));
-  */
-  // Semi-infinite ray horizontally (increasing x, fixed y) out from the test point, and count how many edges it crosses.
-  // At each crossing, the ray switches between inside and outside. This is called the Jordan curve theorem.
-
-  isWithin (coordinates) {
-    let inside = false;
-    let intersect = false;
-    let xi, yi, xj, yj = null;
-
-    if(this._points === null) {
-      throw new Error('points of the object are null');
+    /**
+     * Getter for object points coordinates
+     * @returns {array} points - returns array of coordinates describing object
+     */
+    getPoints() {
+        return this._points;
     }
-    for (let i = 0, j = this._points.length - 1; i < this._points.length; j = i++) {
-      xi = this._points[i].x;
-      yi = this._points[i].y;
 
-      xj = this._points[j].x;
-      yj = this._points[j].y;
-
-      intersect = ((yi > coordinates.y) !== (yj > coordinates.y)) && (coordinates.x < (xj - xi) * (coordinates.y - yi) / (yj - yi) + xi);
-      if (intersect) {
-        inside = !inside;
-      }
+    /**
+     * Getter for object id
+     * @returns {number} id - returns object id;
+     */
+    getID() {
+        return this._id;
     }
-    return inside;
-  }
 
-  _setColor(color, attribute) {
-    let hexToSend = null;
-    const isValidColor = /(^[a-zA-Z]+$)|(#(?:[0-9a-f]{2}){2,4}|#[0-9a-f]{3}|(?:rgba?|hsla?)\((?:\d+%?(?:deg|rad|grad|turn)?(?:,|\s)+){2,3}[\s\/]*[\d]+%?\))/i.test(color);
-    if (!isValidColor) {
-      throw new Error('Wrong color value or/and type');
-    }
-    if (!!this._id) {
-      if (/rgb/i.test(color)) {
-        const rgb = color.slice(4, color.length - 1).split(',');
-        hexToSend = `#${parseInt(rgb[0], 10).toString(16).slice(-2)}${parseInt(rgb[1],10).toString(16).slice(-2)}${parseInt(rgb[2],10).toString(16).slice(-2)}`;
-      } else if (/#/i.test(color)) {
-        hexToSend = color;
-      }
-      INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
-        command: `${attribute}Color`,
-        args: {
-          type: this._type,
-          object: {
-            id: this._id,
-            color: hexToSend
-          }
+    /**
+     * @returns {Promise} Promise that will resolve when connection to WebSocket will be established, assures that instance of INMapObject has been created on the injected Indornavi class, this method should be executed before calling any other method. Those methods should to be executed inside callback, after promise is resolved
+     * @example
+     * 'inheritedObjectFromINMapObject'.ready().then(() => 'inheritedObjectFromINMapObject'.'method()');
+     */
+    ready() {
+        const self = this;
+
+        function setObject(id) {
+            self._id = id;
         }
-      });
-    } else {
-      throw new Error(`Object ${this._type} is not created yet, use ready() method before executing other methods`);
+
+        if (!!self._id) {
+            // resolve immediately
+            return new Promise(resolve => {
+                resolve();
+            })
+        }
+        return new Promise(resolve => {
+                // create listener for event that will fire only once
+                INCommunication.listenOnce('createObject', setObject.bind(self), resolve);
+                // then send message
+                INCommunication.send(self._navi.iFrame, self._navi.targetHost, {
+                    command: 'createObject'
+                });
+            }
+        );
     }
-  }
+
+    /**
+     * Draws object for given array of points.
+     * @param {array} points - array of points between which lines are going to be drawn, coordinates(x, y) of the point are given in centimeters from real distances (scale 1:1)
+     */
+    draw(points) {
+        return this;
+    }
+
+    /**
+     * Removes object and destroys it instance in the frontend server, but do not destroys object class instance in your app.
+     * inheritedObjectFromINMapObject is a child object of abstract class INMapObject
+     * @example
+     * 'inheritedObjectFromINMapObject'.ready().then(() => 'inheritedObjectFromINMapObject'.remove());
+     */
+    remove() {
+        if (!!this._id) {
+            INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
+                command: 'removeObject',
+                args: {
+                    type: this._type,
+                    object: {
+                        id: this._id
+                    }
+                }
+            });
+        } else {
+            throw new Error(`Object ${this._type} is not created yet, use ready() method before executing other methods`);
+        }
+    }
+
+    /**
+     * Checks, is point of given coordinates inside of the created object.
+     * @returns {boolean} true if given coordinates are inside the object, false otherwise;
+     * @param {object} coordinates - object with x and y members given as integers;
+     * @example
+     * 'inheritedObjectFromINMapObject.ready().then(() => 'inheritedObjectFromINMapObject.isWithin({x: 100, y: 50}));
+     */
+    // Semi-infinite ray horizontally (increasing x, fixed y) out from the test point, and count how many edges it crosses.
+    // At each crossing, the ray switches between inside and outside. This is called the Jordan curve theorem.
+
+    isWithin(coordinates) {
+        let inside = false;
+        let intersect = false;
+        let xi, yi, xj, yj = null;
+
+        if (this._points === null) {
+            throw new Error('points of the object are null');
+        }
+        for (let i = 0, j = this._points.length - 1; i < this._points.length; j = i++) {
+            xi = this._points[i].x;
+            yi = this._points[i].y;
+
+            xj = this._points[j].x;
+            yj = this._points[j].y;
+
+            intersect = ((yi > coordinates.y) !== (yj > coordinates.y)) && (coordinates.x < (xj - xi) * (coordinates.y - yi) / (yj - yi) + xi);
+            if (intersect) {
+                inside = !inside;
+            }
+        }
+        return inside;
+    }
+
+    _setColor(color, attribute) {
+        let hexToSend = null;
+        const isValidColor = /(^[a-zA-Z]+$)|(#(?:[0-9a-f]{2}){2,4}|#[0-9a-f]{3}|(?:rgba?|hsla?)\((?:\d+%?(?:deg|rad|grad|turn)?(?:,|\s)+){2,3}[\s\/]*[\d]+%?\))/i.test(color);
+        if (!isValidColor) {
+            throw new Error('Wrong color value or/and type');
+        }
+        if (!!this._id) {
+            if (/rgb/i.test(color)) {
+                const rgb = color.slice(4, color.length - 1).split(',');
+                hexToSend = `#${parseInt(rgb[0], 10).toString(16).slice(-2)}${parseInt(rgb[1], 10).toString(16).slice(-2)}${parseInt(rgb[2], 10).toString(16).slice(-2)}`;
+            } else if (/#/i.test(color)) {
+                hexToSend = color;
+            }
+            INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
+                command: `${attribute}Color`,
+                args: {
+                    type: this._type,
+                    object: {
+                        id: this._id,
+                        color: hexToSend
+                    }
+                }
+            });
+        } else {
+            throw new Error(`Object ${this._type} is not created yet, use ready() method before executing other methods`);
+        }
+    }
 
 }
 
@@ -469,7 +487,7 @@ class INMarker extends INMapObject {
     constructor(navi) {
         super(navi);
         this._type = 'MARKER';
-        this._point = null;
+        this._points = [];
         this._icon = null;
         this._infoWindow = {
             content: null,
@@ -477,61 +495,10 @@ class INMarker extends INMapObject {
         };
         this._label = null;
         this._events = new Set();
-        this.positionEnum = {
-            TOP: 0,
-            RIGHT: 1,
-            BOTTOM: 2,
-            LEFT: 3,
-            TOP_RIGHT: 4,
-            TOP_LEFT: 5,
-            BOTTOM_RIGHT: 6,
-            BOTTOM_LEFT: 7
-        };
         this.eventsEnum = {
             CLICK: 0,
             MOUSEOVER: 1,
         };
-    }
-
-    /**
-     * Sets marker info window and position. Use of this method is optional.
-     * @param {string} content - of data or html template in string format that will be passed in to info window as text.
-     * To reset label to a new content call this method again passing new content as a string and call place method().
-     * @param {number} position - given as INMarker.positionEnum.'POSITION' property representing info window position.
-     * Available POSITION settings: TOP, LEFT, RIGHT, BOTTOM, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT.
-     * @return {INMarker} - returns INMarker instance class;
-     * @example
-     * const marker = new Marker(navi);
-     * marker.ready().then(() => marker.setInfoWindow('<p>text in paragraf</p>', marker.positionEnum.TOP));
-     */
-
-    setInfoWindow(content, position) {
-        if (typeof content !== 'string') {
-            throw new Error('Wrong argument passed for info window content');
-        }
-        if (!Number.isInteger(position) || position < 0 || position > 7) {
-            throw new Error('Wrong argument passed for info window position');
-        }
-        this._infoWindow = {
-            content: content,
-            positon: position
-        };
-        return this;
-    }
-
-    /**
-     * Removes marker info window.
-     * @return {INMarker} - returns INMarker instance class;
-     * @example
-     * marker.ready().then(() => marker.removeInfoWindow());
-     */
-
-    removeInfoWindow() {
-        this._infoWindow = {
-            content: null,
-            position: null
-        };
-        return this;
     }
 
     /**
@@ -540,7 +507,7 @@ class INMarker extends INMapObject {
      * To reset label to a new string call this method again passing new label as a string and call place() method.
      * @return {INMarker} - returns INMarker instance class;
      * @example
-     * const marker = new Marker(navi);
+     * const marker = new INMarker(navi);
      * marker.ready().then(() => marker.setLabel('label to display'));
      */
 
@@ -569,7 +536,7 @@ class INMarker extends INMapObject {
      * @return {INMarker} - returns INMarker instance class;
      * @example
      * const path = 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png'
-     * const marker = new Marker(navi);
+     * const marker = new INMarker(navi);
      * marker.ready().then(() => marker.setIcon(icon));
      */
 
@@ -617,7 +584,7 @@ class INMarker extends INMapObject {
      * Marker will be clipped to the point in the bottom center of marker icon.
      * @return {INMarker} - returns INMarker instance class;
      * @example
-     * const marker = new Marker(navi);
+     * const marker = new INMarker(navi);
      * marker.ready().then(() => marker.coordinates({x: 100, y: 100}));
      */
 
@@ -625,7 +592,7 @@ class INMarker extends INMapObject {
         if (!Number.isInteger(point.x) || !Number.isInteger(point.y)) {
             throw new Error('Given point is in wrong format or coordinates x an y are not integers');
         }
-        this._point = point;
+        this._points = [point];
         return this;
     }
 
@@ -633,12 +600,12 @@ class INMarker extends INMapObject {
      * Place market on the map with all given settings. There is necessary to use coordinates() method before place() method to indicate where market should to be located.
      * Use of this method is indispensable to draw market with set configuration in the IndoorNavi Map.
      * @example
-     * const marker = new Marker(navi);
+     * const marker = new INMarker(navi);
      * marker.ready().then(() => marker.coordinates({x: 100, y: 100}).place());
      */
 
     place() {
-        if (!this._point) {
+        if (this._points.length < 1) {
             throw new Error('No point for marker placement has been specified');
         }
         if (!!this._id) {
@@ -650,7 +617,7 @@ class INMarker extends INMapObject {
                     type: this._type,
                     object: {
                         id: this._id,
-                        points: [this._point],
+                        points: this._points,
                         icon: this._icon,
                         label: this._label,
                         infoWindow: this._infoWindow,
@@ -665,6 +632,110 @@ class INMarker extends INMapObject {
 
 }
 
+/**
+ * Class representing a InfoWindow,
+ * creates the INInfoWindow object in iframe that communicates with indoornavi frontend server and draws INInfoWindow.
+ * @extends INMapObject
+ */
+
+class INInfoWindow extends INMapObject {
+    /**
+     * @constructor
+     * @param {Object} navi - instance of a Marker class needs the Indoornavi instance object injected to the constructor, to know where INMarker object is going to be created
+     */
+    constructor(navi) {
+        super(navi);
+        this._type = 'INFO_WINDOW';
+        this._points = null;
+        this._content = null;
+        this._position = 0;
+        this.positionEnum = {
+            TOP: 0,
+            RIGHT: 1,
+            BOTTOM: 2,
+            LEFT: 3,
+            TOP_RIGHT: 4,
+            TOP_LEFT: 5,
+            BOTTOM_RIGHT: 6,
+            BOTTOM_LEFT: 7
+        };
+    }
+    /**
+     * Sets info window content.
+     * @param {string} content - of data or html template in string format that will be passed in to info window as text.
+     * To reset label to a new content call this method again passing new content as a string and call place method().
+     * @return {INInfoWindow} - returns INInfoWindow instance class;
+     * @example
+     * const infoWindow = new INInfoWindow(navi);
+     * infoWindow.ready().then(() => infoWindow.setInnerHtml('<p>text in paragraf</p>'));
+     */
+
+    setInnerHTML(content) {
+        if (typeof content !== 'string') {
+            throw new Error('Wrong argument passed for info window content');
+        }
+        this._content = content;
+        return this;
+    }
+
+    /**
+     * Sets position of info window regarding to object that info window will be appended to. Use of this method is optional.
+     * Default position for info window is TOP.
+     * @param {number} position - given as INMarker.positionEnum.'POSITION' property representing info window position.
+     * Available POSITION settings: TOP, LEFT, RIGHT, BOTTOM, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT.
+     * return {INInfoWindow} - returns INInfoWindow instance class;
+     * @example
+     * const infoWindow = INInfoWindow(navi);
+     * infoWindow.ready(() => infoWindow.setPosition(infoWindow.positionEnum.TOP));
+     */
+
+    setPositon(position) {
+        if (!Number.isInteger(position) || position < 0 || position > 7) {
+            throw new Error('Wrong argument passed for info window position');
+        }
+        this._position = position;
+        return this;
+    }
+
+    /**
+     * Displays info window in iframe.
+     * Default position for info window is TOP.
+     * @param {object} mapObject - map object to append info window to.
+     * @example
+     * const infoWindow = INInfoWindow(navi);
+     * const marker = INMarker();
+     * marker.ready().then(() => {
+     *  marker.coordinates({x: 100, y: 100}).place();
+     *  infoWindow.ready(() => infoWindow.setInnerHTML('text for info window').open(marker));
+     * });
+     */
+
+    open(mapObject) {
+        if (!mapObject || !Number.isInteger(mapObject.getID())) {
+            throw new Error('Passed object is null, undefined or has not been initialized in indoor navi iframe');
+        }
+        this._points = mapObject.getPoints();
+        if (!this._points || this._points.length < 1) {
+            throw new Error('No points given for info window placement has been specified');
+        }
+        if (!!this._id) {
+            INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
+                command: 'drawObject',
+                args: {
+                    type: this._type,
+                    object: {
+                        id: this._id,
+                        points: this._points,
+                        content: this._content,
+                        position: this._position,
+                    }
+                }
+            });
+        } else {
+            throw new Error('Info Window is not created yet, use ready() method before executing any other method');
+        }
+    }
+}
 /**
 * Class representing a INMap,
 * creates the INMap object to communicate with INMap frontend server

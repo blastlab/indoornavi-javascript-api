@@ -26,7 +26,15 @@
     let inMarker1 = null;
     let inMarker2 = null;
     let markerIcon = 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png';
-    let infoWindowContent = "<div> Hello from info window, this is window that conatains no valiuable information so please enjoy this content as this is all what you can have got for now. tadam, an bye bye. </div>";
+    let infoWindowContent = '<div><h2>Lorem ipsum dolor sit amet</h2>,' +
+        ' consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.' +
+        ' <b>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.' +
+        '</b> Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.' +
+        ' Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. ' +
+        'Lorem ipsum dolor sit amet</h2>, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ' +
+        '<b>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</b> ' +
+        'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ' +
+        'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laboru</div>';
     const points = [
         {x: 480, y: 480},
         {x: 1220, y: 480},
@@ -118,8 +126,8 @@
             inArea.draw(points);
             inArea.setFillColor('rgb(144,224,017)');
             inArea.setOpacity(0.5);
-            console.log(inArea.isWithin({x: 740, y: 750}));
-            console.log(inArea.isWithin({x: 750, y: 750}));
+            console.log(`Point x: 740, y: 750 is within drawn area: ${inArea.isWithin({x: 740, y: 750})}`);
+            console.log(`Point x: 740, y: 750 is within drawn area: ${inArea.isWithin({x: 750, y: 750})}`);
             document.getElementById('addListener').removeAttribute('disabled');
         });
     }
@@ -144,12 +152,7 @@
                 .setIcon(markerIcon)
                 .setLabel('this is label 1')
                 .addEventListener(inMarker1.eventsEnum.CLICK, () => console.log('1'))
-                .setInfoWindow(infoWindowContent, inMarker1.positionEnum.TOP)
                 .place();
-
-            inMarker1.removeLabel()
-                .removeInfoWindow()
-                .removeEventListener();
         });
     }
 
@@ -157,10 +160,15 @@
         if (!!inMarker2) {
             return;
         }
+        const infoWindow1 = new INInfoWindow(navi);
+        infoWindow1.ready().then(() => infoWindow1.setInnerHTML(infoWindowContent));
         inMarker2 = new INMarker(navi);
         inMarker2.ready().then(() => {
             inMarker2.setLabel('this is label 2')
-                .addEventListener(inMarker2.eventsEnum.CLICK, () => console.log('2'))
+                .addEventListener(inMarker2.eventsEnum.CLICK, () =>
+                {
+                    infoWindow1.open(inMarker2);
+                })
                 .coordinates(points[2])
                 .place();
         });

@@ -12,7 +12,7 @@ class INMarker extends INMapObject {
     constructor(navi) {
         super(navi);
         this._type = 'MARKER';
-        this._point = null;
+        this._points = [];
         this._icon = null;
         this._infoWindow = {
             content: null,
@@ -20,61 +20,10 @@ class INMarker extends INMapObject {
         };
         this._label = null;
         this._events = new Set();
-        this.positionEnum = {
-            TOP: 0,
-            RIGHT: 1,
-            BOTTOM: 2,
-            LEFT: 3,
-            TOP_RIGHT: 4,
-            TOP_LEFT: 5,
-            BOTTOM_RIGHT: 6,
-            BOTTOM_LEFT: 7
-        };
         this.eventsEnum = {
             CLICK: 0,
             MOUSEOVER: 1,
         };
-    }
-
-    /**
-     * Sets marker info window and position. Use of this method is optional.
-     * @param {string} content - of data or html template in string format that will be passed in to info window as text.
-     * To reset label to a new content call this method again passing new content as a string and call place method().
-     * @param {number} position - given as INMarker.positionEnum.'POSITION' property representing info window position.
-     * Available POSITION settings: TOP, LEFT, RIGHT, BOTTOM, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT.
-     * @return {INMarker} - returns INMarker instance class;
-     * @example
-     * const marker = new Marker(navi);
-     * marker.ready().then(() => marker.setInfoWindow('<p>text in paragraf</p>', marker.positionEnum.TOP));
-     */
-
-    setInfoWindow(content, position) {
-        if (typeof content !== 'string') {
-            throw new Error('Wrong argument passed for info window content');
-        }
-        if (!Number.isInteger(position) || position < 0 || position > 7) {
-            throw new Error('Wrong argument passed for info window position');
-        }
-        this._infoWindow = {
-            content: content,
-            positon: position
-        };
-        return this;
-    }
-
-    /**
-     * Removes marker info window.
-     * @return {INMarker} - returns INMarker instance class;
-     * @example
-     * marker.ready().then(() => marker.removeInfoWindow());
-     */
-
-    removeInfoWindow() {
-        this._infoWindow = {
-            content: null,
-            position: null
-        };
-        return this;
     }
 
     /**
@@ -83,7 +32,7 @@ class INMarker extends INMapObject {
      * To reset label to a new string call this method again passing new label as a string and call place() method.
      * @return {INMarker} - returns INMarker instance class;
      * @example
-     * const marker = new Marker(navi);
+     * const marker = new INMarker(navi);
      * marker.ready().then(() => marker.setLabel('label to display'));
      */
 
@@ -112,7 +61,7 @@ class INMarker extends INMapObject {
      * @return {INMarker} - returns INMarker instance class;
      * @example
      * const path = 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png'
-     * const marker = new Marker(navi);
+     * const marker = new INMarker(navi);
      * marker.ready().then(() => marker.setIcon(icon));
      */
 
@@ -160,7 +109,7 @@ class INMarker extends INMapObject {
      * Marker will be clipped to the point in the bottom center of marker icon.
      * @return {INMarker} - returns INMarker instance class;
      * @example
-     * const marker = new Marker(navi);
+     * const marker = new INMarker(navi);
      * marker.ready().then(() => marker.coordinates({x: 100, y: 100}));
      */
 
@@ -168,7 +117,7 @@ class INMarker extends INMapObject {
         if (!Number.isInteger(point.x) || !Number.isInteger(point.y)) {
             throw new Error('Given point is in wrong format or coordinates x an y are not integers');
         }
-        this._point = point;
+        this._points = [point];
         return this;
     }
 
@@ -176,12 +125,12 @@ class INMarker extends INMapObject {
      * Place market on the map with all given settings. There is necessary to use coordinates() method before place() method to indicate where market should to be located.
      * Use of this method is indispensable to draw market with set configuration in the IndoorNavi Map.
      * @example
-     * const marker = new Marker(navi);
+     * const marker = new INMarker(navi);
      * marker.ready().then(() => marker.coordinates({x: 100, y: 100}).place());
      */
 
     place() {
-        if (!this._point) {
+        if (this._points.length < 1) {
             throw new Error('No point for marker placement has been specified');
         }
         if (!!this._id) {
@@ -193,7 +142,7 @@ class INMarker extends INMapObject {
                     type: this._type,
                     object: {
                         id: this._id,
-                        points: [this._point],
+                        points: this._points,
                         icon: this._icon,
                         label: this._label,
                         infoWindow: this._infoWindow,
