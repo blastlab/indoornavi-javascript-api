@@ -52,6 +52,8 @@
             height: 600
         }
     );
+    let infoWindow2;
+    let infoWindow1;
     navi.load(2).then(function () {
         document.getElementById('toggle10999').removeAttribute('disabled');
         document.getElementById('drawINPolyline').removeAttribute('disabled');
@@ -146,27 +148,41 @@
         if (!!inMarker1) {
             return;
         }
+        infoWindow1 = new INInfoWindow(navi);
+        infoWindow1.ready().then(() => {
+            infoWindow1
+                .setInnerHTML(infoWindowContent)
+                .setPositon(infoWindow1.positionEnum.BOTTOM_LEFT)
+        });
         inMarker1 = new INMarker(navi);
         inMarker1.ready().then(() => {
-            inMarker1.coordinates(points[4])
+            inMarker1
+                .coordinates(points[4])
                 .setIcon(markerIcon)
                 .setLabel('this is label 1')
-                .addEventListener(inMarker1.eventsEnum.CLICK, () => console.log('1'))
+                .addEventListener(inMarker1.eventsEnum.CLICK, () => {
+                        infoWindow1.open(inMarker1);
+                    })
                 .place();
         });
+
     }
 
     function addINMarker_2() {
         if (!!inMarker2) {
             return;
         }
-        const infoWindow1 = new INInfoWindow(navi);
-        infoWindow1.ready().then(() => infoWindow1.setInnerHTML(infoWindowContent).setPositon(infoWindow1.positionEnum.TOP));
+        infoWindow2 = new INInfoWindow(navi);
+        infoWindow2.ready().then(() => {
+            infoWindow2.setInnerHTML(infoWindowContent)
+            .setPositon(infoWindow2.positionEnum.TOP)
+        });
         inMarker2 = new INMarker(navi);
         inMarker2.ready().then(() => {
-            inMarker2.setLabel('this is label 2')
+            inMarker2
+                .setLabel('this is label 2')
                 .addEventListener(inMarker2.eventsEnum.CLICK, () => {
-                    infoWindow1.open(inMarker2);
+                    infoWindow2.open(inMarker2);
                 })
                 .coordinates(points[2])
                 .place();
