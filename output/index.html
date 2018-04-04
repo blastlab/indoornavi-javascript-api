@@ -148,7 +148,6 @@
         }
         inMarker1 = new INMarker(navi);
         inMarker1.ready().then(() => {
-            console.log(inMarker1);
             inMarker1.coordinates(points[4])
                 .setIcon(markerIcon)
                 .setLabel('this is label 1')
@@ -167,10 +166,6 @@
         inMarker2.ready().then(() => {
             inMarker2.setLabel('this is label 2')
                 .addEventListener(inMarker2.eventsEnum.CLICK, () => {
-                    console.log(inMarker2);
-                    console.log(infoWindow1);
-                    console.log(infoWindow1.getID());
-                    console.log(inMarker2.getID());
                     infoWindow1.open(inMarker2);
                 })
                 .coordinates(points[2])
