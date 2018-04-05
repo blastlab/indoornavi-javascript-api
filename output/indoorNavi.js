@@ -163,6 +163,8 @@ class INMapObject {
         this._navi.checkIsReady();
         this._navi.setIFrame();
         this._points = null;
+        this._stroke = null;
+        this._fill = null;
     }
 
     /**
@@ -209,14 +211,6 @@ class INMapObject {
                 });
             }
         );
-    }
-
-    /**
-     * Draws object for given array of points.
-     * @param {array} points - array of points between which lines are going to be drawn, coordinates(x, y) of the point are given in centimeters from real distances (scale 1:1)
-     */
-    draw(points) {
-        return this;
     }
 
     /**
@@ -287,16 +281,14 @@ class INMapObject {
             } else if (/#/i.test(color)) {
                 hexToSend = color;
             }
-            INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
-                command: `${attribute}Color`,
-                args: {
-                    type: this._type,
-                    object: {
-                        id: this._id,
-                        color: hexToSend
-                    }
-                }
-            });
+            switch (attribute) {
+                case 'stroke':
+                    this._stroke = hexToSend;
+                    break;
+                case 'fill':
+                    this._fill = hexToSend;
+                    break;
+            }
         } else {
             throw new Error(`Object ${this._type} is not created yet, use ready() method before executing other methods`);
         }
@@ -311,66 +303,79 @@ class INMapObject {
  */
 
 class INPolyline extends INMapObject {
-  /**
-  * @constructor
-  * @param {Object} navi - instance of a INPolyline class needs the Indoornavi instance object injected to the constructor, to know where INPolyline object is going to be created
-  */
-   constructor(navi) {
-     super(navi);
-     this._type = 'POLYLINE';
-   }
-
-  /**
-  * Draws polyline for given array of points.
-  * @param {array} points - array of points between which lines are going to be drawn, coordinates(x, y) of the point are given in centimeters as integers from real distances (scale 1:1)
-  * @example
-  * const poly = new INPolyline(navi);
-  * poly.ready().then(() => poly.draw(points));
-  */
-  draw (points) {
-    if (!Array.isArray(points)) {
-      throw new Error('Given argument is not na array');
+    /**
+     * @constructor
+     * @param {Object} navi - instance of a INPolyline class needs the Indoornavi instance object injected to the constructor, to know where INPolyline object is going to be created
+     */
+    constructor(navi) {
+        super(navi);
+        this._type = 'POLYLINE';
     }
-    this._points = points;
-    points.forEach(point => {
-      if(!Number.isInteger(point.x) || !Number.isInteger(point.y)) {
-        throw new Error('Given points are in wrong format or coordianets x an y are not integers')
-      }
-    });
-    if (!!this._id) {
-      INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
-        command: 'drawObject',
-        args: {
-          type: this._type,
-          object: {
-            id: this._id,
-            points: points
-          }
+
+    /**
+     * Draws polyline for given array of points.
+     * @param {array} points - representing polyline points position in real world. Coordinates are calculated to the map scale and than displayed.
+     * @example
+     * const poly = new INPolyline(navi);
+     * poly.ready().then(() => poly.points(points).place());
+     */
+    points(points) {
+        if (!Array.isArray(points)) {
+            throw new Error('Given argument is not na array');
         }
-      });
-    } else {
-      throw new Error('INPolyline is not created yet, use ready() method before executing draw(), or remove()');
+        points.forEach(point => {
+            if (!Number.isInteger(point.x) || !Number.isInteger(point.y)) {
+                throw new Error('Given points are in wrong format or coordinates x an y are not integers')
+            }
+        });
+        this._points = points;
+        return this;
     }
-    return this;
-  }
 
-  /**
-   * Sets polyline lines and points color.
-   * @param {string} color - string that specifies the color. Supports color in hex format '#AABBCC' and 'rgb(255,255,255)';
-   * @example
-   * poly.ready().then(() => poly.setLineColor('#AABBCC'));
-   */
-  setLineColor(color) {
-    this._setColor(color, 'stroke');
-    return this;
-  }
+    /**
+     * Place polyline on the map with all given settings. There is necessary to use points() method before place() method to indicate where polyline should to be located.
+     * Use of this method is indispensable to draw polyline with set configuration in the IndoorNavi Map.
+     * @example
+     * const poly = new INPolyline(navi);
+     * poly.ready().then(() => poly.points(points).place());
+     */
 
-  isWithin (point) {
-    if (this._type === 'INPolyline') {
-        throw new Error('Method not implemented yet for INPolyline');
+
+    place() {
+        if (!!this._id) {
+            INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
+                command: 'drawObject',
+                args: {
+                    type: this._type,
+                    object: {
+                        id: this._id,
+                        points: points,
+                        stroke: this._stroke
+                    }
+                }
+            });
+        } else {
+            throw new Error('INPolyline is not created yet, use ready() method before executing draw(), or remove()');
+        }
     }
-    return false;
-  }
+
+    /**
+     * Sets polyline lines and points color.
+     * @param {string} color - string that specifies the color. Supports color in hex format '#AABBCC' and 'rgb(255,255,255)';
+     * @example
+     * poly.ready().then(() => poly.setLineColor('#AABBCC'));
+     */
+    setLineColor(color) {
+        this._setColor(color, 'stroke');
+        return this;
+    }
+
+    isWithin(point) {
+        if (this._type === 'INPolyline') {
+            throw new Error('Method not implemented yet for INPolyline');
+        }
+        return false;
+    }
 
 }
 
@@ -381,96 +386,99 @@ class INPolyline extends INMapObject {
  */
 
 class INArea extends INMapObject {
-  /**
-   * @constructor
-   * @param {Object} navi - instance of an INArea class needs the Indoornavi instance object injected to the constructor, to know where INArea object is going to be created
-   */
-  constructor(navi) {
-    super(navi);
-    this._type = 'AREA';
-  }
-
-  /**
-   * Draws Area for given array of points.
-   * @param {array} points - array of points which will describe the Area, coordinates members such as x and y of the point are given in centimeters as integers from real distances (scale 1:1).
-   * For less than 3 points supplied to this method, Area isn't going to be drawn.
-   * @example
-   * const area = new INArea(navi);
-   * area.ready().then(() => area.draw(points));
-   */
-  draw (points) {
-    if (arguments.length !== 1) {
-      throw new Error('Wrong number of arguments passed');
+    /**
+     * @constructor
+     * @param {Object} navi - instance of an INArea class needs the Indoornavi instance object injected to the constructor, to know where INArea object is going to be created
+     */
+    constructor(navi) {
+        super(navi);
+        this._type = 'AREA';
+        this._opacity = null;
     }
-    if (!Array.isArray(points)) {
-      throw new Error('Given argument is not na array');
-    } else if (points.length < 3) {
-      throw new Error('Not enought points to draw an INArea');
-    }
-    points.forEach(point => {
-      if(!Number.isInteger(point.x) || !Number.isInteger(point.y)) {
-        throw new Error('Given points are in wrong format or coordianets x an y are not integers');
-      }
-      return this;
-    });
 
-    this._points = points;
-
-    if (!!this._id) {
-      INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
-        command: 'drawObject',
-        args: {
-          type: this._type,
-          object: {
-            id: this._id,
-            points: points
-          }
+    /**
+     * Draws Area for given array of points.
+     * @param {array} points - representing area points position in real world. Coordinates are calculated to the map scale and than displayed.
+     * For less than 3 points supplied to this method, Area isn't going to be drawn.
+     * @example
+     * const area = new INArea(navi);
+     * area.ready().then(() => area.points(points).place());
+     */
+    points(points) {
+        if (arguments.length !== 1) {
+            throw new Error('Wrong number of arguments passed');
         }
-      });
-    } else {
-      throw new Error('INArea is not created yet, use ready() method before executing draw(), or remove()');
-    }
-    return this;
-  }
-
-  /**
-   * Fills Area whit given color.
-   * @param {string} color - string that specifies the color. Supports color in hex format '#AABBCC' and 'rgb(255,255,255)';
-   * @example
-   * area.ready().then(() => area.setFillColor('#AABBCC'));
-   */
-  setFillColor (color) {
-    this._setColor(color, 'fill');
-    return this;
-  }
-
-  /**
-   * Sets Area opacity.
-   * @param {number} value. Float between 1.0 and 0. Set it to 1.0 for no opacity, 0 for maximum opacity.
-   * @example
-   * area.ready().then(() => area.setOpacity(0.3));
-   */
-
-  setOpacity(value) {
-    if(isNaN(value) || value > 1 || value < 0) {
-      throw new Error('Wrong value passed to setTransparency() method, only numbers between 0 and 1 are allowed');
-    }
-    if(!!this._id) {
-      INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
-        command: 'setOpacity',
-        args: {
-          type: this._type,
-          object: {
-            id: this._id,
-            opacity: value
-          }
+        if (!Array.isArray(points)) {
+            throw new Error('Given argument is not na array');
+        } else if (points.length < 3) {
+            throw new Error('Not enough points to draw an INArea');
         }
-      });
-    } else {
-      throw new Error(`Object ${this._type} is not created yet, use ready() method before executing other methods`);
+        points.forEach(point => {
+            if (!Number.isInteger(point.x) || !Number.isInteger(point.y)) {
+                throw new Error('Given points are in wrong format or coordinates x an y are not integers');
+            }
+            return this;
+        });
+        this._points = points;
+        return this;
     }
-    return this;
-  }
+
+    /**
+     * Place area on the map with all given settings. There is necessary to use points() method before place() method to indicate where area should to be located.
+     * Use of this method is indispensable to draw area with set configuration in the IndoorNavi Map.
+     * @example
+     * const area = new INArea(navi);
+     * area.ready().then(() => area.points(points).place());
+     */
+
+    place() {
+        if (!!this._id) {
+            INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
+                command: 'drawObject',
+                args: {
+                    type: this._type,
+                    object: {
+                        id: this._id,
+                        points: points,
+                        opacity: this._opacity,
+                        fill: this._fill
+                    }
+                }
+            });
+        } else {
+            throw new Error('INArea is not created yet, use ready() method before executing draw(), or remove()');
+        }
+    }
+
+    /**
+     * Fills Area whit given color.
+     * @param {string} color - string that specifies the color. Supports color in hex format '#AABBCC' and 'rgb(255,255,255)';
+     * @example
+     * area.ready().then(() => area.setFillColor('#AABBCC'));
+     */
+    setFillColor(color) {
+        this._setColor(color, 'fill');
+        return this;
+    }
+
+    /**
+     * Sets Area opacity.
+     * @param {number} value. Float between 1.0 and 0. Set it to 1.0 for no opacity, 0 for maximum opacity.
+     * @example
+     * area.ready().then(() => area.setOpacity(0.3));
+     */
+
+    setOpacity(value) {
+        if (isNaN(value) || value > 1 || value < 0) {
+            throw new Error('Wrong value passed to setTransparency() method, only numbers between 0 and 1 are allowed');
+        }
+        if (!!this._id) {
+            this._opacity = value;
+        } else {
+            throw new Error(`Object ${this._type} is not created yet, use ready() method before executing other methods`);
+        }
+        return this;
+    }
 
 }
 
@@ -581,15 +589,15 @@ class INMarker extends INMapObject {
 
     /**
      * Locates marker at given point coordinates. Coordinates needs to be given as real world dimensions that map is representing. Use of this method is indispensable.
-     * @param {object} point -object { x: int, y: int } representing marker position in rel world. Coordinates are calculated to the map scale and than displayed.
-     * Marker will be clipped to the point in the bottom center of marker icon.
+     * @param {object} point -object { x: int, y: int } representing marker position in real world. Coordinates are calculated to the map scale and than displayed.
+     * Position will be clipped to the point in the bottom center of marker icon.
      * @return {INMarker} - returns INMarker instance class;
      * @example
      * const marker = new INMarker(navi);
-     * marker.ready().then(() => marker.coordinates({x: 100, y: 100}));
+     * marker.ready().then(() => marker.point({x: 100, y: 100}).place());
      */
 
-    coordinates(point) {
+    point(point) {
         if (!Number.isInteger(point.x) || !Number.isInteger(point.y)) {
             throw new Error('Given point is in wrong format or coordinates x an y are not integers');
         }
@@ -598,11 +606,11 @@ class INMarker extends INMapObject {
     }
 
     /**
-     * Place market on the map with all given settings. There is necessary to use coordinates() method before place() method to indicate where market should to be located.
+     * Place market on the map with all given settings. There is necessary to use point() method before place() method to indicate the point where market should to be located.
      * Use of this method is indispensable to draw market with set configuration in the IndoorNavi Map.
      * @example
      * const marker = new INMarker(navi);
-     * marker.ready().then(() => marker.coordinates({x: 100, y: 100}).place());
+     * marker.ready().then(() => marker.point({x: 100, y: 100}).place());
      */
 
     place() {

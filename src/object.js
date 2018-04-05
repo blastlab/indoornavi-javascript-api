@@ -20,6 +20,8 @@ class INMapObject {
         this._navi.checkIsReady();
         this._navi.setIFrame();
         this._points = null;
+        this._stroke = null;
+        this._fill = null;
     }
 
     /**
@@ -66,14 +68,6 @@ class INMapObject {
                 });
             }
         );
-    }
-
-    /**
-     * Draws object for given array of points.
-     * @param {array} points - array of points between which lines are going to be drawn, coordinates(x, y) of the point are given in centimeters from real distances (scale 1:1)
-     */
-    draw(points) {
-        return this;
     }
 
     /**
@@ -144,16 +138,14 @@ class INMapObject {
             } else if (/#/i.test(color)) {
                 hexToSend = color;
             }
-            INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
-                command: `${attribute}Color`,
-                args: {
-                    type: this._type,
-                    object: {
-                        id: this._id,
-                        color: hexToSend
-                    }
-                }
-            });
+            switch (attribute) {
+                case 'stroke':
+                    this._stroke = hexToSend;
+                    break;
+                case 'fill':
+                    this._fill = hexToSend;
+                    break;
+            }
         } else {
             throw new Error(`Object ${this._type} is not created yet, use ready() method before executing other methods`);
         }

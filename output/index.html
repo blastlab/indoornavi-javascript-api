@@ -99,14 +99,14 @@
     }
 
     function drawINPolyline() {
-        console.log(poly);
         if (!!poly) {
             return;
         }
         poly = new INPolyline(navi);
         poly.ready().then(() => {
-            poly.draw(points);
-            poly.setLineColor('#12a3b5');
+            poly.points(points)
+                .setLineColor('#12a3b5')
+                .place();
         });
     }
 
@@ -125,9 +125,10 @@
         }
         inArea = new INArea(navi);
         inArea.ready().then(() => {
-            inArea.draw(points);
-            inArea.setFillColor('rgb(144,224,017)');
-            inArea.setOpacity(0.5);
+            inArea.points(points)
+                .setFillColor('rgb(144,224,017)')
+                .setOpacity(0.5)
+                .place();
             console.log(`Point x: 740, y: 750 is within drawn area: ${inArea.isWithin({x: 740, y: 750})}`);
             console.log(`Point x: 740, y: 750 is within drawn area: ${inArea.isWithin({x: 750, y: 750})}`);
             document.getElementById('addListener').removeAttribute('disabled');
@@ -157,7 +158,7 @@
         inMarker1 = new INMarker(navi);
         inMarker1.ready().then(() => {
             inMarker1
-                .coordinates(points[4])
+                .point(points[4])
                 .setIcon(markerIcon)
                 .setLabel('this is label 1')
                 .addEventListener(inMarker1.eventsEnum.CLICK, () => {
@@ -184,7 +185,7 @@
                 .addEventListener(inMarker2.eventsEnum.CLICK, () => {
                     infoWindow2.open(inMarker2);
                 })
-                .coordinates(points[2])
+                .point(points[2])
                 .place();
         });
     }

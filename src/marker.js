@@ -105,15 +105,15 @@ class INMarker extends INMapObject {
 
     /**
      * Locates marker at given point coordinates. Coordinates needs to be given as real world dimensions that map is representing. Use of this method is indispensable.
-     * @param {object} point -object { x: int, y: int } representing marker position in rel world. Coordinates are calculated to the map scale and than displayed.
-     * Marker will be clipped to the point in the bottom center of marker icon.
+     * @param {object} point -object { x: int, y: int } representing marker position in real world. Coordinates are calculated to the map scale and than displayed.
+     * Position will be clipped to the point in the bottom center of marker icon.
      * @return {INMarker} - returns INMarker instance class;
      * @example
      * const marker = new INMarker(navi);
-     * marker.ready().then(() => marker.coordinates({x: 100, y: 100}));
+     * marker.ready().then(() => marker.point({x: 100, y: 100}).place());
      */
 
-    coordinates(point) {
+    point(point) {
         if (!Number.isInteger(point.x) || !Number.isInteger(point.y)) {
             throw new Error('Given point is in wrong format or coordinates x an y are not integers');
         }
@@ -122,11 +122,11 @@ class INMarker extends INMapObject {
     }
 
     /**
-     * Place market on the map with all given settings. There is necessary to use coordinates() method before place() method to indicate where market should to be located.
+     * Place market on the map with all given settings. There is necessary to use point() method before place() method to indicate the point where market should to be located.
      * Use of this method is indispensable to draw market with set configuration in the IndoorNavi Map.
      * @example
      * const marker = new INMarker(navi);
-     * marker.ready().then(() => marker.coordinates({x: 100, y: 100}).place());
+     * marker.ready().then(() => marker.point({x: 100, y: 100}).place());
      */
 
     place() {
