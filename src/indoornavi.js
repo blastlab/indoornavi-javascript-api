@@ -8,9 +8,7 @@ class INMap {
      * @param {string} targetHost - address to the INMap server
      * @param {string} apiKey - the API key created on INMap server (must be assigned to your domain)
      * @param {string} containerId of INDOM element which will be used to create iframe with map
-     * @param {object} config of the iframe
-     * @param {number} config.width of the iframe
-     * @param {number} config.height of the iframe
+     * @param {object} config {width: number, height: number} of the iframe in pixels
      */
     constructor(targetHost, apiKey, containerId, config) {
         this.targetHost = targetHost;
@@ -42,7 +40,6 @@ class INMap {
               resolve();
           }
       });
-      return this;
     }
 
     /**

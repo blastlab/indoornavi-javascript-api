@@ -658,6 +658,8 @@ class INInfoWindow extends INMapObject {
         this._points = null;
         this._content = null;
         this._position = 0;
+        this._width = null;
+        this._height = null;
         this.positionEnum = {
             TOP: 0,
             RIGHT: 1,
@@ -668,7 +670,9 @@ class INInfoWindow extends INMapObject {
             BOTTOM_RIGHT: 6,
             BOTTOM_LEFT: 7
         };
+
     }
+
     /**
      * Sets info window content.
      * @param {string} content - of data or html template in string format that will be passed in to info window as text.
@@ -690,7 +694,7 @@ class INInfoWindow extends INMapObject {
     /**
      * Sets position of info window regarding to object that info window will be appended to. Use of this method is optional.
      * Default position for info window is TOP.
-     * @param {number} position - given as INMarker.positionEnum.'POSITION' property representing info window position.
+     * @param {number} position - given as INInfoWindow.positionEnum.'POSITION' property representing info window position.
      * Available POSITION settings: TOP, LEFT, RIGHT, BOTTOM, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT.
      * return {INInfoWindow} - returns INInfoWindow instance class;
      * @example
@@ -703,6 +707,42 @@ class INInfoWindow extends INMapObject {
             throw new Error('Wrong argument passed for info window position');
         }
         this._position = position;
+        return this;
+    }
+
+    /**
+     * Sets height dimension of info window. Use of this method is optional.
+     * Default dimensions for info window height is 250px
+     * @param {number} height - info window height given in pixels, min available dimension is 50px.
+     * return {INInfoWindow} - returns INInfoWindow instance class;
+     * @example
+     * const infoWindow = INInfoWindow(navi);
+     * infoWindow.ready(() => infoWindow.height(200));
+     */
+
+    height(height) {
+        if (!Number.isInteger(height) || height < 50) {
+            throw new Error('Wrong height argument passed for info window position');
+        }
+        this._height = height;
+        return this;
+    }
+
+    /**
+     * Sets width dimension of info window. Use of this method is optional.
+     * Default dimension for info window width is 250px, min available dimension is 50px.
+     * @param {number} width - info window width given in pixels
+     * return {INInfoWindow} - returns INInfoWindow instance class;
+     * @example
+     * const infoWindow = INInfoWindow(navi);
+     * infoWindow.ready(() => infoWindow.width(200));
+     */
+
+    width(width) {
+        if (!Number.isInteger(width) || width < 50) {
+            throw new Error('Wrong width argument passed for info window position');
+        }
+        this._width = width;
         return this;
     }
 
@@ -737,6 +777,8 @@ class INInfoWindow extends INMapObject {
                         points: this._points,
                         content: this._content,
                         position: this._position,
+                        width: this._width,
+                        height: this._height
                     }
                 }
             });
@@ -755,9 +797,7 @@ class INMap {
      * @param {string} targetHost - address to the INMap server
      * @param {string} apiKey - the API key created on INMap server (must be assigned to your domain)
      * @param {string} containerId of INDOM element which will be used to create iframe with map
-     * @param {object} config of the iframe
-     * @param {number} config.width of the iframe
-     * @param {number} config.height of the iframe
+     * @param {object} config {width: number, height: number} of the iframe in pixels
      */
     constructor(targetHost, apiKey, containerId, config) {
         this.targetHost = targetHost;
@@ -789,7 +829,6 @@ class INMap {
               resolve();
           }
       });
-      return this;
     }
 
     /**
