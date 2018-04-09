@@ -1,13 +1,13 @@
 /**
  * Class representing a Marker,
- * creates the INMarker object in iframe that communicates with indoornavi frontend server and draws INMarker.
+ * creates the INMarker object in iframe that communicates with indoornavi frontend server and places a marker.
  * @extends INMapObject
  */
 
 class INMarker extends INMapObject {
     /**
      * @constructor
-     * @param {Object} navi - instance of a Marker class needs the Indoornavi instance object injected to the constructor, to know where INMarker object is going to be created
+     * @param {Object} navi -constructor needs an instance of INMap object injected
      */
     constructor(navi) {
         super(navi);
@@ -28,7 +28,7 @@ class INMarker extends INMapObject {
 
     /**
      * Sets marker label. Use of this method is optional.
-     * @param {string} value - string that will be used as a marker label. If label method isn't used than no label is going to be displayed.
+     * @param {string} label - string that will be used as a marker label. If label method isn't used than no label is going to be displayed.
      * To reset label to a new string call this method again passing new label as a string and call place() method.
      * @return {INMarker} - returns INMarker instance class;
      * @example
@@ -36,9 +36,9 @@ class INMarker extends INMapObject {
      * marker.ready().then(() => marker.setLabel('label to display'));
      */
 
-    setLabel(value) {
-        if (typeof value === 'string' || typeof value === 'number') {
-            this._label = value;
+    setLabel(label) {
+        if (typeof label === 'string' || typeof label === 'number') {
+            this._label = label;
         }
         return this;
     }
@@ -74,8 +74,8 @@ class INMarker extends INMapObject {
     }
 
     /**
-     * Add listener to react when icon is clicked. Use of this method is optional.
-     * @param {number} event - as INMarker.eventsEnum.'EVENT' property representing event to listen to. Available events are: ONCLICK, ONMOUSEOVER ...
+     * Add listener to listen when icon is clicked. Use of this method is optional.
+     * @param {number} event - as INMarker.eventsEnum.'EVENT' property representing event to listen to. Available 'EVENT's are: ONCLICK, ONMOUSEOVER ...
      * @param {function} callback - function that is going to be executed when event occurs.
      * @return {INMarker} - returns INMarker instance class;
      * example
@@ -90,7 +90,7 @@ class INMarker extends INMapObject {
 
     /**
      * Removes listener if listener exists. Use of this method is optional.
-     * @param {number} event - as INMarker.eventsEnum.'EVENT' property representing event to listen to. Available events are: ONCLICK, ONMOUSEOVER ...
+     * @param {number} event - as INMarker.eventsEnum.'EVENT' property representing event to listen to. Available 'EVENT's are: ONCLICK, ONMOUSEOVER ...
      * @return {INMarker} - returns INMarker instance class;
      * example
      * marker.ready(() => marker.removeEventListener(marker.eventsEnum.CLICK));
@@ -104,7 +104,7 @@ class INMarker extends INMapObject {
     }
 
     /**
-     * Locates marker at given point coordinates. Coordinates needs to be given as real world dimensions that map is representing. Use of this method is indispensable.
+     * Locates marker at given coordinates. Coordinates needs to be given as real world dimensions that map is representing. Use of this method is indispensable.
      * @param {object} point -object { x: int, y: int } representing marker position in real world. Coordinates are calculated to the map scale and than displayed.
      * Position will be clipped to the point in the bottom center of marker icon.
      * @return {INMarker} - returns INMarker instance class;
@@ -123,7 +123,7 @@ class INMarker extends INMapObject {
 
     /**
      * Place market on the map with all given settings. There is necessary to use point() method before place() method to indicate the point where market should to be located.
-     * Use of this method is indispensable to draw market with set configuration in the IndoorNavi Map.
+     * Use of this method is indispensable to display market with set configuration in the IndoorNavi Map.
      * @example
      * const marker = new INMarker(navi);
      * marker.ready().then(() => marker.point({x: 100, y: 100}).place());

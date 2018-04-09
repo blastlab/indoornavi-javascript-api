@@ -1,13 +1,13 @@
 /**
  * Class representing a INPolyline,
- * creates the INPolyline object in iframe that communicates with indoornavi frontend server and draws INPolyline
+ * creates the INPolyline ins in iframe that communicates with indoornavi frontend server and draws INPolyline
  * @extends INMapObject
  */
 
 class INPolyline extends INMapObject {
     /**
      * @constructor
-     * @param {Object} navi - instance of a INPolyline class needs the Indoornavi instance object injected to the constructor, to know where INPolyline object is going to be created
+     * @param {Object} navi - constructor needs an instance of INMap object injected
      */
     constructor(navi) {
         super(navi);
@@ -15,8 +15,8 @@ class INPolyline extends INMapObject {
     }
 
     /**
-     * Draws polyline for given array of points.
-     * @param {array} points - representing polyline points position in real world. Coordinates are calculated to the map scale and than displayed.
+     * Locates polyline at given coordinates. Coordinates needs to be given as real world dimensions that map is representing. Use of this method is indispensable
+     * @param {Object[]} points - point objects {x: number, y: number} that are describing polyline in real world dimensions. Coordinates are calculated to the map scale and than displayed.
      * @example
      * const poly = new INPolyline(navi);
      * poly.ready().then(() => poly.points(points).place());
@@ -42,7 +42,6 @@ class INPolyline extends INMapObject {
      * poly.ready().then(() => poly.points(points).place());
      */
 
-
     place() {
         if (!!this._id) {
             INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
@@ -63,7 +62,7 @@ class INPolyline extends INMapObject {
 
     /**
      * Sets polyline lines and points color.
-     * @param {string} color - string that specifies the color. Supports color in hex format '#AABBCC' and 'rgb(255,255,255)';
+     * @param {string} color - string that specifies the color. Supports color in hex format '#AABBCC' and rgb format 'rgb(255,255,255)';
      * @example
      * poly.ready().then(() => poly.setLineColor('#AABBCC'));
      */

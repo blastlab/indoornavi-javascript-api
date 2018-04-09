@@ -1,13 +1,13 @@
 /**
  * Class representing a InfoWindow,
- * creates the INInfoWindow object in iframe that communicates with indoornavi frontend server and draws INInfoWindow.
+ * creates the INInfoWindow object in iframe that communicates with indoornavi frontend server and adds info window to a given INObject child.
  * @extends INMapObject
  */
 
 class INInfoWindow extends INMapObject {
     /**
      * @constructor
-     * @param {Object} navi - instance of a Marker class needs the Indoornavi instance object injected to the constructor, to know where INMarker object is going to be created
+     * @param {Object} navi -constructor needs an instance of INMap object injected
      */
     constructor(navi) {
         super(navi);
@@ -32,8 +32,8 @@ class INInfoWindow extends INMapObject {
 
     /**
      * Sets info window content.
-     * @param {string} content - of data or html template in string format that will be passed in to info window as text.
-     * To reset label to a new content call this method again passing new content as a string and call place method().
+     * @param {string} content - text or html template in string format that will be passed in to info window as text.
+     * To reset label to a new content call this method again passing new content as a string and call place() method.
      * @return {INInfoWindow} - returns INInfoWindow instance class;
      * @example
      * const infoWindow = new INInfoWindow(navi);
@@ -52,11 +52,11 @@ class INInfoWindow extends INMapObject {
      * Sets position of info window regarding to object that info window will be appended to. Use of this method is optional.
      * Default position for info window is TOP.
      * @param {number} position - given as INInfoWindow.positionEnum.'POSITION' property representing info window position.
-     * Available POSITION settings: TOP, LEFT, RIGHT, BOTTOM, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT.
+     * Available 'POSITION' settings: TOP, LEFT, RIGHT, BOTTOM, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT.
      * return {INInfoWindow} - returns INInfoWindow instance class;
      * @example
      * const infoWindow = INInfoWindow(navi);
-     * infoWindow.ready(() => infoWindow.setPosition(infoWindow.positionEnum.TOP));
+     * infoWindow.ready(() => infoWindow.setPosition(infoWindow.positionEnum.TOP_RIGHT));
      */
 
     setPositon(position) {
@@ -105,7 +105,6 @@ class INInfoWindow extends INMapObject {
 
     /**
      * Displays info window in iframe.
-     * Default position for info window is TOP.
      * @param {object} mapObject - map object to append info window to.
      * @example
      * const infoWindow = INInfoWindow(navi);

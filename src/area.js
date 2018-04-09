@@ -1,13 +1,13 @@
 /**
  * Class representing an INArea,
- * creates the INArea object in iframe that communicates with indoornavi frontend server and draws INArea
+ * creates the INArea object in iframe that communicates with indoornavi frontend server and draws Area
  * @extends INMapObject
  */
 
 class INArea extends INMapObject {
     /**
      * @constructor
-     * @param {Object} navi - instance of an INArea class needs the Indoornavi instance object injected to the constructor, to know where INArea object is going to be created
+     * @param {Object} navi - constructor needs an instance of INMap object injected
      */
     constructor(navi) {
         super(navi);
@@ -16,8 +16,8 @@ class INArea extends INMapObject {
     }
 
     /**
-     * Draws Area for given array of points.
-     * @param {array} points - representing area points position in real world. Coordinates are calculated to the map scale and than displayed.
+     * Locates area at given coordinates. Coordinates needs to be given as real world dimensions that map is representing. Use of this method is indispensable
+     * @param {Object[]} points - point objects {x: number, y: number} that are describing area in real world dimensions. Coordinates are calculated to the map scale and than displayed.
      * For less than 3 points supplied to this method, Area isn't going to be drawn.
      * @example
      * const area = new INArea(navi);
@@ -71,7 +71,7 @@ class INArea extends INMapObject {
 
     /**
      * Fills Area whit given color.
-     * @param {string} color - string that specifies the color. Supports color in hex format '#AABBCC' and 'rgb(255,255,255)';
+     * @param {string} color - string that specifies the color. Supports color in hex format '#AABBCC' and rgb format 'rgb(255,255,255)';
      * @example
      * area.ready().then(() => area.setFillColor('#AABBCC'));
      */

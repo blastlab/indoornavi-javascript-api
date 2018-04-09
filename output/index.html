@@ -154,6 +154,8 @@
             infoWindow1
                 .setInnerHTML(infoWindowContent)
                 .setPositon(infoWindow1.positionEnum.BOTTOM_LEFT)
+                .width(200)
+                .height(100);
         });
         inMarker1 = new INMarker(navi);
         inMarker1.ready().then(() => {
@@ -177,6 +179,8 @@
         infoWindow2.ready().then(() => {
             infoWindow2.setInnerHTML(infoWindowContent)
             .setPositon(infoWindow2.positionEnum.TOP)
+                .width(500)
+                .height(400);
         });
         inMarker2 = new INMarker(navi);
         inMarker2.ready().then(() => {

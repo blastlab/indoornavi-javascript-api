@@ -1,5 +1,5 @@
 /**
- * Abstract class that communicates with indoornavi frontend server to create INMapObject object in iFrame.
+ * Abstract class that communicates with indoornavi frontend server.
  * @abstract
  */
 
@@ -8,7 +8,7 @@ class INMapObject {
      * Instance of a INMapObject class cannot be created directly, INMapObject class is an abstract class.
      * @abstract
      * @constructor
-     * @param {Object} navi - needs the Indoornavi instance object injected to the constructor, to know where INMapObject is going to be created
+     * @param {Object} navi -constructor needs an instance of INMap object injected
      */
     constructor(navi) {
         if (new.target === INMapObject) {
@@ -41,7 +41,7 @@ class INMapObject {
     }
 
     /**
-     * @returns {Promise} Promise that will resolve when connection to WebSocket will be established, assures that instance of INMapObject has been created on the injected Indornavi class, this method should be executed before calling any other method. Those methods should to be executed inside callback, after promise is resolved
+     * @returns {Promise} Promise - that will resolve when connection to the frontend will be established, assures that instance of INMapObject has been created on the injected INMap class, this method should be executed before calling any other method on this object children.
      * @example
      * 'inheritedObjectFromINMapObject'.ready().then(() => 'inheritedObjectFromINMapObject'.'method()');
      */
@@ -94,15 +94,15 @@ class INMapObject {
 
     /**
      * Checks, is point of given coordinates inside of the created object.
-     * @returns {boolean} true if given coordinates are inside the object, false otherwise;
      * @param {object} coordinates - object with x and y members given as integers;
+     * @returns {boolean} true if given coordinates are inside the object, false otherwise;
      * @example
      * 'inheritedObjectFromINMapObject.ready().then(() => 'inheritedObjectFromINMapObject.isWithin({x: 100, y: 50}));
      */
-    // Semi-infinite ray horizontally (increasing x, fixed y) out from the test point, and count how many edges it crosses.
-    // At each crossing, the ray switches between inside and outside. This is called the Jordan curve theorem.
 
     isWithin(coordinates) {
+        // Semi-infinite ray horizontally (increasing x, fixed y) out from the test point, and count how many edges it crosses.
+        // At each crossing, the ray switches between inside and outside. This is called the Jordan curve theorem.
         let inside = false;
         let intersect = false;
         let xi, yi, xj, yj = null;
