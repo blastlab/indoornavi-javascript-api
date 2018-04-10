@@ -701,7 +701,7 @@ class INInfoWindow extends INMapObject {
      * infoWindow.ready(() => infoWindow.setPosition(infoWindow.positionEnum.TOP_RIGHT));
      */
 
-    setPositon(position) {
+    setPosition(position) {
         if (!Number.isInteger(position) || position < 0 || position > 7) {
             throw new Error('Wrong argument passed for info window position');
         }
@@ -761,10 +761,7 @@ class INInfoWindow extends INMapObject {
         if (!mapObject || !Number.isInteger(mapObject.getID())) {
             throw new Error('Passed object is null, undefined or has not been initialized in indoor navi iframe');
         }
-        this._points = mapObject.getPoints();
-        if (!this._points || this._points.length < 1) {
-            throw new Error('No points given for info window placement has been specified');
-        }
+        this._relatedObjectId = mapObject.getID();
         if (!!this._id) {
             INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
                 command: 'drawObject',
@@ -772,7 +769,8 @@ class INInfoWindow extends INMapObject {
                     type: this._type,
                     object: {
                         id: this._id,
-                        points: this._points,
+                        points: null,
+                        relatedObjectId: this._relatedObjectId,
                         content: this._content,
                         position: this._position,
                         width: this._width,
