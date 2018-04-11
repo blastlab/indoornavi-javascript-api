@@ -73,6 +73,10 @@ class INPolyline extends INMapObject {
         return this;
     }
 
+    /**
+     * This method is not implemented for polyline yet.
+     */
+
     isWithin(point) {
         if (this._type === 'INPolyline') {
             throw new Error('Method not implemented yet for INPolyline');

@@ -241,7 +241,7 @@ class INMapObject {
      * @param {object} coordinates - object with x and y members given as integers;
      * @returns {boolean} true if given coordinates are inside the object, false otherwise;
      * @example
-     * 'inheritedObjectFromINMapObject.ready().then(() => 'inheritedObjectFromINMapObject.isWithin({x: 100, y: 50}));
+     * 'inheritedObjectFromINMapObject'.ready().then(() => 'inheritedObjectFromINMapObject.isWithin({x: 100, y: 50}));
      */
 
     isWithin(coordinates) {
@@ -371,6 +371,10 @@ class INPolyline extends INMapObject {
         this._setColor(color, 'stroke');
         return this;
     }
+
+    /**
+     * This method is not implemented for polyline yet.
+     */
 
     isWithin(point) {
         if (this._type === 'INPolyline') {
@@ -716,7 +720,7 @@ class INInfoWindow extends INMapObject {
 
     /**
      * Sets height dimension of info window. Use of this method is optional.
-     * Default dimensions for info window height is 250px
+     * Default dimensions for info window height is 250px.
      * @param {number} height - info window height given in pixels, min available dimension is 50px.
      * return {INInfoWindow} - returns INInfoWindow instance class;
      * @example

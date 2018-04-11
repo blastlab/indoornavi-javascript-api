@@ -98,7 +98,7 @@ class INMapObject {
      * @param {object} coordinates - object with x and y members given as integers;
      * @returns {boolean} true if given coordinates are inside the object, false otherwise;
      * @example
-     * 'inheritedObjectFromINMapObject.ready().then(() => 'inheritedObjectFromINMapObject.isWithin({x: 100, y: 50}));
+     * 'inheritedObjectFromINMapObject'.ready().then(() => 'inheritedObjectFromINMapObject.isWithin({x: 100, y: 50}));
      */
 
     isWithin(coordinates) {

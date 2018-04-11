@@ -69,7 +69,7 @@ class INInfoWindow extends INMapObject {
 
     /**
      * Sets height dimension of info window. Use of this method is optional.
-     * Default dimensions for info window height is 250px
+     * Default dimensions for info window height is 250px.
      * @param {number} height - info window height given in pixels, min available dimension is 50px.
      * return {INInfoWindow} - returns INInfoWindow instance class;
      * @example
