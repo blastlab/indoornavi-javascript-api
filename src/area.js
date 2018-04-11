@@ -16,7 +16,7 @@ class INArea extends INMapObject {
     }
 
     /**
-     * Locates area at given coordinates. Coordinates needs to be given as real world dimensions that map is representing. Use of this method is indispensable
+     * Locates area at given coordinates. Coordinates needs to be given as real world dimensions that map is representing. Use of this method is indispensable.
      * @param {Object[]} points - point objects {x: number, y: number} that are describing area in real world dimensions. Coordinates are calculated to the map scale and than displayed.
      * For less than 3 points supplied to this method, Area isn't going to be drawn.
      * @example
@@ -71,6 +71,7 @@ class INArea extends INMapObject {
 
     /**
      * Fills Area whit given color.
+     * Use of this method is optional.
      * @param {string} color - string that specifies the color. Supports color in hex format '#AABBCC' and rgb format 'rgb(255,255,255)';
      * @example
      * area.ready().then(() => area.setFillColor('#AABBCC'));
@@ -82,6 +83,7 @@ class INArea extends INMapObject {
 
     /**
      * Sets Area opacity.
+     * Use of this method is optional.
      * @param {number} value. Float between 1.0 and 0. Set it to 1.0 for no opacity, 0 for maximum opacity.
      * @example
      * area.ready().then(() => area.setOpacity(0.3));

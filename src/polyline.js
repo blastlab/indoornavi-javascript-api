@@ -16,7 +16,8 @@ class INPolyline extends INMapObject {
 
     /**
      * Locates polyline at given coordinates. Coordinates needs to be given as real world dimensions that map is representing. Use of this method is indispensable
-     * @param {Object[]} points - point objects {x: number, y: number} that are describing polyline in real world dimensions. Coordinates are calculated to the map scale and than displayed.
+     * @param {Object[]} points - point objects {x: number, y: number} that are describing polyline in real world dimensions.
+     * Coordinates are calculated to the map scale and than displayed.
      * @example
      * const poly = new INPolyline(navi);
      * poly.ready().then(() => poly.points(points).place());
@@ -62,6 +63,7 @@ class INPolyline extends INMapObject {
 
     /**
      * Sets polyline lines and points color.
+     * Use of this method is optional.
      * @param {string} color - string that specifies the color. Supports color in hex format '#AABBCC' and rgb format 'rgb(255,255,255)';
      * @example
      * poly.ready().then(() => poly.setLineColor('#AABBCC'));

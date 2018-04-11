@@ -37,7 +37,7 @@ class INInfoWindow extends INMapObject {
      * @return {INInfoWindow} - returns INInfoWindow instance class;
      * @example
      * const infoWindow = new INInfoWindow(navi);
-     * infoWindow.ready().then(() => infoWindow.setInnerHtml('<p>text in paragraf</p>'));
+     * infoWindow.ready().then(() => infoWindow.setInnerHtml('<p>text in paragraph</p>'));
      */
 
     setInnerHTML(content) {
@@ -110,7 +110,7 @@ class INInfoWindow extends INMapObject {
      * const infoWindow = INInfoWindow(navi);
      * const marker = INMarker();
      * marker.ready().then(() => {
-     *  marker.coordinates({x: 100, y: 100}).place();
+     *  marker.point({x: 100, y: 100}).place();
      *  infoWindow.ready(() => infoWindow.setInnerHTML('text for info window').open(marker));
      * });
      */

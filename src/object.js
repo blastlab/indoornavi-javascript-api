@@ -94,6 +94,7 @@ class INMapObject {
 
     /**
      * Checks, is point of given coordinates inside of the created object.
+     * Use of this method is optional.
      * @param {object} coordinates - object with x and y members given as integers;
      * @returns {boolean} true if given coordinates are inside the object, false otherwise;
      * @example
