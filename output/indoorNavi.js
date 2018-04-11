@@ -237,6 +237,7 @@ class INMapObject {
 
     /**
      * Checks, is point of given coordinates inside of the created object.
+     * Use of this method is optional.
      * @param {object} coordinates - object with x and y members given as integers;
      * @returns {boolean} true if given coordinates are inside the object, false otherwise;
      * @example
@@ -314,7 +315,8 @@ class INPolyline extends INMapObject {
 
     /**
      * Locates polyline at given coordinates. Coordinates needs to be given as real world dimensions that map is representing. Use of this method is indispensable
-     * @param {Object[]} points - point objects {x: number, y: number} that are describing polyline in real world dimensions. Coordinates are calculated to the map scale and than displayed.
+     * @param {Object[]} points - point objects {x: number, y: number} that are describing polyline in real world dimensions.
+     * Coordinates are calculated to the map scale and than displayed.
      * @example
      * const poly = new INPolyline(navi);
      * poly.ready().then(() => poly.points(points).place());
@@ -360,6 +362,7 @@ class INPolyline extends INMapObject {
 
     /**
      * Sets polyline lines and points color.
+     * Use of this method is optional.
      * @param {string} color - string that specifies the color. Supports color in hex format '#AABBCC' and rgb format 'rgb(255,255,255)';
      * @example
      * poly.ready().then(() => poly.setLineColor('#AABBCC'));
@@ -396,7 +399,7 @@ class INArea extends INMapObject {
     }
 
     /**
-     * Locates area at given coordinates. Coordinates needs to be given as real world dimensions that map is representing. Use of this method is indispensable
+     * Locates area at given coordinates. Coordinates needs to be given as real world dimensions that map is representing. Use of this method is indispensable.
      * @param {Object[]} points - point objects {x: number, y: number} that are describing area in real world dimensions. Coordinates are calculated to the map scale and than displayed.
      * For less than 3 points supplied to this method, Area isn't going to be drawn.
      * @example
@@ -451,6 +454,7 @@ class INArea extends INMapObject {
 
     /**
      * Fills Area whit given color.
+     * Use of this method is optional.
      * @param {string} color - string that specifies the color. Supports color in hex format '#AABBCC' and rgb format 'rgb(255,255,255)';
      * @example
      * area.ready().then(() => area.setFillColor('#AABBCC'));
@@ -462,6 +466,7 @@ class INArea extends INMapObject {
 
     /**
      * Sets Area opacity.
+     * Use of this method is optional.
      * @param {number} value. Float between 1.0 and 0. Set it to 1.0 for no opacity, 0 for maximum opacity.
      * @example
      * area.ready().then(() => area.setOpacity(0.3));
@@ -588,7 +593,7 @@ class INMarker extends INMapObject {
 
     /**
      * Locates marker at given coordinates. Coordinates needs to be given as real world dimensions that map is representing. Use of this method is indispensable.
-     * @param {object} point -object { x: int, y: int } representing marker position in real world. Coordinates are calculated to the map scale and than displayed.
+     * @param {object} point - object { x: int, y: int } representing marker position in real world. Coordinates are calculated to the map scale and than displayed.
      * Position will be clipped to the point in the bottom center of marker icon.
      * @return {INMarker} - returns INMarker instance class;
      * @example
@@ -679,7 +684,7 @@ class INInfoWindow extends INMapObject {
      * @return {INInfoWindow} - returns INInfoWindow instance class;
      * @example
      * const infoWindow = new INInfoWindow(navi);
-     * infoWindow.ready().then(() => infoWindow.setInnerHtml('<p>text in paragraf</p>'));
+     * infoWindow.ready().then(() => infoWindow.setInnerHtml('<p>text in paragraph</p>'));
      */
 
     setInnerHTML(content) {
@@ -752,7 +757,7 @@ class INInfoWindow extends INMapObject {
      * const infoWindow = INInfoWindow(navi);
      * const marker = INMarker();
      * marker.ready().then(() => {
-     *  marker.coordinates({x: 100, y: 100}).place();
+     *  marker.point({x: 100, y: 100}).place();
      *  infoWindow.ready(() => infoWindow.setInnerHTML('text for info window').open(marker));
      * });
      */
