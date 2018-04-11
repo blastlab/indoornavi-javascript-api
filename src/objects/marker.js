@@ -7,7 +7,7 @@
 class INMarker extends INMapObject {
     /**
      * @constructor
-     * @param {Object} navi -constructor needs an instance of INMap object injected
+     * @param {Object} navi - constructor needs an instance of {@link INMap} object injected
      */
     constructor(navi) {
         super(navi);
@@ -105,7 +105,7 @@ class INMarker extends INMapObject {
 
     /**
      * Locates marker at given coordinates. Coordinates needs to be given as real world dimensions that map is representing. Use of this method is indispensable.
-     * @param {object} point - object { x: int, y: int } representing marker position in real world. Coordinates are calculated to the map scale and than displayed.
+     * @param {object} point - object {@link Point} representing marker position in real world. Coordinates are calculated to the map scale and than displayed.
      * Position will be clipped to the point in the bottom center of marker icon.
      * @return {INMarker} - returns INMarker instance class;
      * @example

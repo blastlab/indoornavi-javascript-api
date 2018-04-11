@@ -7,7 +7,7 @@
 class INInfoWindow extends INMapObject {
     /**
      * @constructor
-     * @param {Object} navi -constructor needs an instance of INMap object injected
+     * @param {Object} navi -constructor needs an instance of {@link INMap} object injected
      */
     constructor(navi) {
         super(navi);
@@ -105,7 +105,7 @@ class INInfoWindow extends INMapObject {
 
     /**
      * Displays info window in iframe.
-     * @param {object} mapObject - map object to append info window to.
+     * @param {object} mapObject - {@link INMapObject} map object to append info window to.
      * @example
      * const infoWindow = INInfoWindow(navi);
      * const marker = INMarker();

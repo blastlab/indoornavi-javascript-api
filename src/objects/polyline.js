@@ -7,7 +7,7 @@
 class INPolyline extends INMapObject {
     /**
      * @constructor
-     * @param {Object} navi - constructor needs an instance of INMap object injected
+     * @param {Object} navi - constructor needs an instance of {@link INMap} object injected
      */
     constructor(navi) {
         super(navi);
@@ -16,7 +16,7 @@ class INPolyline extends INMapObject {
 
     /**
      * Locates polyline at given coordinates. Coordinates needs to be given as real world dimensions that map is representing. Use of this method is indispensable
-     * @param {Object[]} points - point objects {x: number, y: number} that are describing polyline in real world dimensions.
+     * @param {Object[]} points - array of {@link Point}'s that are describing polyline in real world dimensions.
      * Coordinates are calculated to the map scale and than displayed.
      * @example
      * const poly = new INPolyline(navi);

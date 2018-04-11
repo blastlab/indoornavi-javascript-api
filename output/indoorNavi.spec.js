@@ -142,6 +142,22 @@ class INCoordinates {
 }
 
 /**
+ * Class representing a Point,
+ */
+
+class Point {
+    /**
+     * Point object
+     * @param {number} x - number is required to be an integer
+     * @param {number} y - number is required to be an integer
+     */
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+}
+
+/**
  * Abstract class that communicates with indoornavi frontend server.
  * @abstract
  */
@@ -151,7 +167,7 @@ class INMapObject {
      * Instance of a INMapObject class cannot be created directly, INMapObject class is an abstract class.
      * @abstract
      * @constructor
-     * @param {Object} navi -constructor needs an instance of INMap object injected
+     * @param {Object} navi -constructor needs an instance of {@link INMap} object injected
      */
     constructor(navi) {
         if (new.target === INMapObject) {
@@ -169,7 +185,7 @@ class INMapObject {
 
     /**
      * Getter for object points coordinates
-     * @returns {array} points - returns array of coordinates describing object
+     * @returns {point[]} - returns array of {@link Point} describing object
      */
     getPoints() {
         return this._points;
@@ -186,7 +202,7 @@ class INMapObject {
     /**
      * @returns {Promise} Promise - that will resolve when connection to the frontend will be established, assures that instance of INMapObject has been created on the injected INMap class, this method should be executed before calling any other method on this object children.
      * @example
-     * 'inheritedObjectFromINMapObject'.ready().then(() => 'inheritedObjectFromINMapObject'.'method()');
+     * 'inheritedObjectFromINMapObject'.ready().then(() => 'inheritedObjectFromINMapObject'.method());
      */
     ready() {
         const self = this;
@@ -238,13 +254,14 @@ class INMapObject {
     /**
      * Checks, is point of given coordinates inside of the created object.
      * Use of this method is optional.
-     * @param {object} coordinates - object with x and y members given as integers;
+     * @param {object} point - coordinates in {@link Point} format that are described in real world dimensions.
+     * Coordinates are calculated to the map scale.
      * @returns {boolean} true if given coordinates are inside the object, false otherwise;
      * @example
      * 'inheritedObjectFromINMapObject'.ready().then(() => 'inheritedObjectFromINMapObject.isWithin({x: 100, y: 50}));
      */
 
-    isWithin(coordinates) {
+    isWithin(point) {
         // Semi-infinite ray horizontally (increasing x, fixed y) out from the test point, and count how many edges it crosses.
         // At each crossing, the ray switches between inside and outside. This is called the Jordan curve theorem.
         let inside = false;
@@ -261,7 +278,7 @@ class INMapObject {
             xj = this._points[j].x;
             yj = this._points[j].y;
 
-            intersect = ((yi > coordinates.y) !== (yj > coordinates.y)) && (coordinates.x < (xj - xi) * (coordinates.y - yi) / (yj - yi) + xi);
+            intersect = ((yi > point.y) !== (yj > point.y)) && (point.x < (xj - xi) * (point.y - yi) / (yj - yi) + xi);
             if (intersect) {
                 inside = !inside;
             }
@@ -306,7 +323,7 @@ class INMapObject {
 class INPolyline extends INMapObject {
     /**
      * @constructor
-     * @param {Object} navi - constructor needs an instance of INMap object injected
+     * @param {Object} navi - constructor needs an instance of {@link INMap} object injected
      */
     constructor(navi) {
         super(navi);
@@ -315,7 +332,7 @@ class INPolyline extends INMapObject {
 
     /**
      * Locates polyline at given coordinates. Coordinates needs to be given as real world dimensions that map is representing. Use of this method is indispensable
-     * @param {Object[]} points - point objects {x: number, y: number} that are describing polyline in real world dimensions.
+     * @param {Object[]} points - array of {@link Point}'s that are describing polyline in real world dimensions.
      * Coordinates are calculated to the map scale and than displayed.
      * @example
      * const poly = new INPolyline(navi);
@@ -394,7 +411,7 @@ class INPolyline extends INMapObject {
 class INArea extends INMapObject {
     /**
      * @constructor
-     * @param {Object} navi - constructor needs an instance of INMap object injected
+     * @param {Object} navi - constructor needs an instance of {@link INMap} object injected
      */
     constructor(navi) {
         super(navi);
@@ -404,7 +421,8 @@ class INArea extends INMapObject {
 
     /**
      * Locates area at given coordinates. Coordinates needs to be given as real world dimensions that map is representing. Use of this method is indispensable.
-     * @param {Object[]} points - point objects {x: number, y: number} that are describing area in real world dimensions. Coordinates are calculated to the map scale and than displayed.
+     * @param {Object[]} points - array of {@link Point}'s that are describing area in real world dimensions.
+     * Coordinates are calculated to the map scale and than displayed.
      * For less than 3 points supplied to this method, Area isn't going to be drawn.
      * @example
      * const area = new INArea(navi);
@@ -471,7 +489,7 @@ class INArea extends INMapObject {
     /**
      * Sets Area opacity.
      * Use of this method is optional.
-     * @param {number} value. Float between 1.0 and 0. Set it to 1.0 for no opacity, 0 for maximum opacity.
+     * @param {number} value - Float between 1.0 and 0. Set it to 1.0 for no opacity, 0 for maximum opacity.
      * @example
      * area.ready().then(() => area.setOpacity(0.3));
      */
@@ -499,7 +517,7 @@ class INArea extends INMapObject {
 class INMarker extends INMapObject {
     /**
      * @constructor
-     * @param {Object} navi -constructor needs an instance of INMap object injected
+     * @param {Object} navi - constructor needs an instance of {@link INMap} object injected
      */
     constructor(navi) {
         super(navi);
@@ -597,7 +615,7 @@ class INMarker extends INMapObject {
 
     /**
      * Locates marker at given coordinates. Coordinates needs to be given as real world dimensions that map is representing. Use of this method is indispensable.
-     * @param {object} point - object { x: int, y: int } representing marker position in real world. Coordinates are calculated to the map scale and than displayed.
+     * @param {object} point - object {@link Point} representing marker position in real world. Coordinates are calculated to the map scale and than displayed.
      * Position will be clipped to the point in the bottom center of marker icon.
      * @return {INMarker} - returns INMarker instance class;
      * @example
@@ -658,7 +676,7 @@ class INMarker extends INMapObject {
 class INInfoWindow extends INMapObject {
     /**
      * @constructor
-     * @param {Object} navi -constructor needs an instance of INMap object injected
+     * @param {Object} navi -constructor needs an instance of {@link INMap} object injected
      */
     constructor(navi) {
         super(navi);
@@ -756,7 +774,7 @@ class INInfoWindow extends INMapObject {
 
     /**
      * Displays info window in iframe.
-     * @param {object} mapObject - map object to append info window to.
+     * @param {object} mapObject - {@link INMapObject} map object to append info window to.
      * @example
      * const infoWindow = INInfoWindow(navi);
      * const marker = INMarker();

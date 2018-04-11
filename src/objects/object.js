@@ -8,7 +8,7 @@ class INMapObject {
      * Instance of a INMapObject class cannot be created directly, INMapObject class is an abstract class.
      * @abstract
      * @constructor
-     * @param {Object} navi -constructor needs an instance of INMap object injected
+     * @param {Object} navi -constructor needs an instance of {@link INMap} object injected
      */
     constructor(navi) {
         if (new.target === INMapObject) {
@@ -26,7 +26,7 @@ class INMapObject {
 
     /**
      * Getter for object points coordinates
-     * @returns {array} points - returns array of coordinates describing object
+     * @returns {point[]} - returns array of {@link Point} describing object
      */
     getPoints() {
         return this._points;
@@ -43,7 +43,7 @@ class INMapObject {
     /**
      * @returns {Promise} Promise - that will resolve when connection to the frontend will be established, assures that instance of INMapObject has been created on the injected INMap class, this method should be executed before calling any other method on this object children.
      * @example
-     * 'inheritedObjectFromINMapObject'.ready().then(() => 'inheritedObjectFromINMapObject'.'method()');
+     * 'inheritedObjectFromINMapObject'.ready().then(() => 'inheritedObjectFromINMapObject'.method());
      */
     ready() {
         const self = this;
@@ -95,13 +95,14 @@ class INMapObject {
     /**
      * Checks, is point of given coordinates inside of the created object.
      * Use of this method is optional.
-     * @param {object} coordinates - object with x and y members given as integers;
+     * @param {object} point - coordinates in {@link Point} format that are described in real world dimensions.
+     * Coordinates are calculated to the map scale.
      * @returns {boolean} true if given coordinates are inside the object, false otherwise;
      * @example
      * 'inheritedObjectFromINMapObject'.ready().then(() => 'inheritedObjectFromINMapObject.isWithin({x: 100, y: 50}));
      */
 
-    isWithin(coordinates) {
+    isWithin(point) {
         // Semi-infinite ray horizontally (increasing x, fixed y) out from the test point, and count how many edges it crosses.
         // At each crossing, the ray switches between inside and outside. This is called the Jordan curve theorem.
         let inside = false;
@@ -118,7 +119,7 @@ class INMapObject {
             xj = this._points[j].x;
             yj = this._points[j].y;
 
-            intersect = ((yi > coordinates.y) !== (yj > coordinates.y)) && (coordinates.x < (xj - xi) * (coordinates.y - yi) / (yj - yi) + xi);
+            intersect = ((yi > point.y) !== (yj > point.y)) && (point.x < (xj - xi) * (point.y - yi) / (yj - yi) + xi);
             if (intersect) {
                 inside = !inside;
             }
