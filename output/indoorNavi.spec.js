@@ -1,15 +1,27 @@
 class Communication {
     static send(iFrame, host, data) {
-        iFrame.contentWindow.postMessage(data, host);
+      iFrame.contentWindow.postMessage(data, host);
     }
 
-    static listen(eventName, callback) {
-        window.addEventListener('message', function(event) {
-            if ('type' in event.data && event.data.type === eventName) {
-                callback(event.data);
-            }
-        }, false);
+  static listen(eventName, callback) {
+    window.addEventListener('message', function(event) {
+      if ('type' in event.data && event.data.type === eventName) {
+        callback(event.data);
+      }
+    }, false);
+  }
+
+  static listenOnce(eventName, callback, resolve) {
+    function handler(event) {
+      if ('type' in event.data && event.data.type === eventName && event.data.mapObjectId) {
+        window.removeEventListener('message', handler, false)
+        callback(event.data.mapObjectId);
+        resolve();
+      }
     }
+    window.addEventListener('message', handler, false);
+  }
+
 }
 
 class DOM {
@@ -21,7 +33,7 @@ class DOM {
         if (!container) {
             container = window;
         }
-        return container.getElementsByTagName(tagName)[0]
+        return container.getElementsByTagName(tagName)[0];
     }
 }
 
@@ -59,6 +71,10 @@ class Http {
     }
 }
 
+/**
+ * Class representing an AreaEvent,
+ */
+
 class AreaEvent {
     static toJSON(eventsArrayString) {
         const events = [];
@@ -76,11 +92,11 @@ class AreaEvent {
 
     /**
      * AreaEvent object
-     * @param {number} tagId short id of the tag
-     * @param {Date} date when tag appeared in this coordinates
+     * @param {number} tagId short id of the tag that entered/left this area
+     * @param {Date} date when tag appeared in this area
      * @param {number} areaId
      * @param {string} areaName
-     * @param {string} mode
+     * @param {string} mode can be ON_LEAVE or ON_ENTER
      */
     constructor(tagId, date, areaId, areaName, mode) {
         this.tagId = tagId;
@@ -90,6 +106,10 @@ class AreaEvent {
         this.mode = mode;
     }
 }
+
+/**
+ * Class representing a Coordinates,
+ */
 
 class Coordinates {
     static toJSON(coordinatesArrayString) {
@@ -120,77 +140,166 @@ class Coordinates {
     }
 }
 
+/**
+ * Class representing a Polyline,
+ * creates the polyline object in iframe that communicates with indoornavi frontend server and draws polyline
+ * @extends Geometry
+ */
 
-class IndoorNavi {
-    /**
-     * Create the IndoorNavi object to communicate with IndoorNavi frontend server
-     * @param {string} targetHost - address to the IndoorNavi server
-     * @param {string} apiKey - the API key created on IndoorNavi server (must be assigned to your domain)
-     * @param {string} containerId of DOM element which will be used to create iframe with map
-     * @param {object} config of the iframe
-     * @param {number} config.width of the iframe
-     * @param {number} config.height of the iframe
-     */
-    constructor(targetHost, apiKey, containerId, config) {
-        this.targetHost = targetHost;
-        this.apiKey = apiKey;
-        this.containerId = containerId;
-        this.isReady = false;
-        this.config = config;
+class Polyline extends Geometry {
+  /**
+  * @constructor
+  * @param {Object} navi - instance of a Polyline class needs the Indoornavi instance object injected to the constructor, to know where polyline object is going to be created
+  */
+   constructor(navi) {
+     super(navi);
+     this._type = 'POLYLINE';
+   }
+
+  /**
+  * Draws polyline for given array of points.
+  * @param {array} points - array of points between which lines are going to be drawn, coordinates(x, y) of the point are given in centimeters as integers from real distances (scale 1:1)
+  * @example
+  * const poly = new Polyline(navi);
+  * poly.ready().then(() => poly.draw(points));
+  */
+  draw (points) {
+    if (!Array.isArray(points)) {
+      throw new Error('Given argument is not na array');
     }
-
-    /**
-     * Load map with specific id
-     @param {number} mapId
-     @returns {Promise} promise that will resolve when connection to WebSocket will be established
-     */
-    load(mapId) {
-        const self = this;
-        const iFrame = document.createElement('iframe');
-        iFrame.style.width = `${!!this.config.width ? this.config.width : 640}px`;
-        iFrame.style.height = `${!!this.config.height ? this.config.height : 480}px`;
-        iFrame.setAttribute('src', `${this.targetHost}/embedded/${mapId}?api_key=${this.apiKey}`);
-        DOM.getById(this.containerId).appendChild(iFrame);
-        return new Promise(function(resolve) {
-            iFrame.onload = function() {
-                self.isReady = true;
-                resolve();
-            }
-        });
-    }
-
-    /**
-     * Toggle the tag visibility
-     * @param tagShortId
-     */
-    toggleTagVisibility(tagShortId) {
-        if (!this.isReady) {
-            throw new Error('IndoorNavi is not ready. Call load() first and then when promise resolves IndoorNavi will be ready.');
+    this._points = points;
+    points.forEach(point => {
+      if(!Number.isInteger(point.x) || !Number.isInteger(point.y)) {
+        throw new Error('Given points are in wrong format or coordianets x an y are not integers')
+      }
+    });
+    if (!!this._id) {
+      Communication.send(this._navi.iFrame, this._navi.targetHost, {
+        command: 'drawObject',
+        args: {
+          type: this._type,
+          object: {
+            id: this._id,
+            points: points
+          }
         }
-        const iFrame = DOM.getByTagName('iframe', DOM.getById(this.containerId));
-        Communication.send(iFrame, this.targetHost, {
-            command: 'toggleTagVisibility',
-            args: tagShortId
-        });
+      });
+    } else {
+      throw new Error('Polyline is not created yet, use ready() method before executing draw(), or remove()');
     }
+  }
 
-    /**
-     * Add listener to react when the specific event occurs
-     * @param {string} eventName - name of the specific event (i.e. 'area', 'coordinates')
-     * @param {function} callback - this method will be called when the specific event occurs
-     */
-    addEventListener(eventName, callback) {
-        if (!this.isReady) {
-            throw new Error('IndoorNavi is not ready. Call load() first and then when promise resolves IndoorNavi will be ready.');
+  /**
+   * Sets polyline lines and points color.
+   * @param {color} string - string that specifies the color. Supports color in hex format '#AABBCC' and 'rgb(255,255,255)';
+   * @example
+   * poly.ready().then(() => poly.setLineColor('#AABBCC'));
+   */
+  setLineColor(color) {
+    this._setColor(color, 'stroke');
+  }
+
+  isWithin (point) {
+    throw new Error('Method not implemented yet for polyline');
+  }
+
+}
+
+/**
+ * Class representing an Area,
+ * creates the area object in iframe that communicates with indoornavi frontend server and draws area
+ * @extends Geometry
+ */
+
+class Area extends Geometry {
+  /**
+   * @constructor
+   * @param {Object} navi - instance of an Area class needs the Indoornavi instance object injected to the constructor, to know where area object is going to be created
+   */
+  constructor(navi) {
+    super(navi);
+    this._type = 'AREA';
+  }
+
+  /**
+   * Draws area for given array of points.
+   * @param {array} points - array of points which will describe the area, coordinates members such as x and y of the point are given in centimeters as integers from real distances (scale 1:1).
+   * For less than 3 points supplied to this method, area isn't going to be drawn.
+   * @example
+   * const area = new Area(navi);
+   * area.ready().then(() => area.draw(points));
+   */
+  draw (points) {
+    if (arguments.length !== 1) {
+      throw new Error('Wrong number of arguments passed');
+    }
+    if (!Array.isArray(points)) {
+      throw new Error('Given argument is not na array');
+    } else if (points.length < 3) {
+      throw new Error('Not enought points to draw an area');
+    }
+    points.forEach(point => {
+      if(!Number.isInteger(point.x) || !Number.isInteger(point.y)) {
+        throw new Error('Given points are in wrong format or coordianets x an y are not integers');
+      }
+    });
+
+    this._points = points;
+
+    if (!!this._id) {
+      Communication.send(this._navi.iFrame, this._navi.targetHost, {
+        command: 'drawObject',
+        args: {
+          type: this._type,
+          object: {
+            id: this._id,
+            points: points
+          }
         }
-        const iFrame = DOM.getByTagName('iframe', DOM.getById(this.containerId));
-        Communication.send(iFrame, this.targetHost, {
-            command: 'addEventListener',
-            args: eventName
-        });
-
-        Communication.listen(eventName, callback);
+      });
+    } else {
+      throw new Error('Area is not created yet, use ready() method before executing draw(), or remove()');
     }
+  }
+
+  /**
+   * Fills area whit given color.
+   * @param {color} string - string that specifies the color. Supports color in hex format '#AABBCC' and 'rgb(255,255,255)';
+   * @example
+   * area.ready().then(() => area.setFillColor('#AABBCC'));
+   */
+  setFillColor (color) {
+    this._setColor(color, 'fill');
+  }
+
+  /**
+   * Sets opacity.
+   * @param {float} float. Float between 1.0 and 0. Set it to 1.0 for no oppacity, 0 for maximum opacity.
+   * @example
+   * area.ready().then(() => area.setOpacity(0.3));
+   */
+
+  setOpacity(value) {
+    if(isNaN(value) || value > 1 || value < 0) {
+      throw new Error('Wrong value passed to setTransparency() method, only numbers between 0 and 1 are allowed');
+    }
+    if(!!this._id) {
+      Communication.send(this._navi.iFrame, this._navi.targetHost, {
+        command: 'setOpacity',
+        args: {
+          type: this._type,
+          object: {
+            id: this._id,
+            opacity: value
+          }
+        }
+      });
+    } else {
+      throw new Error(`Object ${this._type} is not created yet, use ready() method before executing other methods`);
+    }
+
+  }
+
 }
 
 class Report {
@@ -217,7 +326,7 @@ class Report {
      * @param {number} floorId id of the floor you want to get coordinates from
      * @param {Date} from starting closed range
      * @param {Date} to ending closed range
-     * @return {Promise} promise that will be resolved when {@link Coordinates[]} are retrieved
+     * @return {Promise} promise that will be resolved when {@link Coordinates} list is retrieved
      */
     getCoordinates(floorId, from, to) {
         return new Promise((function(resolve) {
@@ -232,7 +341,7 @@ class Report {
      * @param {number} floorId id of the floor you want to get area events from
      * @param {Date} from starting closed range
      * @param {Date} to ending closed range
-     * @return {Promise} promise that will be resolved when {@link AreaEvent[]} are retrieved
+     * @return {Promise} promise that will be resolved when {@link AreaEvent} list is retrieved
      */
     getAreaEvents(floorId, from, to) {
         return new Promise((function(resolve) {

@@ -7,6 +7,6 @@ class DOM {
         if (!container) {
             container = window;
         }
-        return container.getElementsByTagName(tagName)[0]
+        return container.getElementsByTagName(tagName)[0];
     }
 }

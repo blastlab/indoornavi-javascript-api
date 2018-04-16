@@ -1,3 +1,7 @@
+/**
+ * Class representing a Coordinates,
+ */
+
 class Coordinates {
     static toJSON(coordinatesArrayString) {
         const coordinates = [];

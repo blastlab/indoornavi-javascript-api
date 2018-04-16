@@ -4,10 +4,28 @@
 </head>
 <body>
 <button disabled id="toggle10999" onclick="toggle10999()">Toggle 10999</button>
+<button disabled id="drawPolyline" onclick="drawPolyline()">Draw Polyline</button>
+<button disabled id="removePolyline" onclick="removePolyline()">Remove Polyline</button>
+<button disabled id="drawArea" onclick="drawArea()"> Draw Area</button>
+<button disabled id="removeArea" onclick="removeArea()">Remove Area</button>
+<button disabled id="addListener" onclick="addListener()">Add listener</button>
+
 <div id="map"></div>
 </body>
 <script src="indoorNavi.js"></script>
 <script>
+    //set poly as global variable to have access to this from every function,
+    let poly = null;
+    //set area as global variable to have access to this from every function,
+    let area = null;
+    const  points = [
+      {x:480, y: 480},
+      {x:1220, y: 480},
+      {x:1220, y: 1220},
+      {x:480, y: 1220},
+      {x:750, y: 750}
+    ];
+
     const navi = new IndoorNavi(
         'http://localhost:4200',
         'TestAdmin',
@@ -17,30 +35,90 @@
             height: 600
         }
     );
-    // navi.load(3).then(function () {
-    //     document.getElementById('toggle10999').removeAttribute('disabled');
-    //
-    //     navi.addEventListener('area', function(data) {
-    //         console.log(data);
-    //     });
-    //
-    //     navi.addEventListener('coordinates', function(data) {
-    //         console.log(data);
-    //     });
+    navi.load(2).then(function () {
+        document.getElementById('toggle10999').removeAttribute('disabled');
+        document.getElementById('drawPolyline').removeAttribute('disabled');
+        document.getElementById('removePolyline').removeAttribute('disabled');
+        document.getElementById('drawArea').removeAttribute('disabled');
+        document.getElementById('removeArea').removeAttribute('disabled');
+    });
+
+    // const from = new Date(2017, 10, 1);
+    // const to = new Date(2017, 12, 30);
+    // const report = new Report('http://localhost:90', 'TestAdmin');
+    // report.getCoordinates(2, from, to).then(function(coordinates) {
+    //     console.log(coordinates);
     // });
-
-    const from = new Date(2017, 10, 1);
-    const to = new Date(2017, 12, 30);
-    const report = new Report('http://localhost:90', 'TestAdmin');
-    report.getCoordinates(2, from, to).then(function(coordinates) {
-        console.log(coordinates);
-    });
-    report.getAreaEvents(2, from, to).then(function(events) {
-       console.log(events);
-    });
-
+    // report.getAreaEvents(2, from, to).then(function(events) {
+    //    console.log(events);
+    // });
+    //
     function toggle10999() {
         navi.toggleTagVisibility(10999);
     }
+
+    function addListener() {
+      navi.addEventListener('area', function(data) {
+
+      });
+
+      navi.addEventListener('coordinates', data => {
+        console.log(data.coordinates.point);
+        if (!!area) {
+          const tagInsideArea = area.isWithin(data.coordinates.point);
+          if (tagInsideArea) {
+            console.log(`Tag ${data.coordinates.tagShortId} INSIDE`);
+          } else {
+            console.log(`Tag ${data.coordinates.tagShortId} OUTSIDE`);
+          }
+        }
+      });
+    }
+
+    function drawPolyline() {
+      if(!!poly) {
+        return;
+      }
+        poly = new Polyline(navi);
+        poly.ready().then(() => {
+        poly.draw(points);
+        poly.setLineColor('#12a3b5');
+      });
+    }
+
+    function removePolyline() {
+      if(!!poly) {
+        poly.ready().then(() => {
+          poly.remove();
+          poly = null;
+        });
+      }
+    }
+
+    function drawArea() {
+      if(!!area){
+        return;
+      }
+        area = new Area(navi);
+        area.ready().then(() => {
+        area.draw(points);
+        area.setFillColor('rgb(144,224,017)');
+        area.setOpacity(0.5);
+        console.log(area.isWithin({x: 740, y: 750}));
+        console.log(area.isWithin({x: 750, y: 750}));
+        document.getElementById('addListener').removeAttribute('disabled');
+      });
+    }
+
+    function removeArea() {
+      if(!!area) {
+        area.ready().then(() => {
+          area.remove();
+          area = null;
+          document.getElementById('addListener').setAttribute('disabled', true);
+        });
+      }
+    }
+
 </script>
 </html>

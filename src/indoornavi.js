@@ -1,6 +1,10 @@
+/**
+* Class representing a IndoorNavi,
+* creates the IndoorNavi object to communicate with IndoorNavi frontend server
+*/
 class IndoorNavi {
     /**
-     * Create the IndoorNavi object to communicate with IndoorNavi frontend server
+     * @constructor
      * @param {string} targetHost - address to the IndoorNavi server
      * @param {string} apiKey - the API key created on IndoorNavi server (must be assigned to your domain)
      * @param {string} containerId of DOM element which will be used to create iframe with map
@@ -18,8 +22,12 @@ class IndoorNavi {
 
     /**
      * Load map with specific id
-     @param {number} mapId
-     @returns {Promise} promise that will resolve when connection to WebSocket will be established
+     * @param {number} mapId
+     * @returns {Promise} promise that will resolve when connection to WebSocket will be established
+     * @example
+     * const mapId = 2;
+     * const navi = new IndoorNavi( 'http://localhost:4200', 'TestAdmin', 'map', { width: 800, height: 600});
+     * navi.load(mapId).then(() => console.log(`Map ${mapId} is loaded`));
      */
     load(mapId) {
         const self = this;
@@ -39,13 +47,14 @@ class IndoorNavi {
     /**
      * Toggle the tag visibility
      * @param tagShortId
+     * @example
+     * const tagShortId = data.coordinates.tagShortId;
+     * navi.toggleTagVisibility(tagShortId);
      */
     toggleTagVisibility(tagShortId) {
-        if (!this.isReady) {
-            throw new Error('IndoorNavi is not ready. Call load() first and then when promise resolves IndoorNavi will be ready.');
-        }
-        const iFrame = DOM.getByTagName('iframe', DOM.getById(this.containerId));
-        Communication.send(iFrame, this.targetHost, {
+      this.checkIsReady();
+      this.setIFrame();
+        Communication.send(this.iFrame, this.targetHost, {
             command: 'toggleTagVisibility',
             args: tagShortId
         });
@@ -55,17 +64,28 @@ class IndoorNavi {
      * Add listener to react when the specific event occurs
      * @param {string} eventName - name of the specific event (i.e. 'area', 'coordinates')
      * @param {function} callback - this method will be called when the specific event occurs
+     * example
+     * navi.addEventListener('coordinates', data => doSomthingWithCoordinates(data.coordinates.point));
      */
     addEventListener(eventName, callback) {
-        if (!this.isReady) {
-            throw new Error('IndoorNavi is not ready. Call load() first and then when promise resolves IndoorNavi will be ready.');
-        }
-        const iFrame = DOM.getByTagName('iframe', DOM.getById(this.containerId));
-        Communication.send(iFrame, this.targetHost, {
+      this.checkIsReady();
+      this.setIFrame();
+        Communication.send(this.iFrame, this.targetHost, {
             command: 'addEventListener',
             args: eventName
         });
 
         Communication.listen(eventName, callback);
     }
+
+     checkIsReady() {
+       if (!this.isReady) {
+           throw new Error('IndoorNavi is not ready. Call load() first and then when promise resolves IndoorNavi will be ready.');
+       }
+     }
+
+     setIFrame () {
+      this.iFrame = DOM.getByTagName('iframe', DOM.getById(this.containerId));
+     }
+
 }
