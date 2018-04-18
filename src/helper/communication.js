@@ -23,4 +23,8 @@ class Communication {
         window.addEventListener('message', handler, false);
     }
 
+    static remove(handler) {
+        window.removeEventListener('message', event, false);
+    }
+
 }

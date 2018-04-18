@@ -23,6 +23,10 @@ class Communication {
         window.addEventListener('message', handler, false);
     }
 
+    static remove(handler) {
+        window.removeEventListener('message', event, false);
+    }
+
 }
 
 class DOM {
@@ -600,15 +604,16 @@ class INMarker extends INMapObject {
 
     /**
      * Removes listener if listener exists. Use of this method is optional.
-     * @param {number} event - as INMarker.eventsEnum.'EVENT' property representing event to listen to. Available 'EVENT's are: ONCLICK, ONMOUSEOVER ...
+     * @param {number} event - as INMarker.eventsEnum.'EVENT' property representing event to listen to. Available 'EVENT's are: CLICK, MOUSEOVER ...
+     * @param {callback} callback - callback function that was added to event listener to be executed when event occurs.
      * @return {INMarker} - returns INMarker instance class;
      * example
      * marker.ready(() => marker.removeEventListener(marker.eventsEnum.CLICK));
      */
 
-    removeEventListener(event) {
+    removeEventListener(event, callback) {
         if (this._events.has(event)) {
-            Communication.remove(event)
+            Communication.remove(callback)
         }
         return this;
     }
