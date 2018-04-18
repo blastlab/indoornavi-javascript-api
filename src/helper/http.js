@@ -1,4 +1,4 @@
-class INHttp {
+class Http {
 
     constructor() {
         this.authHeader = null;

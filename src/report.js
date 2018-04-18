@@ -13,7 +13,7 @@ class Report {
         const authHeader = 'Token ' + apiKey;
         this.targetHost = targetHost;
         this.baseUrl = '/rest/v1/reports';
-        this.http = new INHttp();
+        this.http = new Http();
         this.http.setAuthorization(authHeader);
     }
 
@@ -24,7 +24,7 @@ class Report {
      * @param {Date} to ending closed range
      * @return {Promise} promise that will be resolved when {@link INCoordinates} list is retrieved
      */
-    getINCoordinates(floorId, from, to) {
+    getCoordinates(floorId, from, to) {
         return new Promise((function(resolve) {
             this.http.doPost(`${this.targetHost}${this.baseUrl}/coordinates`, {floorId: floorId, from: Report.parseDate(from), to: Report.parseDate(to)}, function (data) {
                 resolve(INCoordinates.toJSON(data));
@@ -37,12 +37,12 @@ class Report {
      * @param {number} floorId id of the floor you want to get INArea events from
      * @param {Date} from starting closed range
      * @param {Date} to ending closed range
-     * @return {Promise} promise that will be resolved when {@link INAreaEvent} list is retrieved
+     * @return {Promise} promise that will be resolved when {@link AreaEvent} list is retrieved
      */
-    getINAreaEvents(floorId, from, to) {
+    getAreaEvents(floorId, from, to) {
         return new Promise((function(resolve) {
             this.http.doPost(`${this.targetHost}${this.baseUrl}/events`, {floorId: floorId, from: Report.parseDate(from), to: Report.parseDate(to)}, function (data) {
-                resolve(INAreaEvent.toJSON(data));
+                resolve(AreaEvent.toJSON(data));
             });
         }).bind(this));
     }

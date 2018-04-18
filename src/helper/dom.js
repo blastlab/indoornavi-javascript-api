@@ -1,4 +1,4 @@
-class INDOM {
+class DOM {
     static getById(id) {
         return document.getElementById(id);
     }

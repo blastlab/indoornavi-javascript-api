@@ -59,7 +59,7 @@ This is going to start server at ``` http://127.0.0.1:3000 ```
 
 ### Naming:
 
-1. All classes should have a prefix "In" before them to avoid conflicts between libraries.
+1. All public classes should have a prefix "In" before them to avoid conflicts between libraries.
 For example use: ```INPolyline```
 In prefix simply means that class belongs to IndorNavi API, and as such will be interpreted by API user.
 
@@ -73,7 +73,7 @@ Second word describes a target of taken action - a noun.
 
 ### Fluent API:
 
-1. API should be written fallowing the "soft rule" of [fluent API](https://www.tutorialspoint.com/entity_framework/entity_framework_fluent_api.html), and by "soft rule" is meant to not force this API to be fluent in every end point of this API.
+1. API should be written following the "soft rule" of [fluent API](https://www.tutorialspoint.com/entity_framework/entity_framework_fluent_api.html), and by "soft rule" is meant to not force this API to be fluent in every end point of this API.
 
 2. For methods that are returning values or API sensitive informations it is recommended to avoid fluent API rule by all means.
 

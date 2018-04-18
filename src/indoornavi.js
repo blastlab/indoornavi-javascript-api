@@ -7,7 +7,7 @@ class INMap {
      * @constructor
      * @param {string} targetHost - address to the INMap server
      * @param {string} apiKey - the API key created on INMap server (must be assigned to your domain)
-     * @param {string} containerId of INDOM element which will be used to create iframe with map
+     * @param {string} containerId of DOM element which will be used to create iframe with map
      * @param {object} config {width: number, height: number} of the iframe in pixels
      */
     constructor(targetHost, apiKey, containerId, config) {
@@ -33,7 +33,7 @@ class INMap {
       iFrame.style.width = `${!!this.config.width ? this.config.width : 640}px`;
       iFrame.style.height = `${!!this.config.height ? this.config.height : 480}px`;
       iFrame.setAttribute('src', `${this.targetHost}/embedded/${mapId}?api_key=${this.apiKey}`);
-      INDOM.getById(this.containerId).appendChild(iFrame);
+      DOM.getById(this.containerId).appendChild(iFrame);
       return new Promise(function(resolve) {
           iFrame.onload = function() {
               self.isReady = true;
@@ -52,7 +52,7 @@ class INMap {
     toggleTagVisibility(tagShortId) {
       this.checkIsReady();
       this.setIFrame();
-        INCommunication.send(this.iFrame, this.targetHost, {
+        Communication.send(this.iFrame, this.targetHost, {
             command: 'toggleTagVisibility',
             args: tagShortId
         });
@@ -69,11 +69,11 @@ class INMap {
     addEventListener(eventName, callback) {
       this.checkIsReady();
       this.setIFrame();
-        INCommunication.send(this.iFrame, this.targetHost, {
+        Communication.send(this.iFrame, this.targetHost, {
             command: 'addEventListener',
             args: eventName
         });
-      INCommunication.listen(eventName, callback);
+      Communication.listen(eventName, callback);
       return this;
     }
 
@@ -84,7 +84,7 @@ class INMap {
      }
 
      setIFrame () {
-      this.iFrame = INDOM.getByTagName('iframe', INDOM.getById(this.containerId));
+      this.iFrame = DOM.getByTagName('iframe', DOM.getById(this.containerId));
       return this;
      }
 

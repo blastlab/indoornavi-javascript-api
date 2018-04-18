@@ -58,7 +58,7 @@ class INMarker extends INMapObject {
     /**
      * Sets marker icon. Use of this method is optional.
      * @param {string} path - url path to your icon;
-     * @return {INMarker} - returns INMarker instance class;
+     * @return {INMarker} - returns INMarker instance class
      * @example
      * const path = 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png'
      * const marker = new INMarker(navi);
@@ -84,7 +84,7 @@ class INMarker extends INMapObject {
 
     addEventListener(event, callback) {
         this._events.add(event);
-        INCommunication.listen(`${event.toString(10)}-${this._id}`, callback);
+        Communication.listen(`${event.toString(10)}-${this._id}`, callback);
         return this;
     }
 
@@ -98,7 +98,7 @@ class INMarker extends INMapObject {
 
     removeEventListener(event) {
         if (this._events.has(event)) {
-            INCommunication.remove(event)
+            Communication.remove(event)
         }
         return this;
     }
@@ -136,7 +136,7 @@ class INMarker extends INMapObject {
         if (!!this._id) {
             const events = [];
             this._events.forEach(event => events.push(event));
-            INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
+            Communication.send(this._navi.iFrame, this._navi.targetHost, {
                 command: 'drawObject',
                 args: {
                     type: this._type,

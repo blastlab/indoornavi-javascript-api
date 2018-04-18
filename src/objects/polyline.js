@@ -1,6 +1,6 @@
 /**
  * Class representing a INPolyline,
- * creates the INPolyline ins in iframe that communicates with indoornavi frontend server and draws INPolyline
+ * creates the INPolyline instance in iframe that communicates with indoornavi frontend server and draws INPolyline
  * @extends INMapObject
  */
 
@@ -17,7 +17,7 @@ class INPolyline extends INMapObject {
     /**
      * Locates polyline at given coordinates. Coordinates needs to be given as real world dimensions that map is representing. Use of this method is indispensable
      * @param {Object[]} points - array of {@link Point}'s that are describing polyline in real world dimensions.
-     * Coordinates are calculated to the map scale and than displayed.
+     * Coordinates are calculated to the map scale and then displayed.
      * @example
      * const poly = new INPolyline(navi);
      * poly.ready().then(() => poly.points(points).place());
@@ -45,7 +45,7 @@ class INPolyline extends INMapObject {
 
     place() {
         if (!!this._id) {
-            INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
+            Communication.send(this._navi.iFrame, this._navi.targetHost, {
                 command: 'drawObject',
                 args: {
                     type: this._type,

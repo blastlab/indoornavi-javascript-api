@@ -53,7 +53,7 @@ class INArea extends INMapObject {
 
     place() {
         if (!!this._id) {
-            INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
+            Communication.send(this._navi.iFrame, this._navi.targetHost, {
                 command: 'drawObject',
                 args: {
                     type: this._type,
@@ -71,7 +71,7 @@ class INArea extends INMapObject {
     }
 
     /**
-     * Fills Area whit given color.
+     * Fills Area with given color.
      * Use of this method is optional.
      * @param {string} color - string that specifies the color. Supports color in hex format '#AABBCC' and rgb format 'rgb(255,255,255)';
      * @example

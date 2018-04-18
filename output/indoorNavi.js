@@ -1,4 +1,4 @@
-class INCommunication {
+class Communication {
     static send(iFrame, host, data) {
         iFrame.contentWindow.postMessage(data, host);
     }
@@ -25,7 +25,7 @@ class INCommunication {
 
 }
 
-class INDOM {
+class DOM {
     static getById(id) {
         return document.getElementById(id);
     }
@@ -38,7 +38,7 @@ class INDOM {
     }
 }
 
-class INHttp {
+class Http {
 
     constructor() {
         this.authHeader = null;
@@ -76,11 +76,11 @@ class INHttp {
  * Class representing an areaEvent,
  */
 
-class INAreaEvent {
+class AreaEvent {
     static toJSON(eventsArrayString) {
         const events = [];
         JSON.parse(eventsArrayString).forEach(function(_events) {
-            events.push(new INAreaEvent(
+            events.push(new AreaEvent(
                 _events['tagId'],
                 new Date(_events['date']),
                 _events['INAreaId'],
@@ -92,7 +92,7 @@ class INAreaEvent {
     };
 
     /**
-     * INAreaEvent object
+     * AreaEvent object
      * @param {number} tagId short id of the tag that entered/left this INArea
      * @param {Date} date when tag appeared in this INArea
      * @param {number} INAreaId
@@ -219,9 +219,9 @@ class INMapObject {
         }
         return new Promise(resolve => {
                 // create listener for event that will fire only once
-                INCommunication.listenOnce(`createObject-${this._type}`, setObject.bind(self), resolve);
+                Communication.listenOnce(`createObject-${this._type}`, setObject.bind(self), resolve);
                 // then send message
-                INCommunication.send(self._navi.iFrame, self._navi.targetHost, {
+                Communication.send(self._navi.iFrame, self._navi.targetHost, {
                     command: 'createObject',
                     object: this._type
                 });
@@ -230,14 +230,14 @@ class INMapObject {
     }
 
     /**
-     * Removes object and destroys it instance in the frontend server, but do not destroys object class instance in your app.
+     * Removes object and destroys its instance in the frontend server, but do not destroys object class instance in your app.
      * inheritedObjectFromINMapObject is a child object of abstract class INMapObject
      * @example
      * 'inheritedObjectFromINMapObject'.ready().then(() => 'inheritedObjectFromINMapObject'.remove());
      */
     remove() {
         if (!!this._id) {
-            INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
+            Communication.send(this._navi.iFrame, this._navi.targetHost, {
                 command: 'removeObject',
                 args: {
                     type: this._type,
@@ -316,7 +316,7 @@ class INMapObject {
 
 /**
  * Class representing a INPolyline,
- * creates the INPolyline ins in iframe that communicates with indoornavi frontend server and draws INPolyline
+ * creates the INPolyline instance in iframe that communicates with indoornavi frontend server and draws INPolyline
  * @extends INMapObject
  */
 
@@ -333,7 +333,7 @@ class INPolyline extends INMapObject {
     /**
      * Locates polyline at given coordinates. Coordinates needs to be given as real world dimensions that map is representing. Use of this method is indispensable
      * @param {Object[]} points - array of {@link Point}'s that are describing polyline in real world dimensions.
-     * Coordinates are calculated to the map scale and than displayed.
+     * Coordinates are calculated to the map scale and then displayed.
      * @example
      * const poly = new INPolyline(navi);
      * poly.ready().then(() => poly.points(points).place());
@@ -361,7 +361,7 @@ class INPolyline extends INMapObject {
 
     place() {
         if (!!this._id) {
-            INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
+            Communication.send(this._navi.iFrame, this._navi.targetHost, {
                 command: 'drawObject',
                 args: {
                     type: this._type,
@@ -457,7 +457,7 @@ class INArea extends INMapObject {
 
     place() {
         if (!!this._id) {
-            INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
+            Communication.send(this._navi.iFrame, this._navi.targetHost, {
                 command: 'drawObject',
                 args: {
                     type: this._type,
@@ -475,7 +475,7 @@ class INArea extends INMapObject {
     }
 
     /**
-     * Fills Area whit given color.
+     * Fills Area with given color.
      * Use of this method is optional.
      * @param {string} color - string that specifies the color. Supports color in hex format '#AABBCC' and rgb format 'rgb(255,255,255)';
      * @example
@@ -568,7 +568,7 @@ class INMarker extends INMapObject {
     /**
      * Sets marker icon. Use of this method is optional.
      * @param {string} path - url path to your icon;
-     * @return {INMarker} - returns INMarker instance class;
+     * @return {INMarker} - returns INMarker instance class
      * @example
      * const path = 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png'
      * const marker = new INMarker(navi);
@@ -594,7 +594,7 @@ class INMarker extends INMapObject {
 
     addEventListener(event, callback) {
         this._events.add(event);
-        INCommunication.listen(`${event.toString(10)}-${this._id}`, callback);
+        Communication.listen(`${event.toString(10)}-${this._id}`, callback);
         return this;
     }
 
@@ -608,7 +608,7 @@ class INMarker extends INMapObject {
 
     removeEventListener(event) {
         if (this._events.has(event)) {
-            INCommunication.remove(event)
+            Communication.remove(event)
         }
         return this;
     }
@@ -646,7 +646,7 @@ class INMarker extends INMapObject {
         if (!!this._id) {
             const events = [];
             this._events.forEach(event => events.push(event));
-            INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
+            Communication.send(this._navi.iFrame, this._navi.targetHost, {
                 command: 'drawObject',
                 args: {
                     type: this._type,
@@ -686,7 +686,7 @@ class INInfoWindow extends INMapObject {
         this._position = 0;
         this._width = null;
         this._height = null;
-        this.positionEnum = {
+        this.positions = {
             TOP: 0,
             RIGHT: 1,
             BOTTOM: 2,
@@ -720,12 +720,12 @@ class INInfoWindow extends INMapObject {
     /**
      * Sets position of info window regarding to object that info window will be appended to. Use of this method is optional.
      * Default position for info window is TOP.
-     * @param {number} position - given as INInfoWindow.positionEnum.'POSITION' property representing info window position.
+     * @param {number} position - given as INInfoWindow.positions.'POSITION' property representing info window position.
      * Available 'POSITION' settings: TOP, LEFT, RIGHT, BOTTOM, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT.
      * return {INInfoWindow} - returns INInfoWindow instance class;
      * @example
      * const infoWindow = INInfoWindow(navi);
-     * infoWindow.ready(() => infoWindow.setPosition(infoWindow.positionEnum.TOP_RIGHT));
+     * infoWindow.ready(() => infoWindow.setPosition(infoWindow.positions.TOP_RIGHT));
      */
 
     setPosition(position) {
@@ -790,7 +790,7 @@ class INInfoWindow extends INMapObject {
         }
         this._relatedObjectId = mapObject.getID();
         if (!!this._id) {
-            INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
+            Communication.send(this._navi.iFrame, this._navi.targetHost, {
                 command: 'drawObject',
                 args: {
                     type: this._type,
@@ -819,7 +819,7 @@ class INMap {
      * @constructor
      * @param {string} targetHost - address to the INMap server
      * @param {string} apiKey - the API key created on INMap server (must be assigned to your domain)
-     * @param {string} containerId of INDOM element which will be used to create iframe with map
+     * @param {string} containerId of DOM element which will be used to create iframe with map
      * @param {object} config {width: number, height: number} of the iframe in pixels
      */
     constructor(targetHost, apiKey, containerId, config) {
@@ -845,7 +845,7 @@ class INMap {
       iFrame.style.width = `${!!this.config.width ? this.config.width : 640}px`;
       iFrame.style.height = `${!!this.config.height ? this.config.height : 480}px`;
       iFrame.setAttribute('src', `${this.targetHost}/embedded/${mapId}?api_key=${this.apiKey}`);
-      INDOM.getById(this.containerId).appendChild(iFrame);
+      DOM.getById(this.containerId).appendChild(iFrame);
       return new Promise(function(resolve) {
           iFrame.onload = function() {
               self.isReady = true;
@@ -864,7 +864,7 @@ class INMap {
     toggleTagVisibility(tagShortId) {
       this.checkIsReady();
       this.setIFrame();
-        INCommunication.send(this.iFrame, this.targetHost, {
+        Communication.send(this.iFrame, this.targetHost, {
             command: 'toggleTagVisibility',
             args: tagShortId
         });
@@ -881,11 +881,11 @@ class INMap {
     addEventListener(eventName, callback) {
       this.checkIsReady();
       this.setIFrame();
-        INCommunication.send(this.iFrame, this.targetHost, {
+        Communication.send(this.iFrame, this.targetHost, {
             command: 'addEventListener',
             args: eventName
         });
-      INCommunication.listen(eventName, callback);
+      Communication.listen(eventName, callback);
       return this;
     }
 
@@ -896,7 +896,7 @@ class INMap {
      }
 
      setIFrame () {
-      this.iFrame = INDOM.getByTagName('iframe', INDOM.getById(this.containerId));
+      this.iFrame = DOM.getByTagName('iframe', DOM.getById(this.containerId));
       return this;
      }
 
@@ -917,7 +917,7 @@ class Report {
         const authHeader = 'Token ' + apiKey;
         this.targetHost = targetHost;
         this.baseUrl = '/rest/v1/reports';
-        this.http = new INHttp();
+        this.http = new Http();
         this.http.setAuthorization(authHeader);
     }
 
@@ -928,7 +928,7 @@ class Report {
      * @param {Date} to ending closed range
      * @return {Promise} promise that will be resolved when {@link INCoordinates} list is retrieved
      */
-    getINCoordinates(floorId, from, to) {
+    getCoordinates(floorId, from, to) {
         return new Promise((function(resolve) {
             this.http.doPost(`${this.targetHost}${this.baseUrl}/coordinates`, {floorId: floorId, from: Report.parseDate(from), to: Report.parseDate(to)}, function (data) {
                 resolve(INCoordinates.toJSON(data));
@@ -941,12 +941,12 @@ class Report {
      * @param {number} floorId id of the floor you want to get INArea events from
      * @param {Date} from starting closed range
      * @param {Date} to ending closed range
-     * @return {Promise} promise that will be resolved when {@link INAreaEvent} list is retrieved
+     * @return {Promise} promise that will be resolved when {@link AreaEvent} list is retrieved
      */
-    getINAreaEvents(floorId, from, to) {
+    getAreaEvents(floorId, from, to) {
         return new Promise((function(resolve) {
             this.http.doPost(`${this.targetHost}${this.baseUrl}/events`, {floorId: floorId, from: Report.parseDate(from), to: Report.parseDate(to)}, function (data) {
-                resolve(INAreaEvent.toJSON(data));
+                resolve(AreaEvent.toJSON(data));
             });
         }).bind(this));
     }

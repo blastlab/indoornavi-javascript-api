@@ -17,7 +17,7 @@ class INInfoWindow extends INMapObject {
         this._position = 0;
         this._width = null;
         this._height = null;
-        this.positionEnum = {
+        this.positions = {
             TOP: 0,
             RIGHT: 1,
             BOTTOM: 2,
@@ -51,12 +51,12 @@ class INInfoWindow extends INMapObject {
     /**
      * Sets position of info window regarding to object that info window will be appended to. Use of this method is optional.
      * Default position for info window is TOP.
-     * @param {number} position - given as INInfoWindow.positionEnum.'POSITION' property representing info window position.
+     * @param {number} position - given as INInfoWindow.positions.'POSITION' property representing info window position.
      * Available 'POSITION' settings: TOP, LEFT, RIGHT, BOTTOM, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT.
      * return {INInfoWindow} - returns INInfoWindow instance class;
      * @example
      * const infoWindow = INInfoWindow(navi);
-     * infoWindow.ready(() => infoWindow.setPosition(infoWindow.positionEnum.TOP_RIGHT));
+     * infoWindow.ready(() => infoWindow.setPosition(infoWindow.positions.TOP_RIGHT));
      */
 
     setPosition(position) {
@@ -121,7 +121,7 @@ class INInfoWindow extends INMapObject {
         }
         this._relatedObjectId = mapObject.getID();
         if (!!this._id) {
-            INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
+            Communication.send(this._navi.iFrame, this._navi.targetHost, {
                 command: 'drawObject',
                 args: {
                     type: this._type,

@@ -60,9 +60,9 @@ class INMapObject {
         }
         return new Promise(resolve => {
                 // create listener for event that will fire only once
-                INCommunication.listenOnce(`createObject-${this._type}`, setObject.bind(self), resolve);
+                Communication.listenOnce(`createObject-${this._type}`, setObject.bind(self), resolve);
                 // then send message
-                INCommunication.send(self._navi.iFrame, self._navi.targetHost, {
+                Communication.send(self._navi.iFrame, self._navi.targetHost, {
                     command: 'createObject',
                     object: this._type
                 });
@@ -71,14 +71,14 @@ class INMapObject {
     }
 
     /**
-     * Removes object and destroys it instance in the frontend server, but do not destroys object class instance in your app.
+     * Removes object and destroys its instance in the frontend server, but do not destroys object class instance in your app.
      * inheritedObjectFromINMapObject is a child object of abstract class INMapObject
      * @example
      * 'inheritedObjectFromINMapObject'.ready().then(() => 'inheritedObjectFromINMapObject'.remove());
      */
     remove() {
         if (!!this._id) {
-            INCommunication.send(this._navi.iFrame, this._navi.targetHost, {
+            Communication.send(this._navi.iFrame, this._navi.targetHost, {
                 command: 'removeObject',
                 args: {
                     type: this._type,

@@ -2,11 +2,11 @@
  * Class representing an areaEvent,
  */
 
-class INAreaEvent {
+class AreaEvent {
     static toJSON(eventsArrayString) {
         const events = [];
         JSON.parse(eventsArrayString).forEach(function(_events) {
-            events.push(new INAreaEvent(
+            events.push(new AreaEvent(
                 _events['tagId'],
                 new Date(_events['date']),
                 _events['INAreaId'],
@@ -18,7 +18,7 @@ class INAreaEvent {
     };
 
     /**
-     * INAreaEvent object
+     * AreaEvent object
      * @param {number} tagId short id of the tag that entered/left this INArea
      * @param {Date} date when tag appeared in this INArea
      * @param {number} INAreaId

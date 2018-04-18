@@ -16,17 +16,17 @@ describe('INMap main module tests', function () {
         // given
         let indoorNavi = new INMap();
         indoorNavi.isReady = true;
-        spyOn(INCommunication, 'send').and.stub();
-        spyOn(INDOM, 'getById').and.stub();
-        spyOn(INDOM, 'getByTagName').and.stub();
+        spyOn(Communication, 'send').and.stub();
+        spyOn(DOM, 'getById').and.stub();
+        spyOn(DOM, 'getByTagName').and.stub();
 
         // when
         indoorNavi.toggleTagVisibility(1);
 
         // then
-        expect(INCommunication.send).toHaveBeenCalled();
-        expect(INDOM.getById).toHaveBeenCalled();
-        expect(INDOM.getByTagName).toHaveBeenCalled();
+        expect(Communication.send).toHaveBeenCalled();
+        expect(DOM.getById).toHaveBeenCalled();
+        expect(DOM.getByTagName).toHaveBeenCalled();
     });
 
     it('Should throw an error when you try to add event listener when iFrame is not ready', function() {
@@ -46,45 +46,61 @@ describe('INMap main module tests', function () {
         // given
         let indoorNavi = new INMap();
         indoorNavi.isReady = true;
-        spyOn(INCommunication, 'send').and.stub();
-        spyOn(INDOM, 'getById').and.stub();
-        spyOn(INDOM, 'getByTagName').and.stub();
-        spyOn(INCommunication, 'listen').and.stub();
+        spyOn(Communication, 'send').and.stub();
+        spyOn(DOM, 'getById').and.stub();
+        spyOn(DOM, 'getByTagName').and.stub();
+        spyOn(Communication, 'listen').and.stub();
 
         // when
         indoorNavi.addEventListener('INArea', function() {});
 
         // then
-        expect(INCommunication.send).toHaveBeenCalled();
-        expect(INDOM.getById).toHaveBeenCalled();
-        expect(INDOM.getByTagName).toHaveBeenCalled();
-        expect(INCommunication.listen).toHaveBeenCalled();
+        expect(Communication.send).toHaveBeenCalled();
+        expect(DOM.getById).toHaveBeenCalled();
+        expect(DOM.getByTagName).toHaveBeenCalled();
+        expect(Communication.listen).toHaveBeenCalled();
     });
 
     it('Should throw an error when You try to create an INMapObject instance', () => {
       // given
-      let indoorNavi = new INMap();
-      indoorNavi.isReady = true;
+        let indoorNavi = new INMap();
+        indoorNavi.isReady = true;
       //then
-      const marker = new INMapObject(indoorNavi);
+        function makeObject() {
+            let object = new INMapObject(indoorNavi);
+        }
       // expect
 
-      expect(marker).toThrow(new TypeError("Cannot construct INMapObject instances directly"));
+      expect(makeObject).toThrow(new TypeError("Cannot construct INMapObject instances directly"));
     });
 
-    it('Should create marker and comunicate with IFrame', () => {
-      // given
-      let indoorNavi = new INMap();
-      indoorNavi.isReady = true;
-      spyOn(INCommunication, 'send').and.stub();
-
-      //then
-      const marker = new Marker(indoorNavi);
-
+    it('Should create marker', () => {
+        // given
+        let indoorNavi = new INMap();
+        indoorNavi.isReady = true;
+        spyOn(Communication, 'send').and.stub();
+        spyOn(DOM, 'getById').and.stub();
+        spyOn(DOM, 'getByTagName').and.stub();
+        spyOn(Communication, 'listen').and.stub();
+        // then
+        let marker = new INMarker(indoorNavi);
+        marker.isReady = true;
       // expect
+        expect(marker).toBeTruthy();
+    });
+    it('Should throw an error when color parameter passed as argument to setColor is not valid', () => {
+        // given
+        let indoorNavi = new INMap();
+        indoorNavi.isReady = true;
+        spyOn(Communication, 'send').and.stub();
+        spyOn(DOM, 'getById').and.stub();
+        spyOn(DOM, 'getByTagName').and.stub();
+        spyOn(Communication, 'listen').and.stub();
+        // then
+        let poly = new INPolyline(indoorNavi);
+        poly.isReady = true;
 
-      marker.ready(() => {
-        expect(INCommunication.send).toHaveBeenCalled();
-      });
+        // expect
+        poly.ready(() => expect(toTest).toThrow(new Error('Wrong color value or/and type')));
     });
 });
