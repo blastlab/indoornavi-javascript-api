@@ -81,11 +81,11 @@
     }
 
     function addListener() {
-        navi.addEventListener('INArea', function (data) {
+        navi.addEventListener(Event.LISTENER.AREA, function (data) {
 
         });
 
-        navi.addEventListener('coordinates', data => {
+        navi.addEventListener(Event.LISTENER.COORDINATES, data => {
             console.log(data.coordinates.point);
             if (!!inArea) {
                 const tagInsideINArea = inArea.isWithin(data.coordinates.point);
@@ -106,7 +106,7 @@
         poly.ready().then(() => {
             poly.points(points)
                 .setLineColor('#906090')
-                .place();
+                .draw();
         });
     }
 
@@ -128,7 +128,7 @@
             inArea.points(points)
                 .setFillColor('rgb(144,224,017)')
                 .setOpacity(0.5)
-                .place();
+                .draw();
             console.log(`Point x: 740, y: 750 is within drawn area: ${inArea.isWithin({x: 740, y: 750})}`);
             console.log(`Point x: 740, y: 750 is within drawn area: ${inArea.isWithin({x: 750, y: 750})}`);
             document.getElementById('addListener').removeAttribute('disabled');
@@ -163,10 +163,10 @@
                 .point(points[4])
                 .setIcon(markerIcon)
                 .setLabel('this is label 1')
-                .addEventListener(inMarker1.eventsEnum.CLICK, () => {
+                .addEventListener(Event.MOUSE.CLICK, () => {
                         infoWindow1.open(inMarker1);
                     })
-                .place();
+                .draw();
         });
 
     }
@@ -186,11 +186,11 @@
         inMarker2.ready().then(() => {
             inMarker2
                 .setLabel('this is label 2')
-                .addEventListener(inMarker2.eventsEnum.CLICK, () => {
+                .addEventListener(Event.MOUSE.CLICK, () => {
                     infoWindow2.open(inMarker2);
                 })
                 .point(points[2])
-                .place();
+                .draw();
         });
     }
 

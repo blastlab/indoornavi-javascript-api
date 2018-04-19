@@ -20,7 +20,7 @@ class INPolyline extends INMapObject {
      * Coordinates are calculated to the map scale and then displayed.
      * @example
      * const poly = new INPolyline(navi);
-     * poly.ready().then(() => poly.points(points).place());
+     * poly.ready().then(() => poly.points(points).draw());
      */
     points(points) {
         if (!Array.isArray(points)) {
@@ -36,14 +36,14 @@ class INPolyline extends INMapObject {
     }
 
     /**
-     * Place polyline on the map with all given settings. There is necessary to use points() method before place() method to indicate where polyline should to be located.
+     * Place polyline on the map with all given settings. There is necessary to use points() method before draw() method to indicate where polyline should to be located.
      * Use of this method is indispensable to draw polyline with set configuration in the IndoorNavi Map.
      * @example
      * const poly = new INPolyline(navi);
-     * poly.ready().then(() => poly.points(points).place());
+     * poly.ready().then(() => poly.points(points).draw());
      */
 
-    place() {
+    draw() {
         if (!!this._id) {
             Communication.send(this._navi.iFrame, this._navi.targetHost, {
                 command: 'drawObject',

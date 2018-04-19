@@ -24,7 +24,7 @@ class Communication {
     }
 
     static remove(handler) {
-        window.removeEventListener('message', event, false);
+        window.removeEventListener('message', handler, false);
     }
 
 }

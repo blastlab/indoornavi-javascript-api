@@ -22,7 +22,7 @@ class INArea extends INMapObject {
      * For less than 3 points supplied to this method, Area isn't going to be drawn.
      * @example
      * const area = new INArea(navi);
-     * area.ready().then(() => area.points(points).place());
+     * area.ready().then(() => area.points(points).draw());
      */
     points(points) {
         if (arguments.length !== 1) {
@@ -44,14 +44,14 @@ class INArea extends INMapObject {
     }
 
     /**
-     * Place area on the map with all given settings. There is necessary to use points() method before place() method to indicate where area should to be located.
+     * Place area on the map with all given settings. There is necessary to use points() method before draw() method to indicate where area should to be located.
      * Use of this method is indispensable to draw area with set configuration in the IndoorNavi Map.
      * @example
      * const area = new INArea(navi);
-     * area.ready().then(() => area.points(points).place());
+     * area.ready().then(() => area.points(points).draw());
      */
 
-    place() {
+    draw() {
         if (!!this._id) {
             Communication.send(this._navi.iFrame, this._navi.targetHost, {
                 command: 'drawObject',

@@ -61,19 +61,19 @@ class INMap {
 
     /**
      * Add listener to react when the specific event occurs
-     * @param {string} eventName - name of the specific event (i.e. 'INArea', 'coordinates')
+     * @param {Event.LISTENER} event - name of the specific event {@link Event}
      * @param {function} callback - this method will be called when the specific event occurs
      * example
-     * navi.addEventListener('coordinates', data => doSomthingWithINCoordinates(data.coordinates.point));
+     * navi.addEventListener('coordinates', data => doSomethingWithINCoordinates(data.coordinates.point));
      */
-    addEventListener(eventName, callback) {
+    addEventListener(event, callback) {
       this.checkIsReady();
       this.setIFrame();
         Communication.send(this.iFrame, this.targetHost, {
             command: 'addEventListener',
-            args: eventName
+            args: event
         });
-      Communication.listen(eventName, callback);
+      Communication.listen(event, callback);
       return this;
     }
 

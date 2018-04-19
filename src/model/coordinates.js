@@ -1,12 +1,12 @@
 /**
- * Class representing a INCoordinates,
+ * Class representing a Coordinates,
  */
 
-class INCoordinates {
+class Coordinates {
     static toJSON(coordinatesArrayString) {
         const coordinates = [];
         JSON.parse(coordinatesArrayString).forEach(function(_coordinates) {
-            coordinates.push(new INCoordinates(
+            coordinates.push(new Coordinates(
                _coordinates['point']['x'],
                _coordinates['point']['y'],
                _coordinates['tagShortId'],
@@ -17,7 +17,7 @@ class INCoordinates {
     };
 
     /**
-     * INCoordinates object
+     * Coordinates object
      * @param {number} x
      * @param {number} y
      * @param {number} tagId short id of the tag

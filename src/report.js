@@ -22,12 +22,12 @@ class Report {
      * @param {number} floorId id of the floor you want to get coordinates from
      * @param {Date} from starting closed range
      * @param {Date} to ending closed range
-     * @return {Promise} promise that will be resolved when {@link INCoordinates} list is retrieved
+     * @return {Promise} promise that will be resolved when {@link Coordinates} list is retrieved
      */
     getCoordinates(floorId, from, to) {
         return new Promise((function(resolve) {
             this.http.doPost(`${this.targetHost}${this.baseUrl}/coordinates`, {floorId: floorId, from: Report.parseDate(from), to: Report.parseDate(to)}, function (data) {
-                resolve(INCoordinates.toJSON(data));
+                resolve(Coordinates.toJSON(data));
             });
         }).bind(this));
     }

@@ -33,7 +33,7 @@ class INInfoWindow extends INMapObject {
     /**
      * Sets info window content.
      * @param {string} content - text or html template in string format that will be passed in to info window as text.
-     * To reset label to a new content call this method again passing new content as a string and call place() method.
+     * To reset label to a new content call this method again passing new content as a string and call draw() method.
      * @return {INInfoWindow} - returns INInfoWindow instance class;
      * @example
      * const infoWindow = new INInfoWindow(navi);
@@ -110,7 +110,7 @@ class INInfoWindow extends INMapObject {
      * const infoWindow = INInfoWindow(navi);
      * const marker = INMarker();
      * marker.ready().then(() => {
-     *  marker.point({x: 100, y: 100}).place();
+     *  marker.point({x: 100, y: 100}).draw();
      *  infoWindow.ready(() => infoWindow.setInnerHTML('text for info window').open(marker));
      * });
      */

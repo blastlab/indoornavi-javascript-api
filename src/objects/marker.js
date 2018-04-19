@@ -20,16 +20,12 @@ class INMarker extends INMapObject {
         };
         this._label = null;
         this._events = new Set();
-        this.eventsEnum = {
-            CLICK: 0,
-            MOUSEOVER: 1,
-        };
     }
 
     /**
      * Sets marker label. Use of this method is optional.
      * @param {string} label - string that will be used as a marker label. If label method isn't used than no label is going to be displayed.
-     * To reset label to a new string call this method again passing new label as a string and call place() method.
+     * To reset label to a new string call this method again passing new label as a string and call draw() method.
      * @return {INMarker} - returns INMarker instance class;
      * @example
      * const marker = new INMarker(navi);
@@ -47,7 +43,9 @@ class INMarker extends INMapObject {
      * Removes marker label.
      * @return {INMarker} - returns INMarker instance class;
      * @example
-     * marker.ready().then(() => marker.removeLabel());
+     * marker.ready().then(() => marker.removeLabel().draw());
+     * There is indispensable to use draw() method after removeLabel()
+     * to update changes in to frontend server
      */
 
     removeLabel() {
@@ -75,11 +73,11 @@ class INMarker extends INMapObject {
 
     /**
      * Add listener to listen when icon is clicked. Use of this method is optional.
-     * @param {number} event - as INMarker.eventsEnum.'EVENT' property representing event to listen to. Available 'EVENT's are: ONCLICK, ONMOUSEOVER ...
+     * @param {Event.MOUSE} event - {@link Event}
      * @param {function} callback - function that is going to be executed when event occurs.
      * @return {INMarker} - returns INMarker instance class;
      * example
-     * marker.ready(() => marker.addEventListener(marker.eventsEnum.CLICK, () => marker.displayInfoWindow()));
+     * marker.ready(() => marker.addEventListener(Event.MOUSE.CLICK, () => marker.displayInfoWindow()));
      */
 
     addEventListener(event, callback) {
@@ -111,7 +109,7 @@ class INMarker extends INMapObject {
      * @return {INMarker} - returns INMarker instance class;
      * @example
      * const marker = new INMarker(navi);
-     * marker.ready().then(() => marker.point({x: 100, y: 100}).place());
+     * marker.ready().then(() => marker.point({x: 100, y: 100}).draw());
      */
 
     point(point) {
@@ -123,14 +121,14 @@ class INMarker extends INMapObject {
     }
 
     /**
-     * Place market on the map with all given settings. There is necessary to use point() method before place() method to indicate the point where market should to be located.
+     * Place market on the map with all given settings. There is necessary to use point() method before draw() method to indicate the point where market should to be located.
      * Use of this method is indispensable to display market with set configuration in the IndoorNavi Map.
      * @example
      * const marker = new INMarker(navi);
-     * marker.ready().then(() => marker.point({x: 100, y: 100}).place());
+     * marker.ready().then(() => marker.point({x: 100, y: 100}).draw());
      */
 
-    place() {
+    draw() {
         if (this._points.length < 1) {
             throw new Error('No point for marker placement has been specified');
         }
