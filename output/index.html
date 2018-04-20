@@ -153,7 +153,7 @@
         infoWindow1.ready().then(() => {
             infoWindow1
                 .setInnerHTML(infoWindowContent)
-                .setPosition(infoWindow1.positions.TOP)
+                .setPosition(PositionIt.TOP)
                 .width(200)
                 .height(100);
         });
@@ -178,7 +178,7 @@
         infoWindow2 = new INInfoWindow(navi);
         infoWindow2.ready().then(() => {
             infoWindow2.setInnerHTML(infoWindowContent)
-            .setPosition(infoWindow2.positions.TOP_RIGHT)
+            .setPosition(PositionIt.TOP_RIGHT)
                 .width(500)
                 .height(400);
         });

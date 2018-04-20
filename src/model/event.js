@@ -1,20 +1,21 @@
 /**
- * Object representing a Event,
+ * Global object representing events,
+ * @namespace
+ * @property {object} MOUSE - mouse events, ENUM like, object
+ * @property {string} MOUSE.CLICK - click event
+ * @property {string} MOUSE.MOUSEOVER - mouseover event
+ * @property {object} LISTENER - listener events, ENUM like, object.
+ * Representation of listener type, added to {@link INMap} object
+ * @property {string} LISTENER.AREA - area event sets listener to listen to {@link INArea} object events
+ * @property {string} LISTENER.COORDINATES - coordinates event sets listener to listen to {@link INMap} object events
+ *
  */
 
 const Event = {
-    /**
-     * Event function object
-     * @inner
-     */
     MOUSE: {
             CLICK: 'click',
             MOUSEOVER: 'mouseover'
             },
-    /**
-     * Event function object
-     * @inner
-     */
     LISTENER: {
             AREA: 'area',
             COORDINATES: 'coordinates'

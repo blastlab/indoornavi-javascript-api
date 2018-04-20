@@ -17,17 +17,6 @@ class INInfoWindow extends INMapObject {
         this._position = 0;
         this._width = null;
         this._height = null;
-        this.positions = {
-            TOP: 0,
-            RIGHT: 1,
-            BOTTOM: 2,
-            LEFT: 3,
-            TOP_RIGHT: 4,
-            TOP_LEFT: 5,
-            BOTTOM_RIGHT: 6,
-            BOTTOM_LEFT: 7
-        };
-
     }
 
     /**
@@ -51,16 +40,16 @@ class INInfoWindow extends INMapObject {
     /**
      * Sets position of info window regarding to object that info window will be appended to. Use of this method is optional.
      * Default position for info window is TOP.
-     * @param {number} position - given as INInfoWindow.positions.'POSITION' property representing info window position.
-     * Available 'POSITION' settings: TOP, LEFT, RIGHT, BOTTOM, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT.
+     * @param {PositionIt} position - {@link PositionIt}
+     * Available settings: TOP, LEFT, RIGHT, BOTTOM, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT.
      * return {INInfoWindow} - returns INInfoWindow instance class;
      * @example
      * const infoWindow = INInfoWindow(navi);
-     * infoWindow.ready(() => infoWindow.setPosition(infoWindow.positions.TOP_RIGHT));
+     * infoWindow.ready(() => infoWindow.setPosition(PositionIt.TOP_RIGHT));
      */
 
     setPosition(position) {
-        if (!Number.isInteger(position) || position < 0 || position > 7) {
+        if (Object.values(PositionIt).indexOf(position) < 0) {
             throw new Error('Wrong argument passed for info window position');
         }
         this._position = position;

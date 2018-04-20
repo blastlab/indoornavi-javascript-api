@@ -146,22 +146,23 @@ class Coordinates {
 }
 
 /**
- * Object representing a Event,
+ * Global object representing events,
+ * @namespace
+ * @property {object} MOUSE - mouse events, ENUM like, object
+ * @property {string} MOUSE.CLICK - click event
+ * @property {string} MOUSE.MOUSEOVER - mouseover event
+ * @property {object} LISTENER - listener events, ENUM like, object.
+ * Representation of listener type, added to {@link INMap} object
+ * @property {string} LISTENER.AREA - area event sets listener to listen to {@link INArea} object events
+ * @property {string} LISTENER.COORDINATES - coordinates event sets listener to listen to {@link INMap} object events
+ *
  */
 
 const Event = {
-    /**
-     * Event function object
-     * @inner
-     */
     MOUSE: {
             CLICK: 'click',
             MOUSEOVER: 'mouseover'
             },
-    /**
-     * Event function object
-     * @inner
-     */
     LISTENER: {
             AREA: 'area',
             COORDINATES: 'coordinates'
@@ -183,6 +184,31 @@ class Point {
         this.y = y;
     }
 }
+
+/**
+ * Global object representing position regarding to related {@link INMap} object,
+ * @namespace
+ * @property {object} PositionIt - position, ENUM like, object
+ * @property {string} PositionIt.TOP - top side position in regard to related object
+ * @property {string} PositionIt.RIGHT - right side position in regard to related object
+ * @property {string} PositionIt.BOTTOM - bottom side position in regard to related object
+ * @property {string} PositionIt.LEFT - left side position in regard to related object
+ * @property {string} PositionIt.TOP_RIGHT - top right side position in regard to related object
+ * @property {string} PositionIt.TOP_LEFT - top left side position in regard to related object
+ * @property {string} PositionIt.BOTTOM_RIGHT - bottom right side position in regard to related object
+ * @property {string} PositionIt.BOTTOM_LEFT - bottom left side position in regard to related object
+ *
+ */
+PositionIt = {
+    TOP: 0,
+    RIGHT: 1,
+    BOTTOM: 2,
+    LEFT: 3,
+    TOP_RIGHT: 4,
+    TOP_LEFT: 5,
+    BOTTOM_RIGHT: 6,
+    BOTTOM_LEFT: 7
+};
 
 /**
  * Abstract class that communicates with indoornavi frontend server.
@@ -625,11 +651,11 @@ class INMarker extends INMapObject {
 
     /**
      * Removes listener if listener exists. Use of this method is optional.
-     * @param {number} event - as INMarker.eventsEnum.'EVENT' property representing event to listen to. Available 'EVENT's are: CLICK, MOUSEOVER ...
+     * @param {Event.MOUSE} event - {@link Event}
      * @param {callback} callback - callback function that was added to event listener to be executed when event occurs.
      * @return {INMarker} - returns INMarker instance class;
      * example
-     * marker.ready(() => marker.removeEventListener(marker.eventsEnum.CLICK));
+     * marker.ready(() => marker.removeEventListener(Event.MOUSE.CLICK));
      */
 
     removeEventListener(event, callback) {
@@ -712,17 +738,6 @@ class INInfoWindow extends INMapObject {
         this._position = 0;
         this._width = null;
         this._height = null;
-        this.positions = {
-            TOP: 0,
-            RIGHT: 1,
-            BOTTOM: 2,
-            LEFT: 3,
-            TOP_RIGHT: 4,
-            TOP_LEFT: 5,
-            BOTTOM_RIGHT: 6,
-            BOTTOM_LEFT: 7
-        };
-
     }
 
     /**
@@ -746,16 +761,16 @@ class INInfoWindow extends INMapObject {
     /**
      * Sets position of info window regarding to object that info window will be appended to. Use of this method is optional.
      * Default position for info window is TOP.
-     * @param {number} position - given as INInfoWindow.positions.'POSITION' property representing info window position.
-     * Available 'POSITION' settings: TOP, LEFT, RIGHT, BOTTOM, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT.
+     * @param {PositionIt} position - {@link PositionIt}
+     * Available settings: TOP, LEFT, RIGHT, BOTTOM, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT.
      * return {INInfoWindow} - returns INInfoWindow instance class;
      * @example
      * const infoWindow = INInfoWindow(navi);
-     * infoWindow.ready(() => infoWindow.setPosition(infoWindow.positions.TOP_RIGHT));
+     * infoWindow.ready(() => infoWindow.setPosition(PositionIt.TOP_RIGHT));
      */
 
     setPosition(position) {
-        if (!Number.isInteger(position) || position < 0 || position > 7) {
+        if (Object.values(PositionIt).indexOf(position) < 0) {
             throw new Error('Wrong argument passed for info window position');
         }
         this._position = position;

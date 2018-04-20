@@ -88,11 +88,11 @@ class INMarker extends INMapObject {
 
     /**
      * Removes listener if listener exists. Use of this method is optional.
-     * @param {number} event - as INMarker.eventsEnum.'EVENT' property representing event to listen to. Available 'EVENT's are: CLICK, MOUSEOVER ...
+     * @param {Event.MOUSE} event - {@link Event}
      * @param {callback} callback - callback function that was added to event listener to be executed when event occurs.
      * @return {INMarker} - returns INMarker instance class;
      * example
-     * marker.ready(() => marker.removeEventListener(marker.eventsEnum.CLICK));
+     * marker.ready(() => marker.removeEventListener(Event.MOUSE.CLICK));
      */
 
     removeEventListener(event, callback) {
