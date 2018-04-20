@@ -29,7 +29,7 @@ class INMarker extends INMapObject {
      * @return {INMarker} - returns INMarker instance class;
      * @example
      * const marker = new INMarker(navi);
-     * marker.ready().then(() => marker.setLabel('label to display'));
+     * marker.ready().then(() => marker.setLabel('Marker Label'));
      */
 
     setLabel(label) {
@@ -43,6 +43,8 @@ class INMarker extends INMapObject {
      * Removes marker label.
      * @return {INMarker} - returns INMarker instance class;
      * @example
+     * const marker = new INMarker(navi);
+     * marker.ready().then(() => marker.point({x: 100, y: 100}).setLabel('Marker Label').draw());
      * marker.ready().then(() => marker.removeLabel().draw());
      * There is indispensable to use draw() method after removeLabel()
      * to update changes in to frontend server
@@ -77,6 +79,7 @@ class INMarker extends INMapObject {
      * @param {function} callback - function that is going to be executed when event occurs.
      * @return {INMarker} - returns INMarker instance class;
      * example
+     * const marker = new INMarker(navi);
      * marker.ready(() => marker.addEventListener(Event.MOUSE.CLICK, () => marker.displayInfoWindow()));
      */
 
@@ -92,6 +95,7 @@ class INMarker extends INMapObject {
      * @param {callback} callback - callback function that was added to event listener to be executed when event occurs.
      * @return {INMarker} - returns INMarker instance class;
      * example
+     * const marker = new INMarker(navi);
      * marker.ready(() => marker.removeEventListener(Event.MOUSE.CLICK));
      */
 

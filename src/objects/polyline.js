@@ -66,6 +66,7 @@ class INPolyline extends INMapObject {
      * Use of this method is optional.
      * @param {string} color - string that specifies the color. Supports color in hex format '#AABBCC' and rgb format 'rgb(255,255,255)';
      * @example
+     * const poly = new INPolyline(navi);
      * poly.ready().then(() => poly.setLineColor('#AABBCC'));
      */
     setLineColor(color) {

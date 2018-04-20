@@ -44,7 +44,7 @@ class INInfoWindow extends INMapObject {
      * Available settings: TOP, LEFT, RIGHT, BOTTOM, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT.
      * return {INInfoWindow} - returns INInfoWindow instance class;
      * @example
-     * const infoWindow = INInfoWindow(navi);
+     * const infoWindow = new INInfoWindow(navi);
      * infoWindow.ready(() => infoWindow.setPosition(PositionIt.TOP_RIGHT));
      */
 
@@ -62,7 +62,7 @@ class INInfoWindow extends INMapObject {
      * @param {number} height - info window height given in pixels, min available dimension is 50px.
      * return {INInfoWindow} - returns INInfoWindow instance class;
      * @example
-     * const infoWindow = INInfoWindow(navi);
+     * const infoWindow = new INInfoWindow(navi);
      * infoWindow.ready(() => infoWindow.height(200));
      */
 
@@ -80,7 +80,7 @@ class INInfoWindow extends INMapObject {
      * @param {number} width - info window width given in pixels
      * return {INInfoWindow} - returns INInfoWindow instance class;
      * @example
-     * const infoWindow = INInfoWindow(navi);
+     * const infoWindow = new INInfoWindow(navi);
      * infoWindow.ready(() => infoWindow.width(200));
      */
 
@@ -96,8 +96,8 @@ class INInfoWindow extends INMapObject {
      * Displays info window in iframe.
      * @param {object} mapObject - {@link INMapObject} map object to append info window to.
      * @example
-     * const infoWindow = INInfoWindow(navi);
-     * const marker = INMarker();
+     * const infoWindow = new INInfoWindow(navi);
+     * const marker = new INMarker(navi);
      * marker.ready().then(() => {
      *  marker.point({x: 100, y: 100}).draw();
      *  infoWindow.ready(() => infoWindow.setInnerHTML('text for info window').open(marker));
