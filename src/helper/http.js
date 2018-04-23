@@ -17,17 +17,17 @@ class Http {
     }
 
     doRequest(url, method, body, callback) {
-        const xmlINHttp = new XMLINHttpRequest();
-        xmlINHttp.onreadystatechange = function() {
-            if (xmlINHttp.readyState === 4 && xmlINHttp.status === 200)
-                callback(xmlINHttp.responseText);
+        const xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function() {
+            if (xmlHttp.readyState === 4 && xmlHttp.status === 200)
+                callback(xmlHttp.responseText);
         };
-        xmlINHttp.open(method, url, true); // true for asynchronous
+        xmlHttp.open(method, url, true); // true for asynchronous
         if (!!this.authHeader) {
-            xmlINHttp.setRequestHeader('Authorization', this.authHeader);
+            xmlHttp.setRequestHeader('Authorization', this.authHeader);
         }
-        xmlINHttp.setRequestHeader('Content-Type', 'application/json');
-        xmlINHttp.setRequestHeader('Accept', 'application/json');
-        xmlINHttp.send(JSON.stringify(body));
+        xmlHttp.setRequestHeader('Content-Type', 'application/json');
+        xmlHttp.setRequestHeader('Accept', 'application/json');
+        xmlHttp.send(JSON.stringify(body));
     }
 }
