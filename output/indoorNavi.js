@@ -61,18 +61,18 @@ class Http {
     }
 
     doRequest(url, method, body, callback) {
-        const xmlINHttp = new XMLINHttpRequest();
-        xmlINHttp.onreadystatechange = function() {
-            if (xmlINHttp.readyState === 4 && xmlINHttp.status === 200)
-                callback(xmlINHttp.responseText);
+        const xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function() {
+            if (xmlHttp.readyState === 4 && xmlHttp.status === 200)
+                callback(xmlHttp.responseText);
         };
-        xmlINHttp.open(method, url, true); // true for asynchronous
+        xmlHttp.open(method, url, true); // true for asynchronous
         if (!!this.authHeader) {
-            xmlINHttp.setRequestHeader('Authorization', this.authHeader);
+            xmlHttp.setRequestHeader('Authorization', this.authHeader);
         }
-        xmlINHttp.setRequestHeader('Content-Type', 'application/json');
-        xmlINHttp.setRequestHeader('Accept', 'application/json');
-        xmlINHttp.send(JSON.stringify(body));
+        xmlHttp.setRequestHeader('Content-Type', 'application/json');
+        xmlHttp.setRequestHeader('Accept', 'application/json');
+        xmlHttp.send(JSON.stringify(body));
     }
 }
 
@@ -435,6 +435,7 @@ class INPolyline extends INMapObject {
      * Use of this method is optional.
      * @param {string} color - string that specifies the color. Supports color in hex format '#AABBCC' and rgb format 'rgb(255,255,255)';
      * @example
+     * const poly = new INPolyline(navi);
      * poly.ready().then(() => poly.setLineColor('#AABBCC'));
      */
     setLineColor(color) {
@@ -592,7 +593,7 @@ class INMarker extends INMapObject {
      * @return {INMarker} - returns INMarker instance class;
      * @example
      * const marker = new INMarker(navi);
-     * marker.ready().then(() => marker.setLabel('label to display'));
+     * marker.ready().then(() => marker.setLabel('Marker Label'));
      */
 
     setLabel(label) {
@@ -606,6 +607,8 @@ class INMarker extends INMapObject {
      * Removes marker label.
      * @return {INMarker} - returns INMarker instance class;
      * @example
+     * const marker = new INMarker(navi);
+     * marker.ready().then(() => marker.point({x: 100, y: 100}).setLabel('Marker Label').draw());
      * marker.ready().then(() => marker.removeLabel().draw());
      * There is indispensable to use draw() method after removeLabel()
      * to update changes in to frontend server
@@ -640,6 +643,7 @@ class INMarker extends INMapObject {
      * @param {function} callback - function that is going to be executed when event occurs.
      * @return {INMarker} - returns INMarker instance class;
      * example
+     * const marker = new INMarker(navi);
      * marker.ready(() => marker.addEventListener(Event.MOUSE.CLICK, () => marker.displayInfoWindow()));
      */
 
@@ -655,6 +659,7 @@ class INMarker extends INMapObject {
      * @param {callback} callback - callback function that was added to event listener to be executed when event occurs.
      * @return {INMarker} - returns INMarker instance class;
      * example
+     * const marker = new INMarker(navi);
      * marker.ready(() => marker.removeEventListener(Event.MOUSE.CLICK));
      */
 
@@ -765,7 +770,7 @@ class INInfoWindow extends INMapObject {
      * Available settings: TOP, LEFT, RIGHT, BOTTOM, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT.
      * return {INInfoWindow} - returns INInfoWindow instance class;
      * @example
-     * const infoWindow = INInfoWindow(navi);
+     * const infoWindow = new INInfoWindow(navi);
      * infoWindow.ready(() => infoWindow.setPosition(PositionIt.TOP_RIGHT));
      */
 
@@ -783,7 +788,7 @@ class INInfoWindow extends INMapObject {
      * @param {number} height - info window height given in pixels, min available dimension is 50px.
      * return {INInfoWindow} - returns INInfoWindow instance class;
      * @example
-     * const infoWindow = INInfoWindow(navi);
+     * const infoWindow = new INInfoWindow(navi);
      * infoWindow.ready(() => infoWindow.height(200));
      */
 
@@ -801,7 +806,7 @@ class INInfoWindow extends INMapObject {
      * @param {number} width - info window width given in pixels
      * return {INInfoWindow} - returns INInfoWindow instance class;
      * @example
-     * const infoWindow = INInfoWindow(navi);
+     * const infoWindow = new INInfoWindow(navi);
      * infoWindow.ready(() => infoWindow.width(200));
      */
 
@@ -817,8 +822,8 @@ class INInfoWindow extends INMapObject {
      * Displays info window in iframe.
      * @param {object} mapObject - {@link INMapObject} map object to append info window to.
      * @example
-     * const infoWindow = INInfoWindow(navi);
-     * const marker = INMarker();
+     * const infoWindow = new INInfoWindow(navi);
+     * const marker = new INMarker(navi);
      * marker.ready().then(() => {
      *  marker.point({x: 100, y: 100}).draw();
      *  infoWindow.ready(() => infoWindow.setInnerHTML('text for info window').open(marker));
