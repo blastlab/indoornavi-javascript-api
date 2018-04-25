@@ -5,11 +5,11 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
         // uglify: {
         //     options: {
-        //         banner: '/*! <%= pkg.name %> <%= grunt.template.today('yyyy-mm-dd') %> */\n'
+        //         banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n',
         //     },
         //     build: {
-        //         src: 'src/<%= pkg.name %>.js',
-        //         dest: 'build/<%= pkg.name %>.min.js'
+        //         src: ['src/helper/*', 'src/model/*', 'src/object.js', 'src/polyline.js', 'src/area.js', 'src/marker.js', 'src/indoornavi.js', 'src/report.js'],
+        //         dest: 'build/indoorNavi.min.js'
         //     }
         // },
         concat: {
@@ -17,11 +17,11 @@ module.exports = function(grunt) {
                 separator: '\n'
             },
             prod: {
-                src: ['src/helper/*', 'src/model/*', 'src/geometric.js', 'src/polyline.js', 'src/area.js', 'src/indoornavi.js', 'src/report.js'],
+                src: ['src/helper/*', 'src/model/*', 'src/objects/object.js', 'src/objects/polyline.js', 'src/objects/area.js', 'src/objects/marker.js', 'src/objects/infoWindow.js', 'src/indoornavi.js', 'src/report.js'],
                 dest: 'output/indoorNavi.js'
             },
             test: {
-                src: ['src/helper/*', 'src/model/*', 'src/polyline.js', 'src/area.js', 'src/indornavi.js', 'src/report.js', 'spec/indoornavi.spec.js'],
+                src: ['src/helper/*', 'src/model/*', 'src/objects/object.js', 'src/objects/polyline.js', 'src/objects/area.js', 'src/objects/marker.js', 'src/objects/infoWindow.js', 'src/indoornavi.js', 'src/report.js', 'spec/indoornavi.spec.js'],
                 dest: 'output/indoorNavi.spec.js'
             }
         }

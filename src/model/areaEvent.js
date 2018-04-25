@@ -19,8 +19,8 @@ class AreaEvent {
 
     /**
      * AreaEvent object
-     * @param {number} tagId short id of the tag that entered/left this area
-     * @param {Date} date when tag appeared in this area
+     * @param {number} tagId short id of the tag that entered/left this INArea
+     * @param {Date} date when tag appeared in this INArea
      * @param {number} areaId
      * @param {string} areaName
      * @param {string} mode can be ON_LEAVE or ON_ENTER

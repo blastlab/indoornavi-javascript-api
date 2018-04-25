@@ -4,43 +4,66 @@
 </head>
 <body>
 <button disabled id="toggle10999" onclick="toggle10999()">Toggle 10999</button>
-<button disabled id="drawPolyline" onclick="drawPolyline()">Draw Polyline</button>
-<button disabled id="removePolyline" onclick="removePolyline()">Remove Polyline</button>
-<button disabled id="drawArea" onclick="drawArea()"> Draw Area</button>
-<button disabled id="removeArea" onclick="removeArea()">Remove Area</button>
-<button disabled id="addListener" onclick="addListener()">Add listener</button>
+<button disabled id="drawINPolyline" onclick="drawINPolyline()">Draw Polyline</button>
+<button disabled id="removeINPolyline" onclick="removeINPolyline()">Remove Polyline</button>
+<button disabled id="drawINArea" onclick="drawINArea()"> Draw Area</button>
+<button disabled id="removeINArea" onclick="removeINArea()">Remove Area</button>
+<button disabled id="addListener" onclick="addListener()">Add Area listener</button>
+<button disabled id="addINMarker_1" onclick="addINMarker_1()">Add Marker 1</button>
+<button disabled id="removeINMarker_1" onclick="removeINMarker_1()">Remove Marker 1</button>
+<button disabled id="addINMarker_2" onclick="addINMarker_2()">Add Marker 2</button>
+<button disabled id="removeINMarker_2" onclick="removeINMarker_2()">Remove Marker 2</button>
 
 <div id="map"></div>
 </body>
 <script src="indoorNavi.js"></script>
 <script>
-    //set poly as global variable to have access to this from every function,
+    //set poly as global variable
     let poly = null;
-    //set area as global variable to have access to this from every function,
-    let area = null;
-    const  points = [
-      {x:480, y: 480},
-      {x:1220, y: 480},
-      {x:1220, y: 1220},
-      {x:480, y: 1220},
-      {x:750, y: 750}
+    //set INArea as global variable
+    let inArea = null;
+    // set INMarker as global variable
+    let inMarker1 = null;
+    let inMarker2 = null;
+    let markerIcon = 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png';
+    let infoWindowContent = '<h2>Lorem ipsum dolor sit amet</h2>,' +
+        ' consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.' +
+        ' <b>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.' +
+        '</b> Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.' +
+        ' Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. ' +
+        'Lorem ipsum dolor sit amet</h2>, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ' +
+        '<b>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</b> ' +
+        'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ' +
+        'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laboru';
+    const points = [
+        {x: 480, y: 480},
+        {x: 1220, y: 480},
+        {x: 1220, y: 1220},
+        {x: 480, y: 1220},
+        {x: 750, y: 750}
     ];
 
-    const navi = new IndoorNavi(
-        'http://localhost:4200',
+    const navi = new INMap(
+        'http://127.0.0.1:4200',
         'TestAdmin',
         'map',
         {
-            width: 800,
-            height: 600
+            width: 1200,
+            height: 850
         }
     );
+    let infoWindow2;
+    let infoWindow1;
     navi.load(2).then(function () {
         document.getElementById('toggle10999').removeAttribute('disabled');
-        document.getElementById('drawPolyline').removeAttribute('disabled');
-        document.getElementById('removePolyline').removeAttribute('disabled');
-        document.getElementById('drawArea').removeAttribute('disabled');
-        document.getElementById('removeArea').removeAttribute('disabled');
+        document.getElementById('drawINPolyline').removeAttribute('disabled');
+        document.getElementById('removeINPolyline').removeAttribute('disabled');
+        document.getElementById('drawINArea').removeAttribute('disabled');
+        document.getElementById('removeINArea').removeAttribute('disabled');
+        document.getElementById('addINMarker_1').removeAttribute('disabled');
+        document.getElementById('removeINMarker_1').removeAttribute('disabled');
+        document.getElementById('addINMarker_2').removeAttribute('disabled');
+        document.getElementById('removeINMarker_2').removeAttribute('disabled');
     });
 
     // const from = new Date(2017, 10, 1);
@@ -58,66 +81,137 @@
     }
 
     function addListener() {
-      navi.addEventListener('area', function(data) {
+        navi.addEventListener(Event.LISTENER.AREA, function (data) {
 
-      });
+        });
 
-      navi.addEventListener('coordinates', data => {
-        console.log(data.coordinates.point);
-        if (!!area) {
-          const tagInsideArea = area.isWithin(data.coordinates.point);
-          if (tagInsideArea) {
-            console.log(`Tag ${data.coordinates.tagShortId} INSIDE`);
-          } else {
-            console.log(`Tag ${data.coordinates.tagShortId} OUTSIDE`);
-          }
+        navi.addEventListener(Event.LISTENER.COORDINATES, data => {
+            console.log(data.coordinates.point);
+            if (!!inArea) {
+                const tagInsideINArea = inArea.isWithin(data.coordinates.point);
+                if (tagInsideINArea) {
+                    console.log(`Tag ${data.coordinates.tagShortId} INSIDE`);
+                } else {
+                    console.log(`Tag ${data.coordinates.tagShortId} OUTSIDE`);
+                }
+            }
+        });
+    }
+
+    function drawINPolyline() {
+        if (!!poly) {
+            return;
         }
-      });
-    }
-
-    function drawPolyline() {
-      if(!!poly) {
-        return;
-      }
-        poly = new Polyline(navi);
+        poly = new INPolyline(navi);
         poly.ready().then(() => {
-        poly.draw(points);
-        poly.setLineColor('#12a3b5');
-      });
-    }
-
-    function removePolyline() {
-      if(!!poly) {
-        poly.ready().then(() => {
-          poly.remove();
-          poly = null;
+            poly.points(points)
+                .setLineColor('#906090')
+                .draw();
         });
-      }
     }
 
-    function drawArea() {
-      if(!!area){
-        return;
-      }
-        area = new Area(navi);
-        area.ready().then(() => {
-        area.draw(points);
-        area.setFillColor('rgb(144,224,017)');
-        area.setOpacity(0.5);
-        console.log(area.isWithin({x: 740, y: 750}));
-        console.log(area.isWithin({x: 750, y: 750}));
-        document.getElementById('addListener').removeAttribute('disabled');
-      });
+    function removeINPolyline() {
+        if (!!poly) {
+            poly.ready().then(() => {
+                poly.remove();
+                poly = null;
+            });
+        }
     }
 
-    function removeArea() {
-      if(!!area) {
-        area.ready().then(() => {
-          area.remove();
-          area = null;
-          document.getElementById('addListener').setAttribute('disabled', true);
+    function drawINArea() {
+        if (!!inArea) {
+            return;
+        }
+        inArea = new INArea(navi);
+        inArea.ready().then(() => {
+            inArea.points(points)
+                .setFillColor('rgb(144,224,017)')
+                .setOpacity(0.5)
+                .draw();
+            console.log(`Point x: 740, y: 750 is within drawn area: ${inArea.isWithin({x: 740, y: 750})}`);
+            console.log(`Point x: 740, y: 750 is within drawn area: ${inArea.isWithin({x: 750, y: 750})}`);
+            document.getElementById('addListener').removeAttribute('disabled');
         });
-      }
+    }
+
+    function removeINArea() {
+        if (!!inArea) {
+            inArea.ready().then(() => {
+                inArea.remove();
+                inArea = null;
+                document.getElementById('addListener').setAttribute('disabled', 'true');
+            });
+        }
+    }
+
+    function addINMarker_1() {
+        if (!!inMarker1) {
+            return;
+        }
+        infoWindow1 = new INInfoWindow(navi);
+        infoWindow1.ready().then(() => {
+            infoWindow1
+                .setInnerHTML(infoWindowContent)
+                .setPosition(PositionIt.TOP)
+                .width(200)
+                .height(100);
+        });
+        inMarker1 = new INMarker(navi);
+        inMarker1.ready().then(() => {
+            inMarker1
+                .point(points[4])
+                .setIcon(markerIcon)
+                .setLabel('this is label 1')
+                .addEventListener(Event.MOUSE.CLICK, () => {
+                        infoWindow1.open(inMarker1);
+                    })
+                .draw();
+        });
+
+    }
+
+    function addINMarker_2() {
+        if (!!inMarker2) {
+            return;
+        }
+        infoWindow2 = new INInfoWindow(navi);
+        infoWindow2.ready().then(() => {
+            infoWindow2.setInnerHTML(infoWindowContent)
+            .setPosition(PositionIt.TOP_RIGHT)
+                .width(500)
+                .height(400);
+        });
+        inMarker2 = new INMarker(navi);
+        inMarker2.ready().then(() => {
+            inMarker2
+                .setLabel('this is label 2')
+                .addEventListener(Event.MOUSE.CLICK, () => {
+                    infoWindow2.open(inMarker2);
+                })
+                .point(points[2])
+                .draw();
+        });
+    }
+
+    function removeINMarker_1() {
+        if (!inMarker1) {
+            return;
+        }
+        inMarker1.ready().then(() => {
+            inMarker1.remove();
+            inMarker1 = null;
+        });
+    }
+
+    function removeINMarker_2() {
+        if (!inMarker2) {
+            return;
+        }
+        inMarker2.ready().then(() => {
+            inMarker2.remove();
+            inMarker2 = null;
+        });
     }
 
 </script>

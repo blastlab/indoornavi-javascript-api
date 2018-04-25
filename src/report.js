@@ -6,8 +6,8 @@ class Report {
 
     /**
      * Report object containing methods to retrieve historical data
-     * @param {string} targetHost - address to the IndoorNavi backend server
-     * @param {string} apiKey - the API key created on IndoorNavi server (must be assigned to your domain)
+     * @param {string} targetHost - address to the INMap backend server
+     * @param {string} apiKey - the API key created on INMap server (must be assigned to your domain)
      */
     constructor(targetHost, apiKey) {
         const authHeader = 'Token ' + apiKey;
@@ -33,8 +33,8 @@ class Report {
     }
 
     /**
-     * Get list of historical area events
-     * @param {number} floorId id of the floor you want to get area events from
+     * Get list of historical INArea events
+     * @param {number} floorId id of the floor you want to get INArea events from
      * @param {Date} from starting closed range
      * @param {Date} to ending closed range
      * @return {Promise} promise that will be resolved when {@link AreaEvent} list is retrieved
