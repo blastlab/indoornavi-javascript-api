@@ -78,14 +78,15 @@ class INMarker extends INMapObject {
      * @param {Event.MOUSE} event - {@link Event}
      * @param {function} callback - function that is going to be executed when event occurs.
      * @return {INMarker} - returns INMarker instance class;
-     * example
+     * @example
      * const marker = new INMarker(navi);
      * marker.ready(() => marker.addEventListener(Event.MOUSE.CLICK, () => marker.displayInfoWindow()));
      */
 
     addEventListener(event, callback) {
         this._events.add(event);
-        Communication.listen(`${event.toString(10)}-${this._id}`, callback);
+        const eventID = `${event}-${this._id}`;
+        Communication.listen(eventID, callback);
         return this;
     }
 
@@ -94,7 +95,7 @@ class INMarker extends INMapObject {
      * @param {Event.MOUSE} event - {@link Event}
      * @param {callback} callback - callback function that was added to event listener to be executed when event occurs.
      * @return {INMarker} - returns INMarker instance class;
-     * example
+     * @example
      * const marker = new INMarker(navi);
      * marker.ready(() => marker.removeEventListener(Event.MOUSE.CLICK));
      */

@@ -63,7 +63,7 @@ class INMap {
      * Add listener to react when the specific event occurs
      * @param {Event.LISTENER} event - name of the specific event {@link Event}
      * @param {function} callback - this method will be called when the specific event occurs
-     * example
+     * @example
      * navi.addEventListener('coordinates', data => doSomethingWithINCoordinates(data.coordinates.point));
      */
     addEventListener(event, callback) {
