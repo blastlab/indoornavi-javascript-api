@@ -5,7 +5,7 @@
 class AreaEvent {
     static toJSON(eventsArrayString) {
         const events = [];
-        JSON.parse(eventsArrayString).forEach(function(_events) {
+        JSON.parse(eventsArrayString).forEach(function (_events) {
             events.push(new AreaEvent(
                 _events['tagId'],
                 new Date(_events['date']),

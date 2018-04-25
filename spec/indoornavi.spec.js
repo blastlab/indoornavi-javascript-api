@@ -9,10 +9,10 @@ describe('INMap main module tests', function () {
         };
 
         // then
-        expect(toTest).toThrow(new Error('INMap is not ready. Call load() first and then when promise resolves INMap will be ready.'));
+        expect(toTest).toThrow(new Error('INMap is not ready. Call load() first and then when promise resolves, INMap will be ready.'));
     });
 
-    it('Should send message to iFrame when iFrame is ready and toggle tag is called', function() {
+    it('Should send message to iFrame when iFrame is ready and toggle tag is called', function () {
         // given
         let indoorNavi = new INMap();
         indoorNavi.isReady = true;
@@ -29,20 +29,21 @@ describe('INMap main module tests', function () {
         expect(DOM.getByTagName).toHaveBeenCalled();
     });
 
-    it('Should throw an error when you try to add event listener when iFrame is not ready', function() {
+    it('Should throw an error when you try to add event listener when iFrame is not ready', function () {
         // given
         let indoorNavi = new INMap();
 
         // when
         const toTest = function () {
-            indoorNavi.addEventListener('INArea', function() {});
+            indoorNavi.addEventListener('INArea', function () {
+            });
         };
 
         // then
-        expect(toTest).toThrow(new Error('INMap is not ready. Call load() first and then when promise resolves INMap will be ready.'));
+        expect(toTest).toThrow(new Error('INMap is not ready. Call load() first and then when promise resolves, INMap will be ready.'));
     });
 
-    it('Should send message to iFrame and start listening on events when iFrame is ready and add event listener is called', function() {
+    it('Should send message to iFrame and start listening on events when iFrame is ready and add event listener is called', function () {
         // given
         let indoorNavi = new INMap();
         indoorNavi.isReady = true;
@@ -52,7 +53,8 @@ describe('INMap main module tests', function () {
         spyOn(Communication, 'listen').and.stub();
 
         // when
-        indoorNavi.addEventListener('INArea', function() {});
+        indoorNavi.addEventListener('INArea', function () {
+        });
 
         // then
         expect(Communication.send).toHaveBeenCalled();
@@ -62,16 +64,17 @@ describe('INMap main module tests', function () {
     });
 
     it('Should throw an error when You try to create an INMapObject instance', () => {
-      // given
+        // given
         let indoorNavi = new INMap();
         indoorNavi.isReady = true;
-      //then
+
+        //then
         function makeObject() {
             let object = new INMapObject(indoorNavi);
         }
-      // expect
 
-      expect(makeObject).toThrow(new TypeError("Cannot construct INMapObject instances directly"));
+        // expect
+        expect(makeObject).toThrow(new TypeError("Cannot construct INMapObject instances directly"));
     });
 
     it('Should create marker', () => {
@@ -85,9 +88,10 @@ describe('INMap main module tests', function () {
         // then
         let marker = new INMarker(indoorNavi);
         marker.isReady = true;
-      // expect
+        // expect
         expect(marker).toBeTruthy();
     });
+
     it('Should throw an error when color parameter passed as argument to setColor is not valid', () => {
         // given
         let indoorNavi = new INMap();

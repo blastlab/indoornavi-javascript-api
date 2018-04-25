@@ -1,6 +1,6 @@
 /**
  * Class representing a Marker,
- * creates the INMarker object in iframe that communicates with indoornavi frontend server and places a marker.
+ * creates the INMarker object in iframe that communicates with IndoorNavi frontend server and places a marker.
  * @extends INMapObject
  */
 

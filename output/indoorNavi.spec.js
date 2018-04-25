@@ -62,7 +62,7 @@ class Http {
 
     doRequest(url, method, body, callback) {
         const xmlHttp = new XMLHttpRequest();
-        xmlHttp.onreadystatechange = function() {
+        xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState === 4 && xmlHttp.status === 200)
                 callback(xmlHttp.responseText);
         };
@@ -83,7 +83,7 @@ class Http {
 class AreaEvent {
     static toJSON(eventsArrayString) {
         const events = [];
-        JSON.parse(eventsArrayString).forEach(function(_events) {
+        JSON.parse(eventsArrayString).forEach(function (_events) {
             events.push(new AreaEvent(
                 _events['tagId'],
                 new Date(_events['date']),
@@ -119,12 +119,12 @@ class AreaEvent {
 class Coordinates {
     static toJSON(coordinatesArrayString) {
         const coordinates = [];
-        JSON.parse(coordinatesArrayString).forEach(function(_coordinates) {
+        JSON.parse(coordinatesArrayString).forEach(function (_coordinates) {
             coordinates.push(new Coordinates(
-               _coordinates['point']['x'],
-               _coordinates['point']['y'],
-               _coordinates['tagShortId'],
-               new Date(_coordinates['date'])
+                _coordinates['point']['x'],
+                _coordinates['point']['y'],
+                _coordinates['tagShortId'],
+                new Date(_coordinates['date'])
             ));
         });
         return coordinates;
@@ -160,13 +160,13 @@ class Coordinates {
 
 const Event = {
     MOUSE: {
-            CLICK: 'click',
-            MOUSEOVER: 'mouseover'
-            },
+        CLICK: 'click',
+        MOUSEOVER: 'mouseover'
+    },
     LISTENER: {
-            AREA: 'area',
-            COORDINATES: 'coordinates'
-            }
+        AREA: 'area',
+        COORDINATES: 'coordinates'
+    }
 };
 
 /**
@@ -211,7 +211,7 @@ PositionIt = {
 };
 
 /**
- * Abstract class that communicates with indoornavi frontend server.
+ * Abstract class that communicates with IndoorNavi frontend server.
  * @abstract
  */
 
@@ -369,7 +369,7 @@ class INMapObject {
 
 /**
  * Class representing a INPolyline,
- * creates the INPolyline instance in iframe that communicates with indoornavi frontend server and draws INPolyline
+ * creates the INPolyline instance in iframe that communicates with IndoorNavi frontend server and draws INPolyline
  * @extends INMapObject
  */
 
@@ -564,7 +564,7 @@ class INArea extends INMapObject {
 
 /**
  * Class representing a Marker,
- * creates the INMarker object in iframe that communicates with indoornavi frontend server and places a marker.
+ * creates the INMarker object in iframe that communicates with IndoorNavi frontend server and places a marker.
  * @extends INMapObject
  */
 
@@ -642,14 +642,15 @@ class INMarker extends INMapObject {
      * @param {Event.MOUSE} event - {@link Event}
      * @param {function} callback - function that is going to be executed when event occurs.
      * @return {INMarker} - returns INMarker instance class;
-     * example
+     * @example
      * const marker = new INMarker(navi);
      * marker.ready(() => marker.addEventListener(Event.MOUSE.CLICK, () => marker.displayInfoWindow()));
      */
 
     addEventListener(event, callback) {
         this._events.add(event);
-        Communication.listen(`${event.toString(10)}-${this._id}`, callback);
+        const eventID = `${event}-${this._id}`;
+        Communication.listen(eventID, callback);
         return this;
     }
 
@@ -658,7 +659,7 @@ class INMarker extends INMapObject {
      * @param {Event.MOUSE} event - {@link Event}
      * @param {callback} callback - callback function that was added to event listener to be executed when event occurs.
      * @return {INMarker} - returns INMarker instance class;
-     * example
+     * @example
      * const marker = new INMarker(navi);
      * marker.ready(() => marker.removeEventListener(Event.MOUSE.CLICK));
      */
@@ -725,8 +726,8 @@ class INMarker extends INMapObject {
 }
 
 /**
- * Class representing a InfoWindow,
- * creates the INInfoWindow object in iframe that communicates with indoornavi frontend server and adds info window to a given INObject child.
+ * Class representing an InfoWindow,
+ * creates the INInfoWindow object in iframe that communicates with InndoorNavi frontend server and adds info window to a given INObject child.
  * @extends INMapObject
  */
 
@@ -738,7 +739,6 @@ class INInfoWindow extends INMapObject {
     constructor(navi) {
         super(navi);
         this._type = 'INFO_WINDOW';
-        this._points = null;
         this._content = null;
         this._position = 0;
         this._width = null;
@@ -858,14 +858,14 @@ class INInfoWindow extends INMapObject {
 }
 
 /**
-* Class representing a INMap,
-* creates the INMap object to communicate with INMap frontend server
-*/
+ * Class representing a INMap,
+ * creates the INMap object to communicate with INMap frontend server
+ */
 class INMap {
     /**
      * @constructor
-     * @param {string} targetHost - address to the INMap server
-     * @param {string} apiKey - the API key created on INMap server (must be assigned to your domain)
+     * @param {string} targetHost - address to the IndoorNavi frontend server
+     * @param {string} apiKey - the API key created on IndoorNavi server (must be assigned to your domain)
      * @param {string} containerId of DOM element which will be used to create iframe with map
      * @param {object} config {width: number, height: number} of the iframe in pixels
      */
@@ -887,18 +887,18 @@ class INMap {
      * navi.load(mapId).then(() => console.log(`Map ${mapId} is loaded`));
      */
     load(mapId) {
-      const self = this;
-      const iFrame = document.createElement('iframe');
-      iFrame.style.width = `${!!this.config.width ? this.config.width : 640}px`;
-      iFrame.style.height = `${!!this.config.height ? this.config.height : 480}px`;
-      iFrame.setAttribute('src', `${this.targetHost}/embedded/${mapId}?api_key=${this.apiKey}`);
-      DOM.getById(this.containerId).appendChild(iFrame);
-      return new Promise(function(resolve) {
-          iFrame.onload = function() {
-              self.isReady = true;
-              resolve();
-          }
-      });
+        const self = this;
+        const iFrame = document.createElement('iframe');
+        iFrame.style.width = `${!!this.config.width ? this.config.width : 640}px`;
+        iFrame.style.height = `${!!this.config.height ? this.config.height : 480}px`;
+        iFrame.setAttribute('src', `${this.targetHost}/embedded/${mapId}?api_key=${this.apiKey}`);
+        DOM.getById(this.containerId).appendChild(iFrame);
+        return new Promise(function (resolve) {
+            iFrame.onload = function () {
+                self.isReady = true;
+                resolve();
+            }
+        });
     }
 
     /**
@@ -909,47 +909,44 @@ class INMap {
      * navi.toggleTagVisibility(tagShortId);
      */
     toggleTagVisibility(tagShortId) {
-      this.checkIsReady();
-      this.setIFrame();
+        this.checkIsReady();
+        this.setIFrame();
         Communication.send(this.iFrame, this.targetHost, {
             command: 'toggleTagVisibility',
             args: tagShortId
         });
-      return this;
     }
 
     /**
      * Add listener to react when the specific event occurs
      * @param {Event.LISTENER} event - name of the specific event {@link Event}
      * @param {function} callback - this method will be called when the specific event occurs
-     * example
-     * navi.addEventListener('coordinates', data => doSomethingWithINCoordinates(data.coordinates.point));
+     * @example
+     * navi.addEventListener(Event.LISTENER.COORDINATES, data => doSomethingWithCoordinates(data.coordinates.point));
      */
     addEventListener(event, callback) {
-      this.checkIsReady();
-      this.setIFrame();
+        this.checkIsReady();
+        this.setIFrame();
         Communication.send(this.iFrame, this.targetHost, {
             command: 'addEventListener',
             args: event
         });
-      Communication.listen(event, callback);
-      return this;
+        Communication.listen(event, callback);
     }
 
-     checkIsReady() {
-       if (!this.isReady) {
-           throw new Error('INMap is not ready. Call load() first and then when promise resolves INMap will be ready.');
-       }
-     }
+    checkIsReady() {
+        if (!this.isReady) {
+            throw new Error('INMap is not ready. Call load() first and then when promise resolves, INMap will be ready.');
+        }
+    }
 
-     setIFrame () {
-      this.iFrame = DOM.getByTagName('iframe', DOM.getById(this.containerId));
-      return this;
-     }
+    setIFrame() {
+        this.iFrame = DOM.getByTagName('iframe', DOM.getById(this.containerId));
+    }
 
 }
 
-class Report {
+class INReport {
 
     static parseDate(date) {
         return date.toISOString().slice(0, -5);
@@ -977,7 +974,7 @@ class Report {
      */
     getCoordinates(floorId, from, to) {
         return new Promise((function(resolve) {
-            this.http.doPost(`${this.targetHost}${this.baseUrl}/coordinates`, {floorId: floorId, from: Report.parseDate(from), to: Report.parseDate(to)}, function (data) {
+            this.http.doPost(`${this.targetHost}${this.baseUrl}/coordinates`, {floorId: floorId, from: INReport.parseDate(from), to: INReport.parseDate(to)}, function (data) {
                 resolve(Coordinates.toJSON(data));
             });
         }).bind(this));
@@ -992,7 +989,7 @@ class Report {
      */
     getAreaEvents(floorId, from, to) {
         return new Promise((function(resolve) {
-            this.http.doPost(`${this.targetHost}${this.baseUrl}/events`, {floorId: floorId, from: Report.parseDate(from), to: Report.parseDate(to)}, function (data) {
+            this.http.doPost(`${this.targetHost}${this.baseUrl}/events`, {floorId: floorId, from: INReport.parseDate(from), to: INReport.parseDate(to)}, function (data) {
                 resolve(AreaEvent.toJSON(data));
             });
         }).bind(this));
@@ -1009,10 +1006,10 @@ describe('INMap main module tests', function () {
         };
 
         // then
-        expect(toTest).toThrow(new Error('INMap is not ready. Call load() first and then when promise resolves INMap will be ready.'));
+        expect(toTest).toThrow(new Error('INMap is not ready. Call load() first and then when promise resolves, INMap will be ready.'));
     });
 
-    it('Should send message to iFrame when iFrame is ready and toggle tag is called', function() {
+    it('Should send message to iFrame when iFrame is ready and toggle tag is called', function () {
         // given
         let indoorNavi = new INMap();
         indoorNavi.isReady = true;
@@ -1029,20 +1026,21 @@ describe('INMap main module tests', function () {
         expect(DOM.getByTagName).toHaveBeenCalled();
     });
 
-    it('Should throw an error when you try to add event listener when iFrame is not ready', function() {
+    it('Should throw an error when you try to add event listener when iFrame is not ready', function () {
         // given
         let indoorNavi = new INMap();
 
         // when
         const toTest = function () {
-            indoorNavi.addEventListener('INArea', function() {});
+            indoorNavi.addEventListener('INArea', function () {
+            });
         };
 
         // then
-        expect(toTest).toThrow(new Error('INMap is not ready. Call load() first and then when promise resolves INMap will be ready.'));
+        expect(toTest).toThrow(new Error('INMap is not ready. Call load() first and then when promise resolves, INMap will be ready.'));
     });
 
-    it('Should send message to iFrame and start listening on events when iFrame is ready and add event listener is called', function() {
+    it('Should send message to iFrame and start listening on events when iFrame is ready and add event listener is called', function () {
         // given
         let indoorNavi = new INMap();
         indoorNavi.isReady = true;
@@ -1052,7 +1050,8 @@ describe('INMap main module tests', function () {
         spyOn(Communication, 'listen').and.stub();
 
         // when
-        indoorNavi.addEventListener('INArea', function() {});
+        indoorNavi.addEventListener('INArea', function () {
+        });
 
         // then
         expect(Communication.send).toHaveBeenCalled();
@@ -1062,16 +1061,18 @@ describe('INMap main module tests', function () {
     });
 
     it('Should throw an error when You try to create an INMapObject instance', () => {
-      // given
+        // given
         let indoorNavi = new INMap();
         indoorNavi.isReady = true;
-      //then
+
+        //then
         function makeObject() {
             let object = new INMapObject(indoorNavi);
         }
-      // expect
 
-      expect(makeObject).toThrow(new TypeError("Cannot construct INMapObject instances directly"));
+        // expect
+
+        expect(makeObject).toThrow(new TypeError("Cannot construct INMapObject instances directly"));
     });
 
     it('Should create marker', () => {
@@ -1085,9 +1086,10 @@ describe('INMap main module tests', function () {
         // then
         let marker = new INMarker(indoorNavi);
         marker.isReady = true;
-      // expect
+        // expect
         expect(marker).toBeTruthy();
     });
+
     it('Should throw an error when color parameter passed as argument to setColor is not valid', () => {
         // given
         let indoorNavi = new INMap();

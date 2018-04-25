@@ -1,4 +1,4 @@
-class Report {
+class INReport {
 
     static parseDate(date) {
         return date.toISOString().slice(0, -5);
@@ -26,7 +26,7 @@ class Report {
      */
     getCoordinates(floorId, from, to) {
         return new Promise((function(resolve) {
-            this.http.doPost(`${this.targetHost}${this.baseUrl}/coordinates`, {floorId: floorId, from: Report.parseDate(from), to: Report.parseDate(to)}, function (data) {
+            this.http.doPost(`${this.targetHost}${this.baseUrl}/coordinates`, {floorId: floorId, from: INReport.parseDate(from), to: INReport.parseDate(to)}, function (data) {
                 resolve(Coordinates.toJSON(data));
             });
         }).bind(this));
@@ -41,7 +41,7 @@ class Report {
      */
     getAreaEvents(floorId, from, to) {
         return new Promise((function(resolve) {
-            this.http.doPost(`${this.targetHost}${this.baseUrl}/events`, {floorId: floorId, from: Report.parseDate(from), to: Report.parseDate(to)}, function (data) {
+            this.http.doPost(`${this.targetHost}${this.baseUrl}/events`, {floorId: floorId, from: INReport.parseDate(from), to: INReport.parseDate(to)}, function (data) {
                 resolve(AreaEvent.toJSON(data));
             });
         }).bind(this));

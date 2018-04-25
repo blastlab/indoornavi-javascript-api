@@ -1,6 +1,6 @@
 /**
- * Class representing a InfoWindow,
- * creates the INInfoWindow object in iframe that communicates with indoornavi frontend server and adds info window to a given INObject child.
+ * Class representing an InfoWindow,
+ * creates the INInfoWindow object in iframe that communicates with InndoorNavi frontend server and adds info window to a given INObject child.
  * @extends INMapObject
  */
 
@@ -12,7 +12,6 @@ class INInfoWindow extends INMapObject {
     constructor(navi) {
         super(navi);
         this._type = 'INFO_WINDOW';
-        this._points = null;
         this._content = null;
         this._position = 0;
         this._width = null;

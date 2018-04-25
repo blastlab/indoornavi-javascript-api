@@ -5,12 +5,12 @@
 class Coordinates {
     static toJSON(coordinatesArrayString) {
         const coordinates = [];
-        JSON.parse(coordinatesArrayString).forEach(function(_coordinates) {
+        JSON.parse(coordinatesArrayString).forEach(function (_coordinates) {
             coordinates.push(new Coordinates(
-               _coordinates['point']['x'],
-               _coordinates['point']['y'],
-               _coordinates['tagShortId'],
-               new Date(_coordinates['date'])
+                _coordinates['point']['x'],
+                _coordinates['point']['y'],
+                _coordinates['tagShortId'],
+                new Date(_coordinates['date'])
             ));
         });
         return coordinates;

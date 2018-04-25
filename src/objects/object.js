@@ -1,5 +1,5 @@
 /**
- * Abstract class that communicates with indoornavi frontend server.
+ * Abstract class that communicates with IndoorNavi frontend server.
  * @abstract
  */
 

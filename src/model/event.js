@@ -13,11 +13,11 @@
 
 const Event = {
     MOUSE: {
-            CLICK: 'click',
-            MOUSEOVER: 'mouseover'
-            },
+        CLICK: 'click',
+        MOUSEOVER: 'mouseover'
+    },
     LISTENER: {
-            AREA: 'area',
-            COORDINATES: 'coordinates'
-            }
+        AREA: 'area',
+        COORDINATES: 'coordinates'
+    }
 };

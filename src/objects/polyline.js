@@ -1,6 +1,6 @@
 /**
  * Class representing a INPolyline,
- * creates the INPolyline instance in iframe that communicates with indoornavi frontend server and draws INPolyline
+ * creates the INPolyline instance in iframe that communicates with IndoorNavi frontend server and draws INPolyline
  * @extends INMapObject
  */
 
