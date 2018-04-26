@@ -642,14 +642,15 @@ class INMarker extends INMapObject {
      * @param {Event.MOUSE} event - {@link Event}
      * @param {function} callback - function that is going to be executed when event occurs.
      * @return {INMarker} - returns INMarker instance class;
-     * example
+     * @example
      * const marker = new INMarker(navi);
      * marker.ready(() => marker.addEventListener(Event.MOUSE.CLICK, () => marker.displayInfoWindow()));
      */
 
     addEventListener(event, callback) {
         this._events.add(event);
-        Communication.listen(`${event.toString(10)}-${this._id}`, callback);
+        const eventID = `${event}-${this._id}`;
+        Communication.listen(eventID, callback);
         return this;
     }
 
@@ -658,7 +659,7 @@ class INMarker extends INMapObject {
      * @param {Event.MOUSE} event - {@link Event}
      * @param {callback} callback - callback function that was added to event listener to be executed when event occurs.
      * @return {INMarker} - returns INMarker instance class;
-     * example
+     * @example
      * const marker = new INMarker(navi);
      * marker.ready(() => marker.removeEventListener(Event.MOUSE.CLICK));
      */
@@ -768,7 +769,7 @@ class INInfoWindow extends INMapObject {
      * Default position for info window is TOP.
      * @param {PositionIt} position - {@link PositionIt}
      * Available settings: TOP, LEFT, RIGHT, BOTTOM, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT.
-     * return {INInfoWindow} - returns INInfoWindow instance class;
+     * @return {INInfoWindow} - returns INInfoWindow instance class;
      * @example
      * const infoWindow = new INInfoWindow(navi);
      * infoWindow.ready(() => infoWindow.setPosition(PositionIt.TOP_RIGHT));
@@ -786,7 +787,7 @@ class INInfoWindow extends INMapObject {
      * Sets height dimension of info window. Use of this method is optional.
      * Default dimensions for info window height is 250px.
      * @param {number} height - info window height given in pixels, min available dimension is 50px.
-     * return {INInfoWindow} - returns INInfoWindow instance class;
+     * @return {INInfoWindow} - returns INInfoWindow instance class;
      * @example
      * const infoWindow = new INInfoWindow(navi);
      * infoWindow.ready(() => infoWindow.height(200));
@@ -804,7 +805,7 @@ class INInfoWindow extends INMapObject {
      * Sets width dimension of info window. Use of this method is optional.
      * Default dimension for info window width is 250px, min available dimension is 50px.
      * @param {number} width - info window width given in pixels
-     * return {INInfoWindow} - returns INInfoWindow instance class;
+     * @return {INInfoWindow} - returns INInfoWindow instance class;
      * @example
      * const infoWindow = new INInfoWindow(navi);
      * infoWindow.ready(() => infoWindow.width(200));
@@ -858,9 +859,9 @@ class INInfoWindow extends INMapObject {
 }
 
 /**
-* Class representing a INMap,
-* creates the INMap object to communicate with INMap frontend server
-*/
+ * Class representing a INMap,
+ * creates the INMap object to communicate with INMap frontend server
+ */
 class INMap {
     /**
      * @constructor
@@ -887,18 +888,18 @@ class INMap {
      * navi.load(mapId).then(() => console.log(`Map ${mapId} is loaded`));
      */
     load(mapId) {
-      const self = this;
-      const iFrame = document.createElement('iframe');
-      iFrame.style.width = `${!!this.config.width ? this.config.width : 640}px`;
-      iFrame.style.height = `${!!this.config.height ? this.config.height : 480}px`;
-      iFrame.setAttribute('src', `${this.targetHost}/embedded/${mapId}?api_key=${this.apiKey}`);
-      DOM.getById(this.containerId).appendChild(iFrame);
-      return new Promise(function(resolve) {
-          iFrame.onload = function() {
-              self.isReady = true;
-              resolve();
-          }
-      });
+        const self = this;
+        const iFrame = document.createElement('iframe');
+        iFrame.style.width = `${!!this.config.width ? this.config.width : 640}px`;
+        iFrame.style.height = `${!!this.config.height ? this.config.height : 480}px`;
+        iFrame.setAttribute('src', `${this.targetHost}/embedded/${mapId}?api_key=${this.apiKey}`);
+        DOM.getById(this.containerId).appendChild(iFrame);
+        return new Promise(function (resolve) {
+            iFrame.onload = function () {
+                self.isReady = true;
+                resolve();
+            }
+        });
     }
 
     /**
@@ -909,43 +910,40 @@ class INMap {
      * navi.toggleTagVisibility(tagShortId);
      */
     toggleTagVisibility(tagShortId) {
-      this.checkIsReady();
-      this.setIFrame();
+        this.checkIsReady();
+        this.setIFrame();
         Communication.send(this.iFrame, this.targetHost, {
             command: 'toggleTagVisibility',
             args: tagShortId
         });
-      return this;
     }
 
     /**
      * Add listener to react when the specific event occurs
      * @param {Event.LISTENER} event - name of the specific event {@link Event}
      * @param {function} callback - this method will be called when the specific event occurs
-     * example
+     * @example
      * navi.addEventListener('coordinates', data => doSomethingWithINCoordinates(data.coordinates.point));
      */
     addEventListener(event, callback) {
-      this.checkIsReady();
-      this.setIFrame();
+        this.checkIsReady();
+        this.setIFrame();
         Communication.send(this.iFrame, this.targetHost, {
             command: 'addEventListener',
             args: event
         });
-      Communication.listen(event, callback);
-      return this;
+        Communication.listen(event, callback);
     }
 
-     checkIsReady() {
-       if (!this.isReady) {
-           throw new Error('INMap is not ready. Call load() first and then when promise resolves INMap will be ready.');
-       }
-     }
+    checkIsReady() {
+        if (!this.isReady) {
+            throw new Error('INMap is not ready. Call load() first and then when promise resolves INMap will be ready.');
+        }
+    }
 
-     setIFrame () {
-      this.iFrame = DOM.getByTagName('iframe', DOM.getById(this.containerId));
-      return this;
-     }
+    setIFrame() {
+        this.iFrame = DOM.getByTagName('iframe', DOM.getById(this.containerId));
+    }
 
 }
 

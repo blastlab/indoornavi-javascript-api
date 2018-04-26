@@ -1,7 +1,7 @@
 /**
-* Class representing a INMap,
-* creates the INMap object to communicate with INMap frontend server
-*/
+ * Class representing a INMap,
+ * creates the INMap object to communicate with INMap frontend server
+ */
 class INMap {
     /**
      * @constructor
@@ -28,18 +28,18 @@ class INMap {
      * navi.load(mapId).then(() => console.log(`Map ${mapId} is loaded`));
      */
     load(mapId) {
-      const self = this;
-      const iFrame = document.createElement('iframe');
-      iFrame.style.width = `${!!this.config.width ? this.config.width : 640}px`;
-      iFrame.style.height = `${!!this.config.height ? this.config.height : 480}px`;
-      iFrame.setAttribute('src', `${this.targetHost}/embedded/${mapId}?api_key=${this.apiKey}`);
-      DOM.getById(this.containerId).appendChild(iFrame);
-      return new Promise(function(resolve) {
-          iFrame.onload = function() {
-              self.isReady = true;
-              resolve();
-          }
-      });
+        const self = this;
+        const iFrame = document.createElement('iframe');
+        iFrame.style.width = `${!!this.config.width ? this.config.width : 640}px`;
+        iFrame.style.height = `${!!this.config.height ? this.config.height : 480}px`;
+        iFrame.setAttribute('src', `${this.targetHost}/embedded/${mapId}?api_key=${this.apiKey}`);
+        DOM.getById(this.containerId).appendChild(iFrame);
+        return new Promise(function (resolve) {
+            iFrame.onload = function () {
+                self.isReady = true;
+                resolve();
+            }
+        });
     }
 
     /**
@@ -50,13 +50,12 @@ class INMap {
      * navi.toggleTagVisibility(tagShortId);
      */
     toggleTagVisibility(tagShortId) {
-      this.checkIsReady();
-      this.setIFrame();
+        this.checkIsReady();
+        this.setIFrame();
         Communication.send(this.iFrame, this.targetHost, {
             command: 'toggleTagVisibility',
             args: tagShortId
         });
-      return this;
     }
 
     /**
@@ -67,25 +66,23 @@ class INMap {
      * navi.addEventListener('coordinates', data => doSomethingWithINCoordinates(data.coordinates.point));
      */
     addEventListener(event, callback) {
-      this.checkIsReady();
-      this.setIFrame();
+        this.checkIsReady();
+        this.setIFrame();
         Communication.send(this.iFrame, this.targetHost, {
             command: 'addEventListener',
             args: event
         });
-      Communication.listen(event, callback);
-      return this;
+        Communication.listen(event, callback);
     }
 
-     checkIsReady() {
-       if (!this.isReady) {
-           throw new Error('INMap is not ready. Call load() first and then when promise resolves INMap will be ready.');
-       }
-     }
+    checkIsReady() {
+        if (!this.isReady) {
+            throw new Error('INMap is not ready. Call load() first and then when promise resolves INMap will be ready.');
+        }
+    }
 
-     setIFrame () {
-      this.iFrame = DOM.getByTagName('iframe', DOM.getById(this.containerId));
-      return this;
-     }
+    setIFrame() {
+        this.iFrame = DOM.getByTagName('iframe', DOM.getById(this.containerId));
+    }
 
 }

@@ -42,7 +42,7 @@ class INInfoWindow extends INMapObject {
      * Default position for info window is TOP.
      * @param {PositionIt} position - {@link PositionIt}
      * Available settings: TOP, LEFT, RIGHT, BOTTOM, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT.
-     * return {INInfoWindow} - returns INInfoWindow instance class;
+     * @return {INInfoWindow} - returns INInfoWindow instance class;
      * @example
      * const infoWindow = new INInfoWindow(navi);
      * infoWindow.ready(() => infoWindow.setPosition(PositionIt.TOP_RIGHT));
@@ -60,7 +60,7 @@ class INInfoWindow extends INMapObject {
      * Sets height dimension of info window. Use of this method is optional.
      * Default dimensions for info window height is 250px.
      * @param {number} height - info window height given in pixels, min available dimension is 50px.
-     * return {INInfoWindow} - returns INInfoWindow instance class;
+     * @return {INInfoWindow} - returns INInfoWindow instance class;
      * @example
      * const infoWindow = new INInfoWindow(navi);
      * infoWindow.ready(() => infoWindow.height(200));
@@ -78,7 +78,7 @@ class INInfoWindow extends INMapObject {
      * Sets width dimension of info window. Use of this method is optional.
      * Default dimension for info window width is 250px, min available dimension is 50px.
      * @param {number} width - info window width given in pixels
-     * return {INInfoWindow} - returns INInfoWindow instance class;
+     * @return {INInfoWindow} - returns INInfoWindow instance class;
      * @example
      * const infoWindow = new INInfoWindow(navi);
      * infoWindow.ready(() => infoWindow.width(200));
