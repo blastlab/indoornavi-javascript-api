@@ -59,7 +59,7 @@ class INArea extends INMapObject {
                     type: this._type,
                     object: {
                         id: this._id,
-                        points: points,
+                        points: this._points,
                         opacity: this._opacity,
                         fill: this._fill
                     }
