@@ -176,13 +176,13 @@
 	
 	function clickEventListener() {
 		navi.addMapLongClickListener(data => {
-			this.addMarkeronLong(data.position.x, data.position.y);
+			this.addMarkerOnLongClick(data.position.x, data.position.y);
 		});
 	}
 
 	
 	function addMarkerOnLongClick(x, y) {
-		var value = MapUtils.pixelsToRealDimensions(navi, {x: x, y: y});
+		var value = MapUtils.pixelsToCentimeters(navi, {x: x, y: y});
 		marker = new INMarker(navi);
 		marker.ready().then(() => {
 			marker
