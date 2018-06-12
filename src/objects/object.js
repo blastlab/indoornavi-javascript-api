@@ -48,8 +48,8 @@ class INMapObject {
     ready() {
         const self = this;
 
-        function setObject(id) {
-            self._id = id;
+        function setObject(data) {
+            self._id = data.mapObjectId;
         }
 
         if (!!self._id) {
