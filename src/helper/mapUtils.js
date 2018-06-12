@@ -10,6 +10,9 @@ class MapUtils {
 			var centimetersPerPixel = navi.parameters.scale.realDistance / scaleLengthInPixels;
 			return {x: Math.round(centimetersPerPixel*point.x), y: Math.round(centimetersPerPixel*point.y)};
 		}
+		else {
+			throw new Error('Unable to calculate coordinates. Missing information about map scale!');
+		}
     }
 	
 	static centimetersToPixels(navi, point) {
@@ -21,6 +24,9 @@ class MapUtils {
 			var scaleLengthInPixels = Math.sqrt( xDifferenceInPix*xDifferenceInPix + yDifferenceInPix*yDifferenceInPix );
 			var pixelsPerCentimeter = scaleLengthInPixels / navi.parameters.scale.realDistance;
 			return {x: Math.round(pixelsPerCentimeter*point.x), y: Math.round(pixelsPerCentimeter*point.y)};
+		}
+		else {
+			throw new Error('Unable to calculate coordinates. Missing information about map scale!');
 		}
 	}
 }

@@ -66,7 +66,7 @@
         document.getElementById('removeINMarker_1').removeAttribute('disabled');
         document.getElementById('addINMarker_2').removeAttribute('disabled');
         document.getElementById('removeINMarker_2').removeAttribute('disabled');
-		clickEventListener();
+		applyLongClickListener();
     });
 
     // const from = new Date(2017, 10, 1);
@@ -174,7 +174,7 @@
     }
 	
 	
-	function clickEventListener() {
+	function applyLongClickListener() {
 		navi.addMapLongClickListener(data => {
 			this.addMarkerOnLongClick(data.position.x, data.position.y);
 		});
@@ -182,11 +182,11 @@
 
 	
 	function addMarkerOnLongClick(x, y) {
-		var value = MapUtils.pixelsToCentimeters(navi, {x: x, y: y});
+		var pointInCentymiters = MapUtils.pixelsToCentimeters(navi, {x: x, y: y});
 		marker = new INMarker(navi);
 		marker.ready().then(() => {
 			marker
-				.point({x: value.x, y: value.y})
+				.point({x: pointInCentymiters.x, y: pointInCentymiters.y})
 				.draw();
 		});
 	}
