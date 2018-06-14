@@ -182,11 +182,11 @@
 
 	
 	function addMarkerOnLongClick(x, y) {
-		var pointInCentymiters = MapUtils.pixelsToCentimeters(navi, {x: x, y: y});
-		marker = new INMarker(navi);
+		let pointInRealDimension = MapUtils.pixelsToRealDimensions(navi, {x: x, y: y});
+		let marker = new INMarker(navi);
 		marker.ready().then(() => {
 			marker
-				.point({x: pointInCentymiters.x, y: pointInCentymiters.y})
+				.point({x: pointInRealDimension.x, y: pointInRealDimension.y})
 				.draw();
 		});
 	}

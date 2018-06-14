@@ -78,14 +78,14 @@ class Http {
 
 class MapUtils {
 
-	static pixelsToCentimeters(navi, point) {
+	static pixelsToRealDimensions(navi, point) {
 		
 		if(!!navi.parameters) {
-			var xDifferenceInPix = navi.parameters.scale.start.x - navi.parameters.scale.stop.x;;
-			var yDifferenceInPix = navi.parameters.scale.start.y - navi.parameters.scale.stop.y;
+			let xDifferenceInPix = navi.parameters.scale.start.x - navi.parameters.scale.stop.x;
+            let yDifferenceInPix = navi.parameters.scale.start.y - navi.parameters.scale.stop.y;
 
-			var scaleLengthInPixels = Math.sqrt( xDifferenceInPix*xDifferenceInPix + yDifferenceInPix*yDifferenceInPix );
-			var centimetersPerPixel = navi.parameters.scale.realDistance / scaleLengthInPixels;
+            let scaleLengthInPixels = Math.sqrt( xDifferenceInPix*xDifferenceInPix + yDifferenceInPix*yDifferenceInPix );
+            let centimetersPerPixel = navi.parameters.scale.realDistance / scaleLengthInPixels;
 			return {x: Math.round(centimetersPerPixel*point.x), y: Math.round(centimetersPerPixel*point.y)};
 		}
 		else {
@@ -93,14 +93,14 @@ class MapUtils {
 		}
     }
 	
-	static centimetersToPixels(navi, point) {
+	static realDimensionsToPixels(navi, point) {
 		
 		if(!!navi.parameters) {
-			var xDifferenceInPix = navi.parameters.scale.start.x - navi.parameters.scale.stop.x;;
-			var yDifferenceInPix = navi.parameters.scale.start.y - navi.parameters.scale.stop.y;
+            let xDifferenceInPix = navi.parameters.scale.start.x - navi.parameters.scale.stop.x;
+            let yDifferenceInPix = navi.parameters.scale.start.y - navi.parameters.scale.stop.y;
 
-			var scaleLengthInPixels = Math.sqrt( xDifferenceInPix*xDifferenceInPix + yDifferenceInPix*yDifferenceInPix );
-			var pixelsPerCentimeter = scaleLengthInPixels / navi.parameters.scale.realDistance;
+            let scaleLengthInPixels = Math.sqrt( xDifferenceInPix*xDifferenceInPix + yDifferenceInPix*yDifferenceInPix );
+            let pixelsPerCentimeter = scaleLengthInPixels / navi.parameters.scale.realDistance;
 			return {x: Math.round(pixelsPerCentimeter*point.x), y: Math.round(pixelsPerCentimeter*point.y)};
 		}
 		else {
@@ -294,7 +294,11 @@ class INMapObject {
         const self = this;
 
         function setObject(data) {
-            self._id = data.mapObjectId;
+            if(!data.mapObjectId) {
+                self._id = data.mapObjectId;
+            } else {
+                throw new Error(`Object ${self._type} doesn't contain id. It may not be created correctly.`);
+            }
         }
 
         if (!!self._id) {
@@ -929,7 +933,7 @@ class INMap {
         return new Promise(function (resolve) {
             iFrame.onload = function () {
 				self.getMapDimensions(data => {
-					self.parameters = {height: data.height, width: data.width, scale: data.scale}
+					self.parameters = {height: data.height, width: data.width, scale: data.scale};
 					resolve();
 				});
 			}
@@ -938,8 +942,10 @@ class INMap {
 
 	/**
      * Getter for map dimensions and scale
-     * @returns {height: number, width: number, scale: object} - returns object which contains height and width of the map given in pixels,
-	 * and {object} scale which contains unit, real distance and other parameters.
+     * @param {function} callback - this method will be called when the event occurs. Returns object which contains height and width of the map given in pixels,
+     * and {object} scale which contains unit, real distance and other parameters.
+     * @example
+     * navi.getMapDimensions(data => doSomethingWithMapDimensions(data.height, data.width, data.scale));
      */
     getMapDimensions(callback) {
         this.setIFrame();
@@ -956,7 +962,7 @@ class INMap {
      * Add listener to react when the long click event occurs
      * @param {function} callback - this method will be called when the event occurs
      * @example
-     * navi.addEventListener(data => doSomethingOnLongClick(data.position.x, data.position.y));
+     * navi.addMapLongClickListener(data => doSomethingOnLongClick(data.position.x, data.position.y));
      */
 	addMapLongClickListener(callback) {
 		this.checkIsReady();

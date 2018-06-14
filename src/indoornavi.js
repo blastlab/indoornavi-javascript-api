@@ -37,7 +37,7 @@ class INMap {
         return new Promise(function (resolve) {
             iFrame.onload = function () {
 				self.getMapDimensions(data => {
-					self.parameters = {height: data.height, width: data.width, scale: data.scale}
+					self.parameters = {height: data.height, width: data.width, scale: data.scale};
 					resolve();
 				});
 			}
@@ -46,8 +46,10 @@ class INMap {
 
 	/**
      * Getter for map dimensions and scale
-     * @returns {height: number, width: number, scale: object} - returns object which contains height and width of the map given in pixels,
-	 * and {object} scale which contains unit, real distance and other parameters.
+     * @param {function} callback - this method will be called when the event occurs. Returns object which contains height and width of the map given in pixels,
+     * and {object} scale which contains unit, real distance and other parameters.
+     * @example
+     * navi.getMapDimensions(data => doSomethingWithMapDimensions(data.height, data.width, data.scale));
      */
     getMapDimensions(callback) {
         this.setIFrame();
@@ -64,7 +66,7 @@ class INMap {
      * Add listener to react when the long click event occurs
      * @param {function} callback - this method will be called when the event occurs
      * @example
-     * navi.addEventListener(data => doSomethingOnLongClick(data.position.x, data.position.y));
+     * navi.addMapLongClickListener(data => doSomethingOnLongClick(data.position.x, data.position.y));
      */
 	addMapLongClickListener(callback) {
 		this.checkIsReady();

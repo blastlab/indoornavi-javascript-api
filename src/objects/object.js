@@ -49,7 +49,11 @@ class INMapObject {
         const self = this;
 
         function setObject(data) {
-            self._id = data.mapObjectId;
+            if(!data.mapObjectId) {
+                self._id = data.mapObjectId;
+            } else {
+                throw new Error(`Object ${self._type} doesn't contain id. It may not be created correctly.`);
+            }
         }
 
         if (!!self._id) {
