@@ -15,7 +15,7 @@ class Communication {
         function handler(event) {
             if ('type' in event.data && event.data.type === eventName && !!event.data.mapObjectId) {
                 window.removeEventListener('message', handler, false);
-                callback(event.data.mapObjectId);
+                callback(event.data);
                 resolve();
             }
         }
@@ -74,6 +74,39 @@ class Http {
         xmlHttp.setRequestHeader('Accept', 'application/json');
         xmlHttp.send(JSON.stringify(body));
     }
+}
+
+class MapUtils {
+
+	static pixelsToRealDimensions(navi, point) {
+		
+		if(!!navi.parameters) {
+			let xDifferenceInPix = navi.parameters.scale.start.x - navi.parameters.scale.stop.x;
+            let yDifferenceInPix = navi.parameters.scale.start.y - navi.parameters.scale.stop.y;
+
+            let scaleLengthInPixels = Math.sqrt( xDifferenceInPix*xDifferenceInPix + yDifferenceInPix*yDifferenceInPix );
+            let centimetersPerPixel = navi.parameters.scale.realDistance / scaleLengthInPixels;
+			return {x: Math.round(centimetersPerPixel*point.x), y: Math.round(centimetersPerPixel*point.y)};
+		}
+		else {
+			throw new Error('Unable to calculate coordinates. Missing information about map scale!');
+		}
+    }
+	
+	static realDimensionsToPixels(navi, point) {
+		
+		if(!!navi.parameters) {
+            let xDifferenceInPix = navi.parameters.scale.start.x - navi.parameters.scale.stop.x;
+            let yDifferenceInPix = navi.parameters.scale.start.y - navi.parameters.scale.stop.y;
+
+            let scaleLengthInPixels = Math.sqrt( xDifferenceInPix*xDifferenceInPix + yDifferenceInPix*yDifferenceInPix );
+            let pixelsPerCentimeter = scaleLengthInPixels / navi.parameters.scale.realDistance;
+			return {x: Math.round(pixelsPerCentimeter*point.x), y: Math.round(pixelsPerCentimeter*point.y)};
+		}
+		else {
+			throw new Error('Unable to calculate coordinates. Missing information about map scale!');
+		}
+	}
 }
 
 /**
@@ -260,8 +293,12 @@ class INMapObject {
     ready() {
         const self = this;
 
-        function setObject(id) {
-            self._id = id;
+        function setObject(data) {
+            if(!!data.mapObjectId) {
+                self._id = data.mapObjectId;
+            } else {
+                throw new Error(`Object ${self._type} doesn't contain id. It may not be created correctly.`);
+            }
         }
 
         if (!!self._id) {
@@ -420,7 +457,7 @@ class INPolyline extends INMapObject {
                     type: this._type,
                     object: {
                         id: this._id,
-                        points: points,
+                        points: this._points,
                         stroke: this._stroke
                     }
                 }
@@ -517,7 +554,7 @@ class INArea extends INMapObject {
                     type: this._type,
                     object: {
                         id: this._id,
-                        points: points,
+                        points: this._points,
                         opacity: this._opacity,
                         fill: this._fill
                     }
@@ -873,8 +910,8 @@ class INMap {
         this.targetHost = targetHost;
         this.apiKey = apiKey;
         this.containerId = containerId;
-        this.isReady = false;
         this.config = config;
+		this.parameters = null;
     }
 
     /**
@@ -892,14 +929,50 @@ class INMap {
         iFrame.style.width = `${!!this.config.width ? this.config.width : 640}px`;
         iFrame.style.height = `${!!this.config.height ? this.config.height : 480}px`;
         iFrame.setAttribute('src', `${this.targetHost}/embedded/${mapId}?api_key=${this.apiKey}`);
-        DOM.getById(this.containerId).appendChild(iFrame);
+		DOM.getById(this.containerId).appendChild(iFrame);
         return new Promise(function (resolve) {
             iFrame.onload = function () {
-                self.isReady = true;
-                resolve();
-            }
+				self.getMapDimensions(data => {
+					self.parameters = {height: data.height, width: data.width, scale: data.scale};
+					resolve();
+				});
+			}
         });
     }
+
+	/**
+     * Getter for map dimensions and scale
+     * @param {function} callback - this method will be called when the event occurs. Returns object which contains height and width of the map given in pixels,
+     * and {object} scale which contains unit, real distance and other parameters.
+     * @example
+     * navi.getMapDimensions(data => doSomethingWithMapDimensions(data.height, data.width, data.scale));
+     */
+    getMapDimensions(callback) {
+        this.setIFrame();
+		return new Promise(resolve => {
+			Communication.listenOnce(`getMapDimensions`, callback, resolve);
+			Communication.send(this.iFrame, this.targetHost, {
+				command: 'getMapDimensions',
+				});
+            }
+        );
+    }
+	
+	/**
+     * Add listener to react when the long click event occurs
+     * @param {function} callback - this method will be called when the event occurs
+     * @example
+     * navi.addMapLongClickListener(data => doSomethingOnLongClick(data.position.x, data.position.y));
+     */
+	addMapLongClickListener(callback) {
+		this.checkIsReady();
+        this.setIFrame();
+		Communication.send(this.iFrame, this.targetHost, {
+            command: 'addClickEventListener',
+            args: 'click'
+        });
+        Communication.listen('click', callback);
+	}
 
     /**
      * Toggle the tag visibility
@@ -935,7 +1008,7 @@ class INMap {
     }
 
     checkIsReady() {
-        if (!this.isReady) {
+        if (!this.parameters) {
             throw new Error('INMap is not ready. Call load() first and then when promise resolves, INMap will be ready.');
         }
     }

@@ -15,7 +15,7 @@ class Communication {
         function handler(event) {
             if ('type' in event.data && event.data.type === eventName && !!event.data.mapObjectId) {
                 window.removeEventListener('message', handler, false);
-                callback(event.data.mapObjectId);
+                callback(event.data);
                 resolve();
             }
         }

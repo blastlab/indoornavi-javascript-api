@@ -40,7 +40,8 @@
         {x: 1220, y: 480},
         {x: 1220, y: 1220},
         {x: 480, y: 1220},
-        {x: 750, y: 750}
+        {x: 750, y: 750},
+		{x: 480, y: 480}
     ];
 
     const navi = new INMap(
@@ -48,10 +49,10 @@
         'TestAdmin',
         'map',
         {
-            width: 1200,
-            height: 850
-        }
-    );
+            width: 1300,
+            height: 950
+        });
+	
     let infoWindow2;
     let infoWindow1;
     navi.load(2).then(function () {
@@ -60,10 +61,12 @@
         document.getElementById('removeINPolyline').removeAttribute('disabled');
         document.getElementById('drawINArea').removeAttribute('disabled');
         document.getElementById('removeINArea').removeAttribute('disabled');
+		document.getElementById('addListener').removeAttribute('disabled');
         document.getElementById('addINMarker_1').removeAttribute('disabled');
         document.getElementById('removeINMarker_1').removeAttribute('disabled');
         document.getElementById('addINMarker_2').removeAttribute('disabled');
         document.getElementById('removeINMarker_2').removeAttribute('disabled');
+		applyLongClickListener();
     });
 
     // const from = new Date(2017, 10, 1);
@@ -159,17 +162,34 @@
         });
         inMarker1 = new INMarker(navi);
         inMarker1.ready().then(() => {
-            inMarker1
-                .point(points[4])
-                .setIcon(markerIcon)
-                .setLabel('this is label 1')
-                .addEventListener(Event.MOUSE.CLICK, () => {
-                        infoWindow1.open(inMarker1);
-                    })
-                .draw();
-        });
-
+		inMarker1
+			.point(points[0])
+			.setIcon(markerIcon)
+			.setLabel('this is label 1')
+			.addEventListener(Event.MOUSE.CLICK, () => {
+					infoWindow1.open(inMarker1);
+				})
+			.draw();
+        });	
     }
+	
+	
+	function applyLongClickListener() {
+		navi.addMapLongClickListener(data => {
+			this.addMarkerOnLongClick(data.position.x, data.position.y);
+		});
+	}
+
+	
+	function addMarkerOnLongClick(x, y) {
+		let pointInRealDimension = MapUtils.pixelsToRealDimensions(navi, {x: x, y: y});
+		let marker = new INMarker(navi);
+		marker.ready().then(() => {
+			marker
+				.point({x: pointInRealDimension.x, y: pointInRealDimension.y})
+				.draw();
+		});
+	}
 
     function addINMarker_2() {
         if (!!inMarker2) {
