@@ -385,7 +385,10 @@ class INMapObject {
         if (!!this._id) {
             if (/rgb/i.test(color)) {
                 const rgb = color.slice(4, color.length - 1).split(',');
-                hexToSend = `#${parseInt(rgb[0], 10).toString(16).slice(-2)}${parseInt(rgb[1], 10).toString(16).slice(-2)}${parseInt(rgb[2], 10).toString(16).slice(-2)}`;
+                const red = parseInt(rgb[0], 10) == 0 ? '00' : `${parseInt(rgb[0], 10).toString(16).slice(-2)}`;
+                const green = parseInt(rgb[1], 10) == 0 ? '00' : `${parseInt(rgb[1], 10).toString(16).slice(-2)}`;
+                const blue = parseInt(rgb[2], 10) == 0 ? '00' : `${parseInt(rgb[2], 10).toString(16).slice(-2)}`;
+                hexToSend = '#' + red + green + blue;
             } else if (/#/i.test(color)) {
                 hexToSend = color;
             }
