@@ -262,8 +262,8 @@ class INMapObject {
         this._navi = navi;
         this._id = null;
         this._type = 'OBJECT';
-        this._navi.checkIsReady();
-        this._navi.setIFrame();
+        this._navi._checkIsReady();
+        this._navi._setIFrame();
         this._points = null;
         this._stroke = null;
         this._fill = null;

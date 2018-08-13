@@ -16,6 +16,7 @@ class INMap {
         this.containerId = containerId;
         this.config = config;
         this.parameters = null;
+        this.iFrame = null;
     }
 
     /**
@@ -29,13 +30,9 @@ class INMap {
      */
     load(mapId) {
         const self = this;
-        const iFrame = document.createElement('iframe');
-        iFrame.style.width = `${!!this.config.width ? this.config.width : 640}px`;
-        iFrame.style.height = `${!!this.config.height ? this.config.height : 480}px`;
-        iFrame.setAttribute('src', `${this.targetHost}/embedded/${mapId}?api_key=${this.apiKey}`);
-        DOM.getById(this.containerId).appendChild(iFrame);
+        this._setIFrame(mapId);
         return new Promise(function (resolve) {
-            iFrame.onload = function () {
+            self.iFrame.onload = function () {
                 self.getMapDimensions(data => {
                     self.parameters = {height: data.height, width: data.width, scale: data.scale};
                     resolve();
@@ -117,8 +114,20 @@ class INMap {
         }
     }
 
-    _setIFrame() {
-        this.iFrame = DOM.getByTagName('iframe', DOM.getById(this.containerId));
+    _setIFrame(mapId) {
+        if (!this.iFrame) {
+            const iFrame = document.createElement('iframe');
+            iFrame.style.width = `${!!this.config.width ? this.config.width : 640}px`;
+            iFrame.style.height = `${!!this.config.height ? this.config.height : 480}px`;
+            DOM.getById(this.containerId).appendChild(iFrame);
+            this.iFrame = iFrame;
+        } else {
+            this.iFrame = DOM.getByTagName('iframe', DOM.getById(this.containerId));
+        }
+
+        if (!!mapId) {
+            this.iFrame.setAttribute('src', `${this.targetHost}/embedded/${mapId}?api_key=${this.apiKey}`);
+        }
     }
 
 }
