@@ -17,8 +17,8 @@ class INMapObject {
         this._navi = navi;
         this._id = null;
         this._type = 'OBJECT';
-        this._navi.checkIsReady();
-        this._navi.setIFrame();
+        this._navi._checkIsReady();
+        this._navi._setIFrame();
         this._points = null;
         this._stroke = null;
         this._fill = null;
@@ -140,9 +140,9 @@ class INMapObject {
         if (!!this._id) {
             if (/rgb/i.test(color)) {
                 const rgb = color.slice(4, color.length - 1).split(',');
-                const red = parseInt(rgb[0], 10) == 0 ? '00' : `${parseInt(rgb[0], 10).toString(16).slice(-2)}`;
-                const green = parseInt(rgb[1], 10) == 0 ? '00' : `${parseInt(rgb[1], 10).toString(16).slice(-2)}`;
-                const blue = parseInt(rgb[2], 10) == 0 ? '00' : `${parseInt(rgb[2], 10).toString(16).slice(-2)}`;
+                const red = parseInt(rgb[0], 10) === 0 ? '00' : `${parseInt(rgb[0], 10).toString(16).slice(-2)}`;
+                const green = parseInt(rgb[1], 10) === 0 ? '00' : `${parseInt(rgb[1], 10).toString(16).slice(-2)}`;
+                const blue = parseInt(rgb[2], 10) === 0 ? '00' : `${parseInt(rgb[2], 10).toString(16).slice(-2)}`;
                 hexToSend = '#' + red + green + blue;
             } else if (/#/i.test(color)) {
                 hexToSend = color;
