@@ -15,7 +15,8 @@ class INMap {
         this.apiKey = apiKey;
         this.containerId = containerId;
         this.config = config;
-		this.parameters = null;
+        this.parameters = null;
+        this.iFrame = null;
     }
 
     /**
@@ -29,22 +30,18 @@ class INMap {
      */
     load(mapId) {
         const self = this;
-        const iFrame = document.createElement('iframe');
-        iFrame.style.width = `${!!this.config.width ? this.config.width : 640}px`;
-        iFrame.style.height = `${!!this.config.height ? this.config.height : 480}px`;
-        iFrame.setAttribute('src', `${this.targetHost}/embedded/${mapId}?api_key=${this.apiKey}`);
-		DOM.getById(this.containerId).appendChild(iFrame);
+        this._setIFrame(mapId);
         return new Promise(function (resolve) {
-            iFrame.onload = function () {
-				self.getMapDimensions(data => {
-					self.parameters = {height: data.height, width: data.width, scale: data.scale};
-					resolve();
-				});
-			}
+            self.iFrame.onload = function () {
+                self.getMapDimensions(data => {
+                    self.parameters = {height: data.height, width: data.width, scale: data.scale};
+                    resolve();
+                });
+            }
         });
     }
 
-	/**
+    /**
      * Getter for map dimensions and scale
      * @param {function} callback - this method will be called when the event occurs. Returns object which contains height and width of the map given in pixels,
      * and {object} scale which contains unit, real distance and other parameters.
@@ -52,31 +49,31 @@ class INMap {
      * navi.getMapDimensions(data => doSomethingWithMapDimensions(data.height, data.width, data.scale));
      */
     getMapDimensions(callback) {
-        this.setIFrame();
-		return new Promise(resolve => {
-			Communication.listenOnce(`getMapDimensions`, callback, resolve);
-			Communication.send(this.iFrame, this.targetHost, {
-				command: 'getMapDimensions',
-				});
+        this._setIFrame();
+        return new Promise(resolve => {
+                Communication.listenOnce(`getMapDimensions`, callback, resolve);
+                Communication.send(this.iFrame, this.targetHost, {
+                    command: 'getMapDimensions',
+                });
             }
         );
     }
-	
-	/**
+
+    /**
      * Add listener to react when the long click event occurs
      * @param {function} callback - this method will be called when the event occurs
      * @example
      * navi.addMapLongClickListener(data => doSomethingOnLongClick(data.position.x, data.position.y));
      */
-	addMapLongClickListener(callback) {
-		this.checkIsReady();
-        this.setIFrame();
-		Communication.send(this.iFrame, this.targetHost, {
+    addMapLongClickListener(callback) {
+        this._checkIsReady();
+        this._setIFrame();
+        Communication.send(this.iFrame, this.targetHost, {
             command: 'addClickEventListener',
             args: 'click'
         });
         Communication.listen('click', callback);
-	}
+    }
 
     /**
      * Toggle the tag visibility
@@ -86,8 +83,8 @@ class INMap {
      * navi.toggleTagVisibility(tagShortId);
      */
     toggleTagVisibility(tagShortId) {
-        this.checkIsReady();
-        this.setIFrame();
+        this._checkIsReady();
+        this._setIFrame();
         Communication.send(this.iFrame, this.targetHost, {
             command: 'toggleTagVisibility',
             args: tagShortId
@@ -102,8 +99,8 @@ class INMap {
      * navi.addEventListener(Event.LISTENER.COORDINATES, data => doSomethingWithCoordinates(data.coordinates.point));
      */
     addEventListener(event, callback) {
-        this.checkIsReady();
-        this.setIFrame();
+        this._checkIsReady();
+        this._setIFrame();
         Communication.send(this.iFrame, this.targetHost, {
             command: 'addEventListener',
             args: event
@@ -111,14 +108,26 @@ class INMap {
         Communication.listen(event, callback);
     }
 
-    checkIsReady() {
+    _checkIsReady() {
         if (!this.parameters) {
             throw new Error('INMap is not ready. Call load() first and then when promise resolves, INMap will be ready.');
         }
     }
 
-    setIFrame() {
-        this.iFrame = DOM.getByTagName('iframe', DOM.getById(this.containerId));
+    _setIFrame(mapId) {
+        if (!this.iFrame) {
+            const iFrame = document.createElement('iframe');
+            iFrame.style.width = `${!!this.config.width ? this.config.width : 640}px`;
+            iFrame.style.height = `${!!this.config.height ? this.config.height : 480}px`;
+            DOM.getById(this.containerId).appendChild(iFrame);
+            this.iFrame = iFrame;
+        } else {
+            this.iFrame = DOM.getByTagName('iframe', DOM.getById(this.containerId));
+        }
+
+        if (!!mapId) {
+            this.iFrame.setAttribute('src', `${this.targetHost}/embedded/${mapId}?api_key=${this.apiKey}`);
+        }
     }
 
 }
