@@ -66,7 +66,7 @@ class INMapObject {
                 // create listener for event that will fire only once
                 Communication.listenOnce(`createObject-${this._type}`, setObject.bind(self), resolve);
                 // then send message
-                Communication.send(self._navi.iFrame, self._navi.targetHost, {
+                Communication.send(self._navi.iFrame, self._navi._targetHost, {
                     command: 'createObject',
                     object: this._type
                 });
@@ -82,7 +82,7 @@ class INMapObject {
      */
     remove() {
         if (!!this._id) {
-            Communication.send(this._navi.iFrame, this._navi.targetHost, {
+            Communication.send(this._navi.iFrame, this._navi._targetHost, {
                 command: 'removeObject',
                 args: {
                     type: this._type,

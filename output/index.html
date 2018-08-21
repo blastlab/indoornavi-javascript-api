@@ -55,7 +55,7 @@
 	
     let infoWindow2;
     let infoWindow1;
-    navi.load(1).then(function () {
+    navi.load(4).then(function () {
         document.getElementById('toggle10999').removeAttribute('disabled');
         document.getElementById('drawINPolyline').removeAttribute('disabled');
         document.getElementById('removeINPolyline').removeAttribute('disabled');
@@ -67,6 +67,7 @@
         document.getElementById('addINMarker_2').removeAttribute('disabled');
         document.getElementById('removeINMarker_2').removeAttribute('disabled');
 		applyLongClickListener();
+        getPaths();
     });
 
     // const from = new Date(2017, 10, 1);
@@ -235,13 +236,14 @@
     }
 
     function getPaths() {
-        const data = new INData('http://localhost:90', 'TestAdmin');
+        const data = new INData('http://localhost:90', 'TestAdmin', navi);
         data.getPaths(1).then(function(data) {
             console.log(data);
         });
+        data.pullToPath(points[0], 1000).then(function(data) {
+            console.log(data);
+        });
     }
-
-    getPaths();
 
 </script>
 </html>

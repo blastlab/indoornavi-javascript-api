@@ -203,6 +203,21 @@ const Event = {
 };
 
 /**
+ * Class representing a Path
+ */
+class Path {
+    /**
+     * Path object
+     * @param {Point} startPoint it's where path starts
+     * @param {Point} endPoint it's where path ends
+     */
+    constructor(startPoint, endPoint) {
+        this.startPoint = startPoint;
+        this.endPoint = endPoint;
+    }
+}
+
+/**
  * Class representing a Point,
  */
 
@@ -311,7 +326,7 @@ class INMapObject {
                 // create listener for event that will fire only once
                 Communication.listenOnce(`createObject-${this._type}`, setObject.bind(self), resolve);
                 // then send message
-                Communication.send(self._navi.iFrame, self._navi.targetHost, {
+                Communication.send(self._navi.iFrame, self._navi._targetHost, {
                     command: 'createObject',
                     object: this._type
                 });
@@ -327,7 +342,7 @@ class INMapObject {
      */
     remove() {
         if (!!this._id) {
-            Communication.send(this._navi.iFrame, this._navi.targetHost, {
+            Communication.send(this._navi.iFrame, this._navi._targetHost, {
                 command: 'removeObject',
                 args: {
                     type: this._type,
@@ -385,9 +400,9 @@ class INMapObject {
         if (!!this._id) {
             if (/rgb/i.test(color)) {
                 const rgb = color.slice(4, color.length - 1).split(',');
-                const red = parseInt(rgb[0], 10) == 0 ? '00' : `${parseInt(rgb[0], 10).toString(16).slice(-2)}`;
-                const green = parseInt(rgb[1], 10) == 0 ? '00' : `${parseInt(rgb[1], 10).toString(16).slice(-2)}`;
-                const blue = parseInt(rgb[2], 10) == 0 ? '00' : `${parseInt(rgb[2], 10).toString(16).slice(-2)}`;
+                const red = parseInt(rgb[0], 10) === 0 ? '00' : `${parseInt(rgb[0], 10).toString(16).slice(-2)}`;
+                const green = parseInt(rgb[1], 10) === 0 ? '00' : `${parseInt(rgb[1], 10).toString(16).slice(-2)}`;
+                const blue = parseInt(rgb[2], 10) === 0 ? '00' : `${parseInt(rgb[2], 10).toString(16).slice(-2)}`;
                 hexToSend = '#' + red + green + blue;
             } else if (/#/i.test(color)) {
                 hexToSend = color;
@@ -403,95 +418,6 @@ class INMapObject {
         } else {
             throw new Error(`Object ${this._type} is not created yet, use ready() method before executing other methods`);
         }
-    }
-
-}
-
-/**
- * Class representing a INPolyline,
- * creates the INPolyline instance in iframe that communicates with IndoorNavi frontend server and draws INPolyline
- * @extends INMapObject
- */
-
-class INPolyline extends INMapObject {
-    /**
-     * @constructor
-     * @param {Object} navi - constructor needs an instance of {@link INMap} object injected
-     */
-    constructor(navi) {
-        super(navi);
-        this._type = 'POLYLINE';
-    }
-
-    /**
-     * Locates polyline at given coordinates. Coordinates needs to be given as real world dimensions that map is representing. Use of this method is indispensable
-     * @param {Object[]} points - array of {@link Point}'s that are describing polyline in real world dimensions.
-     * Coordinates are calculated to the map scale and then displayed.
-     * @example
-     * const poly = new INPolyline(navi);
-     * poly.ready().then(() => poly.points(points).draw());
-     */
-    points(points) {
-        if (!Array.isArray(points)) {
-            throw new Error('Given argument is not na array');
-        }
-        points.forEach(point => {
-            if (!Number.isInteger(point.x) || !Number.isInteger(point.y)) {
-                throw new Error('Given points are in wrong format or coordinates x an y are not integers')
-            }
-        });
-        this._points = points;
-        return this;
-    }
-
-    /**
-     * Place polyline on the map with all given settings. There is necessary to use points() method before draw() method to indicate where polyline should to be located.
-     * Use of this method is indispensable to draw polyline with set configuration in the IndoorNavi Map.
-     * @example
-     * const poly = new INPolyline(navi);
-     * poly.ready().then(() => poly.points(points).draw());
-     */
-
-    draw() {
-        if (!!this._id) {
-            Communication.send(this._navi.iFrame, this._navi.targetHost, {
-                command: 'drawObject',
-                args: {
-                    type: this._type,
-                    object: {
-                        id: this._id,
-                        points: this._points,
-                        stroke: this._stroke
-                    }
-                }
-            });
-        } else {
-            throw new Error('INPolyline is not created yet, use ready() method before executing draw(), or remove()');
-        }
-    }
-
-    /**
-     * Sets polyline lines and points color.
-     * Use of this method is optional.
-     * @param {string} color - string that specifies the color. Supports color in hex format '#AABBCC' and rgb format 'rgb(255,255,255)';
-     * @example
-     * const poly = new INPolyline(navi);
-     * poly.ready().then(() => poly.setLineColor('#AABBCC'));
-     */
-    setLineColor(color) {
-        this._setColor(color, 'stroke');
-        return this;
-    }
-
-    /**
-     * This method is not implemented for polyline yet.
-     */
-
-    isWithin(point) {
-        if (this._type === 'INPolyline') {
-            throw new Error('Method not implemented yet for INPolyline');
-        }
-        return false;
     }
 
 }
@@ -551,7 +477,7 @@ class INArea extends INMapObject {
 
     draw() {
         if (!!this._id) {
-            Communication.send(this._navi.iFrame, this._navi.targetHost, {
+            Communication.send(this._navi.iFrame, this._navi._targetHost, {
                 command: 'drawObject',
                 args: {
                     type: this._type,
@@ -600,6 +526,139 @@ class INArea extends INMapObject {
         return this;
     }
 
+}
+
+
+/**
+ * Class representing an InfoWindow,
+ * creates the INInfoWindow object in iframe that communicates with InndoorNavi frontend server and adds info window to a given INObject child.
+ * @extends INMapObject
+ */
+
+class INInfoWindow extends INMapObject {
+    /**
+     * @constructor
+     * @param {Object} navi -constructor needs an instance of {@link INMap} object injected
+     */
+    constructor(navi) {
+        super(navi);
+        this._type = 'INFO_WINDOW';
+        this._content = null;
+        this._position = 0;
+        this._width = null;
+        this._height = null;
+    }
+
+    /**
+     * Sets info window content.
+     * @param {string} content - text or html template in string format that will be passed in to info window as text.
+     * To reset label to a new content call this method again passing new content as a string and call draw() method.
+     * @return {INInfoWindow} - returns INInfoWindow instance class;
+     * @example
+     * const infoWindow = new INInfoWindow(navi);
+     * infoWindow.ready().then(() => infoWindow.setInnerHtml('<p>text in paragraph</p>'));
+     */
+
+    setInnerHTML(content) {
+        if (typeof content !== 'string') {
+            throw new Error('Wrong argument passed for info window content');
+        }
+        this._content = content;
+        return this;
+    }
+
+    /**
+     * Sets position of info window regarding to object that info window will be appended to. Use of this method is optional.
+     * Default position for info window is TOP.
+     * @param {PositionIt} position - {@link PositionIt}
+     * Available settings: TOP, LEFT, RIGHT, BOTTOM, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT.
+     * @return {INInfoWindow} - returns INInfoWindow instance class;
+     * @example
+     * const infoWindow = new INInfoWindow(navi);
+     * infoWindow.ready(() => infoWindow.setPosition(PositionIt.TOP_RIGHT));
+     */
+
+    setPosition(position) {
+        if (Object.values(PositionIt).indexOf(position) < 0) {
+            throw new Error('Wrong argument passed for info window position');
+        }
+        this._position = position;
+        return this;
+    }
+
+    /**
+     * Sets height dimension of info window. Use of this method is optional.
+     * Default dimensions for info window height is 250px.
+     * @param {number} height - info window height given in pixels, min available dimension is 50px.
+     * @return {INInfoWindow} - returns INInfoWindow instance class;
+     * @example
+     * const infoWindow = new INInfoWindow(navi);
+     * infoWindow.ready(() => infoWindow.height(200));
+     */
+
+    height(height) {
+        if (!Number.isInteger(height) || height < 50) {
+            throw new Error('Wrong height argument passed for info window position');
+        }
+        this._height = height;
+        return this;
+    }
+
+    /**
+     * Sets width dimension of info window. Use of this method is optional.
+     * Default dimension for info window width is 250px, min available dimension is 50px.
+     * @param {number} width - info window width given in pixels
+     * @return {INInfoWindow} - returns INInfoWindow instance class;
+     * @example
+     * const infoWindow = new INInfoWindow(navi);
+     * infoWindow.ready(() => infoWindow.width(200));
+     */
+
+    width(width) {
+        if (!Number.isInteger(width) || width < 50) {
+            throw new Error('Wrong width argument passed for info window position');
+        }
+        this._width = width;
+        return this;
+    }
+
+    /**
+     * Displays info window in iframe.
+     * @param {object} mapObject - {@link INMapObject} map object to append info window to.
+     * @example
+     * const infoWindow = new INInfoWindow(navi);
+     * const marker = new INMarker(navi);
+     * marker.ready().then(() => {
+     *  marker.point({x: 100, y: 100}).draw();
+     *  infoWindow.ready(() => infoWindow.setInnerHTML('text for info window').open(marker));
+     * });
+     */
+
+    open(mapObject) {
+        if (!mapObject || !Number.isInteger(mapObject.getID())) {
+            throw new Error('Passed object is null, undefined or has not been initialized in indoor navi iframe');
+        }
+        this._relatedObjectId = mapObject.getID();
+        if (!!this._id) {
+            Communication.send(this._navi.iFrame, this._navi._targetHost, {
+                command: 'drawObject',
+                args: {
+                    type: this._type,
+                    object: {
+                        id: this._id,
+                        points: null,
+                        relatedObjectId: this._relatedObjectId,
+                        content: this._content,
+                        position: this._position,
+                        width: this._width,
+                        height: this._height
+                    }
+                }
+            });
+        } else {
+            throw new Error('Info Window is not created yet, use ready() method before executing any other method');
+        }
+    }
 }
 
 /**
@@ -744,7 +803,7 @@ class INMarker extends INMapObject {
         if (!!this._id) {
             const events = [];
             this._events.forEach(event => events.push(event));
-            Communication.send(this._navi.iFrame, this._navi.targetHost, {
+            Communication.send(this._navi.iFrame, this._navi._targetHost, {
                 command: 'drawObject',
                 args: {
                     type: this._type,
@@ -766,135 +825,92 @@ class INMarker extends INMapObject {
 }
 
 /**
- * Class representing an InfoWindow,
- * creates the INInfoWindow object in iframe that communicates with InndoorNavi frontend server and adds info window to a given INObject child.
+ * Class representing a INPolyline,
+ * creates the INPolyline instance in iframe that communicates with IndoorNavi frontend server and draws INPolyline
  * @extends INMapObject
  */
 
-class INInfoWindow extends INMapObject {
+class INPolyline extends INMapObject {
     /**
      * @constructor
-     * @param {Object} navi -constructor needs an instance of {@link INMap} object injected
+     * @param {Object} navi - constructor needs an instance of {@link INMap} object injected
      */
     constructor(navi) {
         super(navi);
-        this._type = 'INFO_WINDOW';
-        this._content = null;
-        this._position = 0;
-        this._width = null;
-        this._height = null;
+        this._type = 'POLYLINE';
     }
 
     /**
-     * Sets info window content.
-     * @param {string} content - text or html template in string format that will be passed in to info window as text.
-     * To reset label to a new content call this method again passing new content as a string and call draw() method.
-     * @return {INInfoWindow} - returns INInfoWindow instance class;
+     * Locates polyline at given coordinates. Coordinates needs to be given as real world dimensions that map is representing. Use of this method is indispensable
+     * @param {Object[]} points - array of {@link Point}'s that are describing polyline in real world dimensions.
+     * Coordinates are calculated to the map scale and then displayed.
      * @example
-     * const infoWindow = new INInfoWindow(navi);
-     * infoWindow.ready().then(() => infoWindow.setInnerHtml('<p>text in paragraph</p>'));
+     * const poly = new INPolyline(navi);
+     * poly.ready().then(() => poly.points(points).draw());
      */
-
-    setInnerHTML(content) {
-        if (typeof content !== 'string') {
-            throw new Error('Wrong argument passed for info window content');
+    points(points) {
+        if (!Array.isArray(points)) {
+            throw new Error('Given argument is not na array');
         }
-        this._content = content;
+        points.forEach(point => {
+            if (!Number.isInteger(point.x) || !Number.isInteger(point.y)) {
+                throw new Error('Given points are in wrong format or coordinates x an y are not integers')
+            }
+        });
+        this._points = points;
         return this;
     }
 
     /**
-     * Sets position of info window regarding to object that info window will be appended to. Use of this method is optional.
-     * Default position for info window is TOP.
-     * @param {PositionIt} position - {@link PositionIt}
-     * Available settings: TOP, LEFT, RIGHT, BOTTOM, TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT.
-     * @return {INInfoWindow} - returns INInfoWindow instance class;
+     * Place polyline on the map with all given settings. There is necessary to use points() method before draw() method to indicate where polyline should to be located.
+     * Use of this method is indispensable to draw polyline with set configuration in the IndoorNavi Map.
      * @example
-     * const infoWindow = new INInfoWindow(navi);
-     * infoWindow.ready(() => infoWindow.setPosition(PositionIt.TOP_RIGHT));
+     * const poly = new INPolyline(navi);
+     * poly.ready().then(() => poly.points(points).draw());
      */
 
-    setPosition(position) {
-        if (Object.values(PositionIt).indexOf(position) < 0) {
-            throw new Error('Wrong argument passed for info window position');
-        }
-        this._position = position;
-        return this;
-    }
-
-    /**
-     * Sets height dimension of info window. Use of this method is optional.
-     * Default dimensions for info window height is 250px.
-     * @param {number} height - info window height given in pixels, min available dimension is 50px.
-     * @return {INInfoWindow} - returns INInfoWindow instance class;
-     * @example
-     * const infoWindow = new INInfoWindow(navi);
-     * infoWindow.ready(() => infoWindow.height(200));
-     */
-
-    height(height) {
-        if (!Number.isInteger(height) || height < 50) {
-            throw new Error('Wrong height argument passed for info window position');
-        }
-        this._height = height;
-        return this;
-    }
-
-    /**
-     * Sets width dimension of info window. Use of this method is optional.
-     * Default dimension for info window width is 250px, min available dimension is 50px.
-     * @param {number} width - info window width given in pixels
-     * @return {INInfoWindow} - returns INInfoWindow instance class;
-     * @example
-     * const infoWindow = new INInfoWindow(navi);
-     * infoWindow.ready(() => infoWindow.width(200));
-     */
-
-    width(width) {
-        if (!Number.isInteger(width) || width < 50) {
-            throw new Error('Wrong width argument passed for info window position');
-        }
-        this._width = width;
-        return this;
-    }
-
-    /**
-     * Displays info window in iframe.
-     * @param {object} mapObject - {@link INMapObject} map object to append info window to.
-     * @example
-     * const infoWindow = new INInfoWindow(navi);
-     * const marker = new INMarker(navi);
-     * marker.ready().then(() => {
-     *  marker.point({x: 100, y: 100}).draw();
-     *  infoWindow.ready(() => infoWindow.setInnerHTML('text for info window').open(marker));
-     * });
-     */
-
-    open(mapObject) {
-        if (!mapObject || !Number.isInteger(mapObject.getID())) {
-            throw new Error('Passed object is null, undefined or has not been initialized in indoor navi iframe');
-        }
-        this._relatedObjectId = mapObject.getID();
+    draw() {
         if (!!this._id) {
-            Communication.send(this._navi.iFrame, this._navi.targetHost, {
+            Communication.send(this._navi.iFrame, this._navi._targetHost, {
                 command: 'drawObject',
                 args: {
                     type: this._type,
                     object: {
                         id: this._id,
-                        points: null,
-                        relatedObjectId: this._relatedObjectId,
-                        content: this._content,
-                        position: this._position,
-                        width: this._width,
-                        height: this._height
+                        points: this._points,
+                        stroke: this._stroke
                     }
                 }
             });
         } else {
-            throw new Error('Info Window is not created yet, use ready() method before executing any other method');
+            throw new Error('INPolyline is not created yet, use ready() method before executing draw(), or remove()');
         }
     }
+
+    /**
+     * Sets polyline lines and points color.
+     * Use of this method is optional.
+     * @param {string} color - string that specifies the color. Supports color in hex format '#AABBCC' and rgb format 'rgb(255,255,255)';
+     * @example
+     * const poly = new INPolyline(navi);
+     * poly.ready().then(() => poly.setLineColor('#AABBCC'));
+     */
+    setLineColor(color) {
+        this._setColor(color, 'stroke');
+        return this;
+    }
+
+    /**
+     * This method is not implemented for polyline yet.
+     */
+
+    isWithin(point) {
+        if (this._type === 'INPolyline') {
+            throw new Error('Method not implemented yet for INPolyline');
+        }
+        return false;
+    }
+
 }
 
 /**
@@ -1039,8 +1055,8 @@ class INReport {
 
     /**
      * Report object containing methods to retrieve historical data
-     * @param {string} targetHost - address to the INMap backend server
-     * @param {string} apiKey - the API key created on INMap server (must be assigned to your domain)
+     * @param {string} targetHost - address to the IndoorNavi backend server
+     * @param {string} apiKey - the API key created on IndoorNavi server (must be assigned to your domain)
      */
     constructor(targetHost, apiKey) {
         const authHeader = 'Token ' + apiKey;
@@ -1079,4 +1095,58 @@ class INReport {
             });
         }).bind(this));
     }
+}
+class INData {
+    /**
+     * Data object containing methods to retrieve data
+     * @param {string} targetHost - address to the IndoorNavi backend server
+     * @param {string} apiKey - the API key created on IndoorNavi server (must be assigned to your domain)
+     * @param {Object} navi - constructor needs an instance of {@link INMap} object injected
+     */
+    constructor(targetHost, apiKey, navi) {
+        const authHeader = 'Token ' + apiKey;
+        this._targetHost = targetHost;
+        this._baseUrl = '/rest/v1/';
+        this._http = new Http();
+        this._http.setAuthorization(authHeader);
+        this._navi = navi;
+    }
+
+    /**
+     * Get list of paths
+     * @param {number} floorId id of the floor you want to get paths from
+     * @return {Promise} promise that will be resolved when {@link Path} list is retrieved
+     */
+    getPaths(floorId) {
+        return new Promise((function(resolve) {
+            this._http.doGet(`${this._targetHost}${this._baseUrl}paths/${floorId}`, function (data) {
+                resolve(JSON.parse(data));
+            });
+        }).bind(this));
+    }
+
+    /**
+     * Get closest coordinates on floor path for given point
+     * @param {@link Point} point coordinates
+     * @param {number} accuracy of path pull
+     * @return {Promise} promise that will be resolved when {@link Point} is retrieved
+     */
+    pullToPath(point, accuracy) {
+        console.log(point, accuracy);
+        const self = this;
+        return new Promise(resolve => {
+            // create listener for event that will fire only once
+            Communication.listen(`getPointOnPath`, resolve);
+            // then send message
+            console.log(self._navi.iFrame, self._navi.targetHost);
+            Communication.send(self._navi.iFrame, self._navi.targetHost, {
+                command: 'getPointOnPath',
+                args: {
+                    point: point,
+                    accuracy: accuracy
+                }
+            });
+        });
+    }
+
 }
