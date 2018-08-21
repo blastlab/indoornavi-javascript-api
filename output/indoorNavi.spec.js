@@ -326,7 +326,7 @@ class INMapObject {
                 // create listener for event that will fire only once
                 Communication.listenOnce(`createObject-${this._type}`, setObject.bind(self), resolve);
                 // then send message
-                Communication.send(self._navi.iFrame, self._navi._targetHost, {
+                Communication.send(self._navi.iFrame, self._navi.targetHost, {
                     command: 'createObject',
                     object: this._type
                 });
@@ -342,7 +342,7 @@ class INMapObject {
      */
     remove() {
         if (!!this._id) {
-            Communication.send(this._navi.iFrame, this._navi._targetHost, {
+            Communication.send(this._navi.iFrame, this._navi.targetHost, {
                 command: 'removeObject',
                 args: {
                     type: this._type,
@@ -477,7 +477,7 @@ class INArea extends INMapObject {
 
     draw() {
         if (!!this._id) {
-            Communication.send(this._navi.iFrame, this._navi._targetHost, {
+            Communication.send(this._navi.iFrame, this._navi.targetHost, {
                 command: 'drawObject',
                 args: {
                     type: this._type,
@@ -640,7 +640,7 @@ class INInfoWindow extends INMapObject {
         }
         this._relatedObjectId = mapObject.getID();
         if (!!this._id) {
-            Communication.send(this._navi.iFrame, this._navi._targetHost, {
+            Communication.send(this._navi.iFrame, this._navi.targetHost, {
                 command: 'drawObject',
                 args: {
                     type: this._type,
@@ -797,13 +797,14 @@ class INMarker extends INMapObject {
      */
 
     draw() {
+        const self = this;
         if (this._points.length < 1) {
             throw new Error('No point for marker placement has been specified');
         }
         if (!!this._id) {
             const events = [];
             this._events.forEach(event => events.push(event));
-            Communication.send(this._navi.iFrame, this._navi._targetHost, {
+            Communication.send(self._navi.iFrame, self._navi.targetHost, {
                 command: 'drawObject',
                 args: {
                     type: this._type,
@@ -871,7 +872,7 @@ class INPolyline extends INMapObject {
 
     draw() {
         if (!!this._id) {
-            Communication.send(this._navi.iFrame, this._navi._targetHost, {
+            Communication.send(this._navi.iFrame, this._navi.targetHost, {
                 command: 'drawObject',
                 args: {
                     type: this._type,

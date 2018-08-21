@@ -134,13 +134,14 @@ class INMarker extends INMapObject {
      */
 
     draw() {
+        const self = this;
         if (this._points.length < 1) {
             throw new Error('No point for marker placement has been specified');
         }
         if (!!this._id) {
             const events = [];
             this._events.forEach(event => events.push(event));
-            Communication.send(this._navi.iFrame, this._navi.targetHost, {
+            Communication.send(self._navi.iFrame, self._navi.targetHost, {
                 command: 'drawObject',
                 args: {
                     type: this._type,

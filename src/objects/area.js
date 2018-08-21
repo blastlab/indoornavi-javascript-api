@@ -53,7 +53,7 @@ class INArea extends INMapObject {
 
     draw() {
         if (!!this._id) {
-            Communication.send(this._navi.iFrame, this._navi._targetHost, {
+            Communication.send(this._navi.iFrame, this._navi.targetHost, {
                 command: 'drawObject',
                 args: {
                     type: this._type,

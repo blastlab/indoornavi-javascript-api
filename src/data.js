@@ -36,9 +36,7 @@ class INData {
     pullToPath(point, accuracy) {
         const self = this;
         return new Promise(resolve => {
-            // create listener for event that will fire only once
             Communication.listen(`getPointOnPath`, resolve);
-            // then send message
             Communication.send(self._navi.iFrame, self._navi.targetHost, {
                 command: 'getPointOnPath',
                 args: {

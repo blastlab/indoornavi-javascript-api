@@ -52,6 +52,7 @@
             width: 1300,
             height: 950
         });
+    let data = null;
 	
     let infoWindow2;
     let infoWindow1;
@@ -66,9 +67,11 @@
         document.getElementById('removeINMarker_1').removeAttribute('disabled');
         document.getElementById('addINMarker_2').removeAttribute('disabled');
         document.getElementById('removeINMarker_2').removeAttribute('disabled');
-		applyLongClickListener();
+        data = new INData('http://localhost:90', 'TestAdmin', navi);
+        applyLongClickListener();
         getPaths();
     });
+
 
     // const from = new Date(2017, 10, 1);
     // const to = new Date(2017, 12, 30);
@@ -177,7 +180,7 @@
 	
 	function applyLongClickListener() {
 		navi.addMapLongClickListener(data => {
-			this.addMarkerOnLongClick(data.position.x, data.position.y);
+            pullPointToPaht(data.position, 10000, addMarkerOnLongClick)
 		});
 	}
 
@@ -185,7 +188,7 @@
 	function addMarkerOnLongClick(x, y) {
 		let pointInRealDimension = MapUtils.pixelsToRealDimensions(navi, {x: x, y: y});
 		let marker = new INMarker(navi);
-		marker.ready().then(() => {
+        marker.ready().then(() => {
 			marker
 				.point({x: pointInRealDimension.x, y: pointInRealDimension.y})
 				.draw();
@@ -236,12 +239,29 @@
     }
 
     function getPaths() {
-        const data = new INData('http://localhost:90', 'TestAdmin', navi);
-        data.getPaths(1).then(function(data) {
+        data.getPaths(4).then(function(data) {
             console.log(data);
+            const path = [];
+            data.forEach(d => {
+
+                path.push(MapUtils.pixelsToRealDimensions(navi, d.startPoint));
+                path.push(MapUtils.pixelsToRealDimensions(navi, d.endPoint));
+                if (!!poly) {
+                    return;
+                }
+                poly = new INPolyline(navi);
+                poly.ready().then(() => {
+                    poly.points(path)
+                        .setLineColor('#906090')
+                        .draw();
+                });
+            });
         });
-        data.pullToPath(points[0], 1000).then(function(data) {
-            console.log(data);
+    }
+    function pullPointToPaht(point, accuracy, callback) {
+        data.pullToPath(point, accuracy).then(function(d) {
+            console.log(d.calculatedPosition);
+            callback(d.calculatedPosition.x, d.calculatedPosition.y);
         });
     }
 
