@@ -13,11 +13,62 @@
 <button disabled id="removeINMarker_1" onclick="removeINMarker_1()">Remove Marker 1</button>
 <button disabled id="addINMarker_2" onclick="addINMarker_2()">Add Marker 2</button>
 <button disabled id="removeINMarker_2" onclick="removeINMarker_2()">Remove Marker 2</button>
+<button disabled id="androidPathTest" onclick="pullAndroidPointsToPath()">Android Pull to Path Test</button>
+
 
 <div id="map"></div>
 </body>
 <script src="indoorNavi.js"></script>
 <script>
+    // floor id
+    const floorId = 4;
+    const androidTestCasePoints = [
+        {x: 1359, y: 0},
+        {x: 1260, y: 5},
+        {x: 1352, y: 0},
+        {x: 1260, y: 5},
+        {x: 1061, y: 24},
+        {x: 923, y: 0},
+        {x: 1087, y: 115},
+        {x: 941, y: 251},
+        {x: 745, y: 213},
+        {x: 746, y: 413},
+        {x: 822, y: 598},
+        {x: 875, y: 738},
+        {x: 694, y: 825},
+        {x: 806, y: 737},
+        {x: 938, y: 887},
+        {x: 851, y: 974},
+        {x: 673, y: 884},
+        {x: 721, y: 690},
+        {x: 656, y: 501},
+        {x: 607, y: 586},
+        {x: 468, y: 442},
+        {x: 330, y: 297},
+        {x: 192, y: 153},
+        {x: 74, y: 30},
+        {x: 212, y: 174},
+        {x: 190, y: 34},
+        {x: 390, y: 19},
+        {x: 190, y: 26},
+        {x: 390, y: 16},
+        {x: 191, y: 39},
+        {x: 74, y: 30},
+        {x: 74, y: 30},
+        {x: 239, y: 143},
+        {x: 74, y: 30},
+        {x: 101, y: 58},
+        {x: 267, y: 169},
+        {x: 467, y: 177},
+        {x: 642, y: 273},
+        {x: 842, y: 285},
+        {x: 1041, y: 263},
+        {x: 1220, y: 216},
+        {x: 1269, y: 22},
+        {x: 1260, y: 5},
+        {x: 1223, y: 202},
+        {x: 1260, y: 5}
+    ];
     //set poly as global variable
     let poly = null;
     //set INArea as global variable
@@ -56,7 +107,7 @@
 	
     let infoWindow2;
     let infoWindow1;
-    navi.load(4).then(function () {
+    navi.load(floorId).then(function () {
         document.getElementById('toggle10999').removeAttribute('disabled');
         document.getElementById('drawINPolyline').removeAttribute('disabled');
         document.getElementById('removeINPolyline').removeAttribute('disabled');
@@ -67,6 +118,7 @@
         document.getElementById('removeINMarker_1').removeAttribute('disabled');
         document.getElementById('addINMarker_2').removeAttribute('disabled');
         document.getElementById('removeINMarker_2').removeAttribute('disabled');
+        document.getElementById('androidPathTest').removeAttribute('disabled');
         data = new INData('http://localhost:90', 'TestAdmin', navi);
         applyLongClickListener();
         getPaths();
@@ -180,20 +232,37 @@
 	
 	function applyLongClickListener() {
 		navi.addMapLongClickListener(data => {
-            pullPointToPaht(data.position, 10000, addMarkerOnLongClick)
+            console.log('Real coordinates: ', data.position);
+            addMarkerOnPixelsCoordinates(data.position.x, data.position.y, 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png');
+            pullPointToPaht(data.position, 10000, addMarkerOnPixelsCoordinates)
 		});
 	}
 
-	
-	function addMarkerOnLongClick(x, y) {
-		let pointInRealDimension = MapUtils.pixelsToRealDimensions(navi, {x: x, y: y});
-		let marker = new INMarker(navi);
+
+    function addMarkerOnPixelsCoordinates(x, y, icon) {
+        let pointInRealDimension = MapUtils.pixelsToRealDimensions(navi, {x: x, y: y});
+        let marker = new INMarker(navi);
         marker.ready().then(() => {
-			marker
-				.point({x: pointInRealDimension.x, y: pointInRealDimension.y})
-				.draw();
-		});
-	}
+            marker
+                .point({x: pointInRealDimension.x, y: pointInRealDimension.y});
+            if (!!icon) {
+                marker.setIcon(icon);
+            }
+            marker.draw();
+        });
+    }
+
+    function addMarkerOnRealCoordinates(x, y, icon) {
+        let marker = new INMarker(navi);
+        marker.ready().then(() => {
+            marker
+                .point({x: x, y: y});
+            if (!!icon) {
+                marker.setIcon(icon);
+            }
+            marker.draw();
+        });
+    }
 
     function addINMarker_2() {
         if (!!inMarker2) {
@@ -239,7 +308,7 @@
     }
 
     function getPaths() {
-        data.getPaths(4).then(function(data) {
+        data.getPaths(floorId).then(function (data) {
             console.log(data);
             const path = [];
             data.forEach(d => {
@@ -260,9 +329,23 @@
     }
     function pullPointToPaht(point, accuracy, callback) {
         data.pullToPath(point, accuracy).then(function(d) {
-            console.log(d.calculatedPosition);
-            callback(d.calculatedPosition.x, d.calculatedPosition.y);
+            console.log('Pulled to path coordinates: ', d.calculatedPosition);
+            callback(d.calculatedPosition.x, d.calculatedPosition.y, null);
         });
+    }
+
+    function pullAndroidPointsToPath() {
+        let point = null;
+        if (androidTestCasePoints.length > 0) {
+            point = androidTestCasePoints.pop();
+        }
+        if (!!point) {
+            console.log('Real coordinates: ', point);
+            addMarkerOnRealCoordinates(point.x, point.y, 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png');
+            pullPointToPaht(MapUtils.realDimensionsToPixels(navi, point), 100, addMarkerOnPixelsCoordinates);
+        } else {
+            console.log('DONE WITH ANDROID TEST');
+        }
     }
 
 </script>
