@@ -112,8 +112,8 @@
         }
         poly = new INPolyline(navi);
         poly.ready().then(() => {
-            poly.points(points)
-                .setLineColor('#906090')
+            poly.setPoints(points)
+                .setColor('#906090')
                 .draw();
         });
     }
@@ -133,8 +133,8 @@
         }
         inArea = new INArea(navi);
         inArea.ready().then(() => {
-            inArea.points(points)
-                .setFillColor('rgb(144,224,017)')
+            inArea.setPoints(points)
+                .setColor('rgb(144,224,017)')
                 .setOpacity(0.5)
                 .draw();
             console.log(`Point x: 740, y: 750 is within drawn area: ${inArea.isWithin({x: 740, y: 750})}`);
@@ -160,7 +160,7 @@
         infoWindow1 = new INInfoWindow(navi);
         infoWindow1.ready().then(() => {
             infoWindow1
-                .setInnerHTML(infoWindowContent)
+                .setContent(infoWindowContent)
                 .setPosition(PositionIt.TOP)
                 .width(200)
                 .height(100);
@@ -168,7 +168,7 @@
         inMarker1 = new INMarker(navi);
         inMarker1.ready().then(() => {
 		inMarker1
-			.point(points[0])
+			.setPosition(points[0])
 			.setIcon(markerIcon)
 			.setLabel('this is label 1')
 			.addEventListener(Event.MOUSE.CLICK, () => {
@@ -202,7 +202,7 @@
         }
         infoWindow2 = new INInfoWindow(navi);
         infoWindow2.ready().then(() => {
-            infoWindow2.setInnerHTML(infoWindowContent)
+            infoWindow2.setContent(infoWindowContent)
             .setPosition(PositionIt.TOP_RIGHT)
                 .width(500)
                 .height(400);
@@ -214,7 +214,7 @@
                 .addEventListener(Event.MOUSE.CLICK, () => {
                     infoWindow2.open(inMarker2);
                 })
-                .point(points[2])
+                .setPosition(points[2])
                 .draw();
         });
     }

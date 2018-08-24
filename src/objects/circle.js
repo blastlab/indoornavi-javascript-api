@@ -1,6 +1,6 @@
 /**
  * Class representing a Circle,
- * creates the INArea object in iframe that communicates with indoornavi frontend server and draws Area
+ * creates the INCircle object in iframe that communicates with indoornavi frontend server and draws the Circle
  * @extends INMapObject
  */
 class INCircle extends INMapObject {
@@ -24,9 +24,8 @@ class INCircle extends INMapObject {
      * @return {INCircle} self to let you chain methods
      */
     setPosition(position) {
-        if (!(!!position.x) || !(!!position.y)) {
-            throw new Error('Point must have x and y');
-        }
+        Validation.required(position, 'x', 'Point must have x');
+        Validation.required(position, 'y', 'Point must have y');
         this._position = position;
         return this;
     }
@@ -41,13 +40,11 @@ class INCircle extends INMapObject {
 
     /**
      * Sets radius of the circle
-     * @param {number} radius of the circle
+     * @param {number} radius of the circle, must be an integer
      * @return {INCircle} self to let you chain methods
      */
     setRadius(radius) {
-        if (!Number.isInteger(radius)) {
-            throw new Error('Radius must be an integer');
-        }
+        Validation.isInteger(radius, 'Radius must be an integer');
         this._radius = radius;
         return this;
     }
@@ -66,6 +63,7 @@ class INCircle extends INMapObject {
      * @return {INCircle} self to let you chain methods
      */
     setColor(color) {
+        Validation.isColor(color, 'Must be valid color format: hex or rgb');
         this._color = color;
         return this;
     }
@@ -84,9 +82,7 @@ class INCircle extends INMapObject {
      * @return {INCircle} self to let you chain methods
      */
     setOpacity(opacity) {
-        if (!(Number(opacity) === opacity && opacity % 1 !== 0) || opacity > 1 || opacity < 0) {
-            throw new Error('Wrong value passed to setTransparency() method, only numbers between 0 and 1 are allowed');
-        }
+        Validation.isBetween(0, 1, opacity, 'Opacity must be between 0.0 and 1.0');
         this._opacity = opacity;
         return this;
     }
@@ -105,9 +101,7 @@ class INCircle extends INMapObject {
      * @return {INCircle} self to let you chain methods
      */
     setBorder(border) {
-        if (!(!!border.color) && !(!!border.width)) {
-            throw new Error('Border must have at least color and/or width');
-        }
+        Validation.requiredAny(border, ['color', 'width'], 'Border must have at least color and/or width');
         this._border = border;
         return this;
     }

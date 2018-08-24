@@ -1,18 +1,18 @@
 /**
  * Global object representing position regarding to related {@link INMap} object,
  * @namespace
- * @property {object} PositionIt - position, ENUM like, object
- * @property {string} PositionIt.TOP - top side position in regard to related object
- * @property {string} PositionIt.RIGHT - right side position in regard to related object
- * @property {string} PositionIt.BOTTOM - bottom side position in regard to related object
- * @property {string} PositionIt.LEFT - left side position in regard to related object
- * @property {string} PositionIt.TOP_RIGHT - top right side position in regard to related object
- * @property {string} PositionIt.TOP_LEFT - top left side position in regard to related object
- * @property {string} PositionIt.BOTTOM_RIGHT - bottom right side position in regard to related object
- * @property {string} PositionIt.BOTTOM_LEFT - bottom left side position in regard to related object
+ * @property {object} Position - position, ENUM like, object
+ * @property {string} Position.TOP - top side position in regard to related object
+ * @property {string} Position.RIGHT - right side position in regard to related object
+ * @property {string} Position.BOTTOM - bottom side position in regard to related object
+ * @property {string} Position.LEFT - left side position in regard to related object
+ * @property {string} Position.TOP_RIGHT - top right side position in regard to related object
+ * @property {string} Position.TOP_LEFT - top left side position in regard to related object
+ * @property {string} Position.BOTTOM_RIGHT - bottom right side position in regard to related object
+ * @property {string} Position.BOTTOM_LEFT - bottom left side position in regard to related object
  *
  */
-PositionIt = {
+Position = {
     TOP: 0,
     RIGHT: 1,
     BOTTOM: 2,
