@@ -23,10 +23,10 @@ class INPolyline extends INMapObject {
      * poly.ready().then(() => poly.setPoints(points).draw(); );
      */
     setPoints(points) {
-        Validation.isArray(points, 'Given argument is not na array');
+        Validation.isArray(points, 'Given argument is not an array');
         points.forEach(point => {
-            Validation.isInteger(point.x, 'Given points are in wrong format or coordinates x an y are not integers');
-            Validation.isInteger(point.y, 'Given points are in wrong format or coordinates x an y are not integers');
+            Validation.isInteger(point.x, 'Given points are in wrong format or coordinates x and y are not integers');
+            Validation.isInteger(point.y, 'Given points are in wrong format or coordinates x and y are not integers');
         });
         this._points = points;
         return this;
