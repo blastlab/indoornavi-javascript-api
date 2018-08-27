@@ -140,13 +140,13 @@ class Validation {
     }
 
     static isString(value, errorMessage) {
-        if (typeof path !== 'string') {
+        if (typeof value !== 'string') {
             throw new Error(errorMessage);
         }
     }
 
     static isNumber(value, errorMessage) {
-        if (typeof path !== 'number') {
+        if (typeof value !== 'number') {
             throw new Error(errorMessage);
         }
     }
@@ -160,7 +160,7 @@ class Validation {
     static isColor(value, errorMessage) {
         const isValidRgb = /[R][G][B][A]?[(]([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\s*,\s*([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\s*,\s*([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])[)]/i.test(value);
         const isValidHex = /^#(?:[0-9a-fA-F]{3}){1,2}$/i.test(value);
-        if (!isValidHex || !isValidRgb) {
+        if (!isValidHex && !isValidRgb) {
             throw new Error(errorMessage);
         }
     }
@@ -787,7 +787,7 @@ class INInfoWindow extends INMapObject {
      * infoWindow.ready(() => infoWindow.setPositionAt(Position.TOP_RIGHT).open(); );
      */
     setPositionAt(position) {
-        Validation.isInArray('Wrong argument passed for info window position');
+        Validation.isInArray(Object.values(Position), position, 'Wrong argument passed for info window position');
         this._positionAt = position;
         return this;
     }
@@ -834,8 +834,8 @@ class INInfoWindow extends INMapObject {
      * infoWindow.ready(() => infoWindow.width(200).open(); );
      */
     setWidth(width) {
-        Validation.isInteger(height, 'Wrong height argument passed for info window position');
-        Validation.isGreaterThan(50, height, 'Wrong height argument passed for info window position');
+        Validation.isInteger(width, 'Wrong height argument passed for info window position');
+        Validation.isGreaterThan(50, width, 'Wrong height argument passed for info window position');
         this._width = width;
         return this;
     }
@@ -918,8 +918,7 @@ class INMarker extends INMapObject {
      * marker.ready().then(() => marker.setLabel('Marker Label').draw(); );
      */
     setLabel(label) {
-        Validation.isString(label, 'Label must be string or number');
-        Validation.isNumber(label, 'Label must be string or number');
+        Validation.isString(label, 'Label must be a string');
         this._label = label;
         return this;
     }
@@ -1072,10 +1071,10 @@ class INPolyline extends INMapObject {
      * poly.ready().then(() => poly.setPoints(points).draw(); );
      */
     setPoints(points) {
-        Validation.isArray(points, 'Given argument is not na array');
+        Validation.isArray(points, 'Given argument is not an array');
         points.forEach(point => {
-            Validation.isInteger(point.x, 'Given points are in wrong format or coordinates x an y are not integers');
-            Validation.isInteger(point.y, 'Given points are in wrong format or coordinates x an y are not integers');
+            Validation.isInteger(point.x, 'Given points are in wrong format or coordinates x and y are not integers');
+            Validation.isInteger(point.y, 'Given points are in wrong format or coordinates x and y are not integers');
         });
         this._points = points;
         return this;

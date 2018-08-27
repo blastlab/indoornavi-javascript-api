@@ -161,9 +161,9 @@
         infoWindow1.ready().then(() => {
             infoWindow1
                 .setContent(infoWindowContent)
-                .setPosition(PositionIt.TOP)
-                .width(200)
-                .height(100);
+                .setPositionAt(Position.TOP)
+                .setWidth(200)
+                .setHeight(100);
         });
         inMarker1 = new INMarker(navi);
         inMarker1.ready().then(() => {
@@ -191,7 +191,7 @@
 		let marker = new INMarker(navi);
 		marker.ready().then(() => {
 			marker
-				.point({x: pointInRealDimension.x, y: pointInRealDimension.y})
+				.setPosition({x: pointInRealDimension.x, y: pointInRealDimension.y})
 				.draw();
 		});
 	}
@@ -203,9 +203,9 @@
         infoWindow2 = new INInfoWindow(navi);
         infoWindow2.ready().then(() => {
             infoWindow2.setContent(infoWindowContent)
-            .setPosition(PositionIt.TOP_RIGHT)
-                .width(500)
-                .height(400);
+            .setPositionAt(Position.TOP_RIGHT)
+                .setWidth(500)
+                .setHeight(400);
         });
         inMarker2 = new INMarker(navi);
         inMarker2.ready().then(() => {

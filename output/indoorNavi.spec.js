@@ -140,13 +140,13 @@ class Validation {
     }
 
     static isString(value, errorMessage) {
-        if (typeof path !== 'string') {
+        if (typeof value !== 'string') {
             throw new Error(errorMessage);
         }
     }
 
     static isNumber(value, errorMessage) {
-        if (typeof path !== 'number') {
+        if (typeof value !== 'number') {
             throw new Error(errorMessage);
         }
     }
@@ -160,7 +160,7 @@ class Validation {
     static isColor(value, errorMessage) {
         const isValidRgb = /[R][G][B][A]?[(]([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\s*,\s*([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\s*,\s*([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])[)]/i.test(value);
         const isValidHex = /^#(?:[0-9a-fA-F]{3}){1,2}$/i.test(value);
-        if (!isValidHex || !isValidRgb) {
+        if (!isValidHex && !isValidRgb) {
             throw new Error(errorMessage);
         }
     }
@@ -1072,10 +1072,10 @@ class INPolyline extends INMapObject {
      * poly.ready().then(() => poly.setPoints(points).draw(); );
      */
     setPoints(points) {
-        Validation.isArray(points, 'Given argument is not na array');
+        Validation.isArray(points, 'Given argument is not an array');
         points.forEach(point => {
-            Validation.isInteger(point.x, 'Given points are in wrong format or coordinates x an y are not integers');
-            Validation.isInteger(point.y, 'Given points are in wrong format or coordinates x an y are not integers');
+            Validation.isInteger(point.x, 'Given points are in wrong format or coordinates x and y are not integers');
+            Validation.isInteger(point.y, 'Given points are in wrong format or coordinates x and y are not integers');
         });
         this._points = points;
         return this;
@@ -1405,7 +1405,7 @@ describe('Object tests', function() {
 });
 
 describe('Validation module tests', function() {
-    it('Should throw an error when required field is undefined', function() {
+    it('should throw an error when required field is undefined', function() {
         // given
         const requiredField = 'test';
         const object = {
@@ -1421,7 +1421,7 @@ describe('Validation module tests', function() {
         expect(toTest).toThrow(new Error('Test'));
     });
 
-    it('Should throw an error when required field value is undefined', function() {
+    it('should throw an error when required field value is undefined', function() {
         // given
         const requiredField = 'test';
         const object = {
@@ -1437,13 +1437,13 @@ describe('Validation module tests', function() {
         expect(toTest).toThrow(new Error('Test'));
     });
 
-    it('Should NOT throw an error when required field is defined', function() {
+    it('should NOT throw an error when required field is defined', function() {
         // given
         const requiredField = 'test';
         const object = {
             test: 'test'
         };
-        const spy = spyOn(Validation, 'required');
+        const spy = spyOn(Validation, 'required').and.callThrough();
 
         // when
         Validation.required(object, requiredField, 'Test');
@@ -1452,7 +1452,7 @@ describe('Validation module tests', function() {
         expect(spy).toHaveBeenCalled();
     });
 
-    it('Should throw an error when all of the required fields are undefined', function() {
+    it('should throw an error when all of the required fields are undefined', function() {
         // given
         const requiredFields = ['test', 'mama'];
         const object = {
@@ -1468,13 +1468,13 @@ describe('Validation module tests', function() {
         expect(toTest).toThrow(new Error('Test'));
     });
 
-    it('Should NOT throw an error when any of the required fields is defined', function() {
+    it('should NOT throw an error when any of the required fields is defined', function() {
         // given
         const requiredFields = ['test', 'mama'];
         const object = {
             'test': false
         };
-        const spy = spyOn(Validation, 'requiredAny');
+        const spy = spyOn(Validation, 'requiredAny').and.callThrough();
 
         // when
         Validation.requiredAny(object, requiredFields, 'Test');
@@ -1483,7 +1483,7 @@ describe('Validation module tests', function() {
         expect(spy).toHaveBeenCalled();
     });
 
-    it('Should throw an error when given number is NOT an integer', function() {
+    it('should throw an error when given number is NOT an integer', function() {
         // given
         const num = 1.1;
 
@@ -1496,10 +1496,10 @@ describe('Validation module tests', function() {
         expect(toTest).toThrow(new Error('Test'));
     });
 
-    it('Should NOT throw an error when given number is an integer', function() {
+    it('should NOT throw an error when given number is an integer', function() {
         // given
         const num = 5;
-        const spy = spyOn(Validation, 'isInteger');
+        const spy = spyOn(Validation, 'isInteger').and.callThrough();
 
         // when
         Validation.isInteger(num, 'Test');
@@ -1508,7 +1508,7 @@ describe('Validation module tests', function() {
         expect(spy).toHaveBeenCalled();
     });
 
-    it('Should throw an error when given number is NOT in given range', function() {
+    it('should throw an error when given number is NOT in given range', function() {
         // given
         const min = 1;
         const max = 5;
@@ -1522,11 +1522,11 @@ describe('Validation module tests', function() {
         expect(toTest).toThrow(new Error('Test'));
     });
 
-    it('Should NOT throw an error when given number is in given range', function() {
+    it('should NOT throw an error when given number is in given range', function() {
         // given
         const min = 5;
         const max = 10;
-        const spy = spyOn(Validation, 'isBetween');
+        const spy = spyOn(Validation, 'isBetween').and.callThrough();
 
         // when
         Validation.isBetween(min, max, 6, 'Test');
@@ -1535,7 +1535,7 @@ describe('Validation module tests', function() {
         expect(spy).toHaveBeenCalled();
     });
 
-    it('Should throw an error when given value is NOT in the proper color format', function() {
+    it('should throw an error when given value is NOT in the proper color format', function() {
         // given
         const wrongColorFormat = 'rb(19,91,9)';
 
@@ -1548,10 +1548,10 @@ describe('Validation module tests', function() {
         expect(toTest).toThrow(new Error('Test'));
     });
 
-    it('Should NOT throw an error when given value is in the proper color format', function() {
+    it('should NOT throw an error when given value is in the proper color format', function() {
         // given
-        const goodColorFormat = '#1100f9';
-        const spy = spyOn(Validation, 'isColor');
+        const goodColorFormat = '#ff0000';
+        const spy = spyOn(Validation, 'isColor').and.callThrough();
 
         // when
         Validation.isColor(goodColorFormat, 'Test');
@@ -1560,7 +1560,7 @@ describe('Validation module tests', function() {
         expect(spy).toHaveBeenCalled();
     });
 
-    it('Should throw an error when given value is NOT a string', function() {
+    it('should throw an error when given value is NOT a string', function() {
         // given
         const notAString = false;
 
@@ -1573,10 +1573,10 @@ describe('Validation module tests', function() {
         expect(toTest).toThrow(new Error('Test'));
     });
 
-    it('Should NOT throw an error when given value is a string', function() {
+    it('should NOT throw an error when given value is a string', function() {
         // given
         const value = 'test';
-        const spy = spyOn(Validation, 'isString');
+        const spy = spyOn(Validation, 'isString').and.callThrough();
 
         // when
         Validation.isString(value, 'Test');
@@ -1585,7 +1585,7 @@ describe('Validation module tests', function() {
         expect(spy).toHaveBeenCalled();
     });
 
-    it('Should throw an error when given value is NOT a number', function() {
+    it('should throw an error when given value is NOT a number', function() {
         // given
         const notANumber = false;
 
@@ -1598,10 +1598,10 @@ describe('Validation module tests', function() {
         expect(toTest).toThrow(new Error('Test'));
     });
 
-    it('Should NOT throw an error when given value is a number', function() {
+    it('should NOT throw an error when given value is a number', function() {
         // given
         const value = 1.1;
-        const spy = spyOn(Validation, 'isNumber');
+        const spy = spyOn(Validation, 'isNumber').and.callThrough();
 
         // when
         Validation.isNumber(value, 'Test');
@@ -1610,7 +1610,7 @@ describe('Validation module tests', function() {
         expect(spy).toHaveBeenCalled();
     });
 
-    it('Should throw an error when given value is NOT an array', function() {
+    it('should throw an error when given value is NOT an array', function() {
         // given
         const notAnArray = false;
 
@@ -1623,10 +1623,10 @@ describe('Validation module tests', function() {
         expect(toTest).toThrow(new Error('Test'));
     });
 
-    it('Should NOT throw an error when given value is an array', function() {
+    it('should NOT throw an error when given value is an array', function() {
         // given
         const value = ['test'];
-        const spy = spyOn(Validation, 'isArray');
+        const spy = spyOn(Validation, 'isArray').and.callThrough();
 
         // when
         Validation.isArray(value, 'Test');
@@ -1635,7 +1635,7 @@ describe('Validation module tests', function() {
         expect(spy).toHaveBeenCalled();
     });
 
-    it('Should throw an error when given value is NOT in an array', function() {
+    it('should throw an error when given value is NOT in an array', function() {
         // given
         const value = 89;
 
@@ -1648,10 +1648,10 @@ describe('Validation module tests', function() {
         expect(toTest).toThrow(new Error('Test'));
     });
 
-    it('Should NOT throw an error when given value is in an array', function() {
+    it('should NOT throw an error when given value is in an array', function() {
         // given
         const value = 89;
-        const spy = spyOn(Validation, 'isInArray');
+        const spy = spyOn(Validation, 'isInArray').and.callThrough();
 
         // when
         Validation.isInArray([11, 22, 33, 89], value, 'Test');
@@ -1660,7 +1660,7 @@ describe('Validation module tests', function() {
         expect(spy).toHaveBeenCalled();
     });
 
-    it('Should throw an error when given value is lower than min', function() {
+    it('should throw an error when given value is lower than min', function() {
         // given
         const value = 89;
 
@@ -1673,10 +1673,10 @@ describe('Validation module tests', function() {
         expect(toTest).toThrow(new Error('Test'));
     });
 
-    it('Should NOT throw an error when given value is greater than min', function() {
+    it('should NOT throw an error when given value is greater than min', function() {
         // given
         const value = 89;
-        const spy = spyOn(Validation, 'isGreaterThan');
+        const spy = spyOn(Validation, 'isGreaterThan').and.callThrough();
 
         // when
         Validation.isGreaterThan(82, value, 'Test');

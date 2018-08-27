@@ -31,8 +31,7 @@ class INMarker extends INMapObject {
      * marker.ready().then(() => marker.setLabel('Marker Label').draw(); );
      */
     setLabel(label) {
-        Validation.isString(label, 'Label must be string or number');
-        Validation.isNumber(label, 'Label must be string or number');
+        Validation.isString(label, 'Label must be a string');
         this._label = label;
         return this;
     }
