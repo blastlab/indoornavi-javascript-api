@@ -29,13 +29,13 @@ class Validation {
     }
 
     static isString(value, errorMessage) {
-        if (typeof path !== 'string') {
+        if (typeof value !== 'string') {
             throw new Error(errorMessage);
         }
     }
 
     static isNumber(value, errorMessage) {
-        if (typeof path !== 'number') {
+        if (typeof value !== 'number') {
             throw new Error(errorMessage);
         }
     }
@@ -49,7 +49,7 @@ class Validation {
     static isColor(value, errorMessage) {
         const isValidRgb = /[R][G][B][A]?[(]([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\s*,\s*([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\s*,\s*([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])[)]/i.test(value);
         const isValidHex = /^#(?:[0-9a-fA-F]{3}){1,2}$/i.test(value);
-        if (!isValidHex || !isValidRgb) {
+        if (!isValidHex && !isValidRgb) {
             throw new Error(errorMessage);
         }
     }
