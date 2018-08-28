@@ -11,7 +11,7 @@ class INPolyline extends INMapObject {
     constructor(navi) {
         super(navi);
         this._type = 'POLYLINE';
-        this._color = '#111';
+        this._lineColor = '#111';
     }
 
     /**
@@ -50,7 +50,7 @@ class INPolyline extends INMapObject {
      */
     setLineColor(color) {
         Validation.isColor(color, 'Must be valid color format: hex or rgb');
-        this._color = color;
+        this._lineColor = color;
         return this;
     }
 
@@ -59,7 +59,7 @@ class INPolyline extends INMapObject {
      * @return {string} color of the lines in polyline
      */
     getLineColor() {
-        return this._color;
+        return this._lineColor;
     }
 
     /**
@@ -78,7 +78,7 @@ class INPolyline extends INMapObject {
                     object: {
                         id: this._id,
                         points: this._points,
-                        stroke: this._stroke
+                        color: this._lineColor
                     }
                 }
             });
