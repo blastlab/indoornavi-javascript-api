@@ -118,7 +118,7 @@ class INMap {
         const self = this;
         return new Promise(resolve => {
             Communication.listen(`getPointOnPath`, resolve);
-            Communication.send(self._navi.iFrame, self._navi.targetHost, {
+            Communication.send(self.iFrame, self.targetHost, {
                 command: 'getPointOnPath',
                 args: {
                     point: point,
