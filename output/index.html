@@ -328,7 +328,7 @@
         });
     }
     function pullPointToPath(point, accuracy, callback) {
-        data.pullToPath(point, accuracy).then(function(d) {
+        navi.pullToPath(point, accuracy).then(function(d) {
             console.log('Pulled to path coordinates: ', d.calculatedPosition);
             callback(d.calculatedPosition.x, d.calculatedPosition.y, null);
         });
