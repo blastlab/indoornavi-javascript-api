@@ -13,7 +13,7 @@
 <button disabled id="removeINMarker_1" onclick="removeINMarker_1()">Remove Marker 1</button>
 <button disabled id="addINMarker_2" onclick="addINMarker_2()">Add Marker 2</button>
 <button disabled id="removeINMarker_2" onclick="removeINMarker_2()">Remove Marker 2</button>
-<button disabled id="androidPathTest" onclick="pullAndroidPointsToPath()">Android Pull to Path Test</button>
+<button disabled id="androidPathTest" onclick="executePullPointsToPath()">Android Pull to Path Test</button>
 
 
 <div id="map"></div>
@@ -234,7 +234,7 @@
 		navi.addMapLongClickListener(data => {
             console.log('Real coordinates: ', data.position);
             addMarkerOnPixelsCoordinates(data.position.x, data.position.y, 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png');
-            pullPointToPaht(data.position, 10000, addMarkerOnPixelsCoordinates)
+            pullPointToPath(data.position, 10000, addMarkerOnPixelsCoordinates)
 		});
 	}
 
@@ -327,14 +327,14 @@
             });
         });
     }
-    function pullPointToPaht(point, accuracy, callback) {
+    function pullPointToPath(point, accuracy, callback) {
         data.pullToPath(point, accuracy).then(function(d) {
             console.log('Pulled to path coordinates: ', d.calculatedPosition);
             callback(d.calculatedPosition.x, d.calculatedPosition.y, null);
         });
     }
 
-    function pullAndroidPointsToPath() {
+    function executePullPointsToPath() {
         let point = null;
         if (androidTestCasePoints.length > 0) {
             point = androidTestCasePoints.pop();
@@ -342,7 +342,7 @@
         if (!!point) {
             console.log('Real coordinates: ', point);
             addMarkerOnRealCoordinates(point.x, point.y, 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png');
-            pullPointToPaht(MapUtils.realDimensionsToPixels(navi, point), 100, addMarkerOnPixelsCoordinates);
+            pullPointToPath(MapUtils.realDimensionsToPixels(navi, point), 100, addMarkerOnPixelsCoordinates);
         } else {
             console.log('DONE WITH ANDROID TEST');
         }

@@ -21,7 +21,7 @@ class INData {
      */
     getPaths(floorId) {
         return new Promise((function(resolve) {
-            this._http.doGet(`${this._targetHost}${this._baseUrl}paths/${floorId}`, function (data) {
+            this._http.doGet(`${this._targetHost}${this._baseUrl}paths/${floorId}`, function(data) {
                 resolve(JSON.parse(data));
             });
         }).bind(this));
