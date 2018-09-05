@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="JavaScriptLibraryMappings">
-    <file url="file://$PROJECT_DIR$" libraries="{indoornavi_api/node_modules}" />
-    <file url="PROJECT" libraries="{indoornavi_api/node_modules, jasmine, jasmine-DefinitelyTyped}" />
+    <file url="PROJECT" libraries="{jasmine, jasmine-DefinitelyTyped}" />
   </component>
 </project>
