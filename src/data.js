@@ -3,9 +3,8 @@ class INData {
      * Data object containing methods to retrieve data
      * @param {string} targetHost - address to the IndoorNavi backend server
      * @param {string} apiKey - the API key created on IndoorNavi server (must be assigned to your domain)
-     * @param {Object} navi - constructor needs an instance of {@link INMap} object injected
      */
-    constructor(targetHost, apiKey, navi) {
+    constructor(targetHost, apiKey) {
         const authHeader = 'Token ' + apiKey;
         this._targetHost = targetHost;
         this._baseUrl = '/rest/v1/';
