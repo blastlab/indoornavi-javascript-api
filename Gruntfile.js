@@ -21,7 +21,7 @@ module.exports = function(grunt) {
                 dest: 'output/indoorNavi.js'
             },
             test: {
-                src: ['src/helper/*', 'src/model/*', 'src/objects/base/*', 'src/objects/*', 'src/indoornavi.js', 'src/report.js', 'spec/indoornavi.spec.js'],
+                src: ['src/helper/*', 'src/model/*', 'src/objects/base/*', 'src/objects/*', 'src/indoornavi.js', 'src/report.js', 'spec/*'],
                 dest: 'output/indoorNavi.spec.js'
             }
         }
