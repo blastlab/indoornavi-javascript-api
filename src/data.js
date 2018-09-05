@@ -10,7 +10,6 @@ class INData {
         this._baseUrl = '/rest/v1/';
         this._http = new Http();
         this._http.setAuthorization(authHeader);
-        this._navi = navi;
     }
 
     /**
