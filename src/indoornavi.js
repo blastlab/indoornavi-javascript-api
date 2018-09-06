@@ -108,6 +108,26 @@ class INMap {
         Communication.listen(event, callback);
     }
 
+    /**
+     * Get closest coordinates on floor path for given point
+     * @param {@link Point} point coordinates
+     * @param {number} accuracy of path pull
+     * @return {Promise} promise that will be resolved when {@link Point} is retrieved
+     */
+    pullToPath(point, accuracy) {
+        const self = this;
+        return new Promise(resolve => {
+            Communication.listen(`getPointOnPath`, resolve);
+            Communication.send(self.iFrame, self.targetHost, {
+                command: 'getPointOnPath',
+                args: {
+                    point: point,
+                    accuracy: accuracy
+                }
+            });
+        });
+    }
+
     _checkIsReady() {
         if (!this.parameters) {
             throw new Error('INMap is not ready. Call load() first and then when promise resolves, INMap will be ready.');

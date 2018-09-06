@@ -787,7 +787,7 @@ class INInfoWindow extends INMapObject {
      * infoWindow.ready(() => infoWindow.setPositionAt(Position.TOP_RIGHT).open(); );
      */
     setPositionAt(position) {
-        Validation.isInArray('Wrong argument passed for info window position');
+        Validation.isInArray(Object.values(Position), position, 'Wrong argument passed for info window position');
         this._positionAt = position;
         return this;
     }
@@ -834,8 +834,8 @@ class INInfoWindow extends INMapObject {
      * infoWindow.ready(() => infoWindow.width(200).open(); );
      */
     setWidth(width) {
-        Validation.isInteger(height, 'Wrong height argument passed for info window position');
-        Validation.isGreaterThan(50, height, 'Wrong height argument passed for info window position');
+        Validation.isInteger(width, 'Wrong height argument passed for info window position');
+        Validation.isGreaterThan(50, width, 'Wrong height argument passed for info window position');
         this._width = width;
         return this;
     }
@@ -918,8 +918,7 @@ class INMarker extends INMapObject {
      * marker.ready().then(() => marker.setLabel('Marker Label').draw(); );
      */
     setLabel(label) {
-        Validation.isString(label, 'Label must be string or number');
-        Validation.isNumber(label, 'Label must be string or number');
+        Validation.isString(label, 'Label must be a string');
         this._label = label;
         return this;
     }
@@ -1097,17 +1096,17 @@ class INPolyline extends INMapObject {
      * const poly = new INPolyline(navi);
      * poly.ready().then(() => poly.setColor('#AABBCC').draw(); );
      */
-    setLineColor(color) {
+    setColor(color) {
         Validation.isColor(color, 'Must be valid color format: hex or rgb');
         this._color = color;
         return this;
     }
 
     /**
-     * Gets color of the lines in polyline
+     * Gets color of the lines and points in polyline
      * @return {string} color of the lines in polyline
      */
-    getLineColor() {
+    getColor() {
         return this._color;
     }
 
@@ -1127,7 +1126,7 @@ class INPolyline extends INMapObject {
                     object: {
                         id: this._id,
                         points: this._points,
-                        stroke: this._stroke
+                        color: this._color
                     }
                 }
             });
@@ -1245,6 +1244,26 @@ class INMap {
             args: event
         });
         Communication.listen(event, callback);
+    }
+
+    /**
+     * Get closest coordinates on floor path for given point
+     * @param {@link Point} point coordinates
+     * @param {number} accuracy of path pull
+     * @return {Promise} promise that will be resolved when {@link Point} is retrieved
+     */
+    pullToPath(point, accuracy) {
+        const self = this;
+        return new Promise(resolve => {
+            Communication.listen(`getPointOnPath`, resolve);
+            Communication.send(self.iFrame, self.targetHost, {
+                command: 'getPointOnPath',
+                args: {
+                    point: point,
+                    accuracy: accuracy
+                }
+            });
+        });
     }
 
     _checkIsReady() {

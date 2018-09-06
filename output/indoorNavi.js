@@ -1246,6 +1246,26 @@ class INMap {
         Communication.listen(event, callback);
     }
 
+    /**
+     * Get closest coordinates on floor path for given point
+     * @param {@link Point} point coordinates
+     * @param {number} accuracy of path pull
+     * @return {Promise} promise that will be resolved when {@link Point} is retrieved
+     */
+    pullToPath(point, accuracy) {
+        const self = this;
+        return new Promise(resolve => {
+            Communication.listen(`getPointOnPath`, resolve);
+            Communication.send(self.iFrame, self.targetHost, {
+                command: 'getPointOnPath',
+                args: {
+                    point: point,
+                    accuracy: accuracy
+                }
+            });
+        });
+    }
+
     _checkIsReady() {
         if (!this.parameters) {
             throw new Error('INMap is not ready. Call load() first and then when promise resolves, INMap will be ready.');
@@ -1327,10 +1347,10 @@ class INData {
      */
     constructor(targetHost, apiKey) {
         const authHeader = 'Token ' + apiKey;
-        this.targetHost = targetHost;
-        this.baseUrl = '/rest/v1/';
-        this.http = new Http();
-        this.http.setAuthorization(authHeader);
+        this._targetHost = targetHost;
+        this._baseUrl = '/rest/v1/';
+        this._http = new Http();
+        this._http.setAuthorization(authHeader);
     }
 
     /**
@@ -1340,7 +1360,7 @@ class INData {
      */
     getPaths(floorId) {
         return new Promise((function(resolve) {
-            this.http.doGet(`${this.targetHost}${this.baseUrl}paths/${floorId}`, function(data) {
+            this._http.doGet(`${this._targetHost}${this._baseUrl}paths/${floorId}`, function(data) {
                 resolve(JSON.parse(data));
             });
         }).bind(this));
