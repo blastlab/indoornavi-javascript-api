@@ -22,7 +22,7 @@
 <script src="indoorNavi.js"></script>
 <script>
     // floor id
-    const floorId = 4;
+    const floorId = 1;
     let inCircle = null;
     //set poly as global variable
     let poly = null;
@@ -73,7 +73,7 @@
         document.getElementById('removeINMarker_1').removeAttribute('disabled');
         document.getElementById('addINMarker_2').removeAttribute('disabled');
         document.getElementById('removeINMarker_2').removeAttribute('disabled');
-        data = new INData('http://localhost:90', 'TestAdmin', navi);
+        data = new INData('http://localhost:90', 'TestAdmin');
         document.getElementById('addCircle').removeAttribute('disabled');
         document.getElementById('removeCircle').removeAttribute('disabled');
 		applyLongClickListener();
