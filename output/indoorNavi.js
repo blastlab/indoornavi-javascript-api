@@ -5,7 +5,7 @@ class Communication {
 
     static listen(eventName, callback) {
         window.addEventListener('message', function (event) {
-            if ('type' in event.data && event.data.type === eventName) {
+            if (event.data.hasOwnProperty('type') && event.data.type === eventName) {
                 callback(event.data);
             }
         }, false);
@@ -13,7 +13,7 @@ class Communication {
 
     static listenOnce(eventName, callback, resolve) {
         function handler(event) {
-            if ('type' in event.data && event.data.type === eventName && !!event.data.mapObjectId) {
+            if (event.data.hasOwnProperty('type') && event.data.type === eventName && !!event.data.mapObjectId) {
                 window.removeEventListener('message', handler, false);
                 callback(event.data);
                 resolve();
