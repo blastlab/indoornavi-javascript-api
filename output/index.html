@@ -200,7 +200,7 @@
         let marker = new INMarker(navi);
         marker.ready().then(() => {
             marker
-                .point({x: pointInRealDimension.x, y: pointInRealDimension.y});
+                .setPosition({x: pointInRealDimension.x, y: pointInRealDimension.y});
             if (!!icon) {
                 marker.setIcon(icon);
             }
