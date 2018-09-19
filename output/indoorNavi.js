@@ -13,6 +13,7 @@ class Communication {
 
     static listenOnce(eventName, callback, resolve) {
         function handler(event) {
+            console.log(event);
             if ('type' in event.data && event.data.type === eventName && !!event.data.mapObjectId) {
                 window.removeEventListener('message', handler, false);
                 callback(event.data);
@@ -1262,6 +1263,20 @@ class INMap {
                     point: point,
                     accuracy: accuracy
                 }
+            });
+        });
+    }
+
+    /**
+     * Get list of complex, buildings and floors.
+     * @returns {Promise} promise that will be resolved when complex list is retrieved.
+     */
+    getComplexes(callback) {
+        const self = this;
+        return new Promise(resolve => {
+            Communication.listenOnce(`getComplexes`, callback, resolve);
+            Communication.send(self.iFrame, self.targetHost, {
+                command: 'getComplexes'
             });
         });
     }

@@ -22,7 +22,7 @@
 <script src="indoorNavi.js"></script>
 <script>
     // floor id
-    const floorId = 4;
+    const floorId = 2;
     let inCircle = null;
     //set poly as global variable
     let poly = null;
@@ -51,7 +51,7 @@
     ];
 
     const navi = new INMap(
-        'http://127.0.0.1:4200',
+        'http://192.168.1.29:4200',
         'TestAdmin',
         'map',
         {
@@ -310,11 +310,16 @@
             });
         });
     }
+
     function pullPointToPath(point, accuracy, callback) {
         navi.pullToPath(point, accuracy).then(function(d) {
             console.log('Pulled to path coordinates: ', d.calculatedPosition);
             callback(d.calculatedPosition.x, d.calculatedPosition.y, null);
         });
+    }
+
+    function getComplexes() {
+        navi.getComplexes(data)
     }
 
 </script>
