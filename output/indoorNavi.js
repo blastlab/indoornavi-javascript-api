@@ -13,7 +13,6 @@ class Communication {
 
     static listenOnce(eventName, callback, resolve) {
         function handler(event) {
-            console.log(event);
             if ('type' in event.data && event.data.type === eventName && !!event.data.mapObjectId) {
                 window.removeEventListener('message', handler, false);
                 callback(event.data);
