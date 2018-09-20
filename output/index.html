@@ -310,11 +310,16 @@
             });
         });
     }
+
     function pullPointToPath(point, accuracy, callback) {
         navi.pullToPath(point, accuracy).then(function(d) {
             console.log('Pulled to path coordinates: ', d.calculatedPosition);
             callback(d.calculatedPosition.x, d.calculatedPosition.y, null);
         });
+    }
+
+    function getComplexes() {
+        navi.getComplexes(data)
     }
 
 </script>
