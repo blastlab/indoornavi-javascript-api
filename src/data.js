@@ -40,7 +40,6 @@ class INData {
                         id: payload.name,
                         name: payload.name,
                         points: payload.points
-
                     }
                 });
                 resolve(areaPoints);
