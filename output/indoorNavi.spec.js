@@ -5,7 +5,7 @@ class Communication {
 
     static listen(eventName, callback) {
         window.addEventListener('message', function (event) {
-            if ('type' in event.data && event.data.type === eventName) {
+            if (event.data.hasOwnProperty('type') && event.data.type === eventName) {
                 callback(event.data);
             }
         }, false);
@@ -13,7 +13,7 @@ class Communication {
 
     static listenOnce(eventName, callback, resolve) {
         function handler(event) {
-            if ('type' in event.data && event.data.type === eventName && !!event.data.mapObjectId) {
+            if (event.data.hasOwnProperty('type') && event.data.type === eventName && !!event.data['mapObjectId']) {
                 window.removeEventListener('message', handler, false);
                 callback(event.data);
                 resolve();
@@ -217,6 +217,23 @@ class AreaEvent {
         this.areaId = areaId;
         this.areaName = areaName;
         this.mode = mode;
+    }
+}
+
+/**
+ * Class representing an AreaPayload
+ */
+class AreaPayload {
+    /**
+     * Area payload
+     *  @param {number} id unique given area id number
+     *  @param {string} name not unique given area name
+     *  @param {array} pointsList as array of {@link Point}
+     */
+    constructor(id, name, pointsList) {
+        this.id = id;
+        this.name = name;
+        this.points = pointsList
     }
 }
 

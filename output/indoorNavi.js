@@ -13,7 +13,7 @@ class Communication {
 
     static listenOnce(eventName, callback, resolve) {
         function handler(event) {
-            if (event.data.hasOwnProperty('type') && event.data.type === eventName && !!event.data.mapObjectId) {
+            if (event.data.hasOwnProperty('type') && event.data.type === eventName && !!event.data['mapObjectId']) {
                 window.removeEventListener('message', handler, false);
                 callback(event.data);
                 resolve();
@@ -217,6 +217,23 @@ class AreaEvent {
         this.areaId = areaId;
         this.areaName = areaName;
         this.mode = mode;
+    }
+}
+
+/**
+ * Class representing an AreaPayload
+ */
+class AreaPayload {
+    /**
+     * Area payload
+     *  @param {number} id unique given area id number
+     *  @param {string} name not unique given area name
+     *  @param {array} pointsList as array of {@link Point}
+     */
+    constructor(id, name, pointsList) {
+        this.id = id;
+        this.name = name;
+        this.points = pointsList
     }
 }
 
@@ -1376,6 +1393,29 @@ class INData {
         return new Promise((function(resolve) {
             this._http.doGet(`${this._targetHost}${this._baseUrl}paths/${floorId}`, function(data) {
                 resolve(JSON.parse(data));
+            });
+        }).bind(this));
+    }
+
+    /**
+     * Get list of areas
+     * @param {number} floorId id of the floor you want to get paths from
+     * @return {Promise} promise that will be resolved when {@link AreaPayload} list is retrieved
+     */
+
+    getAreas(floorId) {
+        return new Promise((function(resolve) {
+            this._http.doGet(`${this._targetHost}${this._baseUrl}areas/${floorId}`, function(data) {
+                const payloads = JSON.parse(data);
+                const areaPoints = payloads.map(payload => {
+                    return {
+                        id: payload.name,
+                        name: payload.name,
+                        points: payload.points
+
+                    }
+                });
+                resolve(areaPoints);
             });
         }).bind(this));
     }

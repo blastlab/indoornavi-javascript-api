@@ -22,7 +22,7 @@
 <script src="indoorNavi.js"></script>
 <script>
     // floor id
-    const floorId = 1;
+    const floorId = 2;
     let inCircle = null;
     //set poly as global variable
     let poly = null;
@@ -78,6 +78,7 @@
         document.getElementById('removeCircle').removeAttribute('disabled');
 		applyLongClickListener();
         getPaths();
+        getAreas();
     });
 
 
@@ -309,6 +310,12 @@
                 });
             });
         });
+    }
+
+    function getAreas() {
+        data.getAreas(floorId).then((data) => {
+            console.log(data);
+        })
     }
 
     function pullPointToPath(point, accuracy, callback) {
