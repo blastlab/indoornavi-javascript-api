@@ -30,7 +30,6 @@ class INData {
      * @param {number} floorId id of the floor you want to get paths from
      * @return {Promise} promise that will be resolved when {@link AreaPayload} list is retrieved
      */
-
     getAreas(floorId) {
         return new Promise((function(resolve) {
             this._http.doGet(`${this._targetHost}${this._baseUrl}areas/${floorId}`, function(data) {
