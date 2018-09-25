@@ -34,14 +34,14 @@ class INData {
         return new Promise((function(resolve) {
             this._http.doGet(`${this._targetHost}${this._baseUrl}areas/${floorId}`, function(data) {
                 const payloads = JSON.parse(data);
-                const areaPoints = payloads.map(payload => {
+                const areas = payloads.map(payload => {
                     return {
                         id: payload.name,
                         name: payload.name,
                         points: payload.points
                     }
                 });
-                resolve(areaPoints);
+                resolve(areas);
             });
         }).bind(this));
     }
