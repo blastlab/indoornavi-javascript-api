@@ -71,4 +71,12 @@ class Validation {
             throw new Error(errorMessage);
         }
     }
+
+    static isPoint(point, errorMessage) {
+        if (!point.x || !point.y) {
+            throw new Error(errorMessage);
+        }
+        Validation.isInteger(point.x, errorMessage);
+        Validation.isInteger(point.y, errorMessage);
+    }
 }
