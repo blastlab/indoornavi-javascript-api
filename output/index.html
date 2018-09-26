@@ -22,7 +22,7 @@
 <script src="indoorNavi.js"></script>
 <script>
     // floor id
-    const floorId = 1;
+    const floorId = 4;
     let inCircle = null;
     //set poly as global variable
     let poly = null;
@@ -78,6 +78,8 @@
         document.getElementById('removeCircle').removeAttribute('disabled');
 		applyLongClickListener();
         getPaths();
+        // getComplexes();
+        simulateNavigation();
     });
 
 
@@ -303,8 +305,8 @@
                 }
                 poly = new INPolyline(navi);
                 poly.ready().then(() => {
-                    poly.points(path)
-                        .setLineColor('#906090')
+                    poly.setPoints(path)
+                        .setColor('#906090')
                         .draw();
                 });
             });
@@ -320,6 +322,17 @@
 
     function getComplexes() {
         navi.getComplexes(data)
+    }
+
+    function simulateNavigation() {
+        const navigation = new INNavigation(navi);
+        navigation.start({x: 100, y: 100}, {x: 300, y: 300}, 10, (data)=> {
+            console.log(data);
+        });
+        for (let i = 0; i < 100; i++) {
+            navigation.updatePosition({x: (100 + i), y: (100 + i)});
+        }
+        navigation.stop();
     }
 
 </script>

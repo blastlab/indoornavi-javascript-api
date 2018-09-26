@@ -17,11 +17,11 @@ module.exports = function(grunt) {
                 separator: '\n'
             },
             prod: {
-                src: ['src/helper/*', 'src/model/*', 'src/objects/base/*', 'src/objects/*', 'src/indoornavi.js', 'src/report.js', 'src/data.js'],
+                src: ['src/helper/*', 'src/model/*', 'src/objects/base/*', 'src/objects/*', 'src/indoornavi.js', 'src/report.js', 'src/data.js', 'src/navigation.js'],
                 dest: 'output/indoorNavi.js'
             },
             test: {
-                src: ['src/helper/*', 'src/model/*', 'src/objects/base/*', 'src/objects/*', 'src/indoornavi.js', 'src/report.js', 'spec/*'],
+                src: ['src/helper/*', 'src/model/*', 'src/objects/base/*', 'src/objects/*', 'src/indoornavi.js', 'src/report.js', 'spec/*', 'src/navigation.js'],
                 dest: 'output/indoorNavi.spec.js'
             }
         }
