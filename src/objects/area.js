@@ -148,5 +148,4 @@ class INArea extends INMapObject {
             throw new Error('INArea is not created yet, use ready() method before executing draw(), or remove()');
         }
     }
-
 }
