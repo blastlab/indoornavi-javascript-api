@@ -79,7 +79,7 @@
 		applyLongClickListener();
         getPaths();
         // getComplexes();
-        simulateNavigation();
+        setTimeout(() => {simulateNavigation()}, 2000);
     });
 
 
@@ -294,7 +294,6 @@
 
     function getPaths() {
         data.getPaths(floorId).then(function (data) {
-            console.log(data);
             const path = [];
             data.forEach(d => {
 
@@ -326,13 +325,14 @@
 
     function simulateNavigation() {
         const navigation = new INNavigation(navi);
-        navigation.start({x: 100, y: 100}, {x: 300, y: 300}, 10, (data)=> {
+        navigation.start({x: 39, y: 49}, {x: 390, y: 473}, 10, (data)=> {
             console.log(data);
         });
-        for (let i = 0; i < 100; i++) {
-            navigation.updatePosition({x: (100 + i), y: (100 + i)});
-        }
-        navigation.stop();
+        setTimeout(() => navigation.updatePosition({x: 18, y: 16}), 1000);
+        // for (let i = 0; i < 100; i++) {
+        //     navigation.updatePosition({x: (100 + i), y: (100 + i)});
+        // }
+        // navigation.stop();
     }
 
 </script>
