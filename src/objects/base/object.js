@@ -39,9 +39,9 @@ class INMapObject {
 
         function setObject(data) {
             if(data.hasOwnProperty('mapObjectId')) {
-                self._id = data.mapObjectId;
+                this._id = data.mapObjectId;
             } else {
-                throw new Error(`Object ${self._type} doesn't contain id. It may not be created correctly.`);
+                throw new Error(`Object ${this._type} doesn't contain id. It may not be created correctly.`);
             }
         }
 
@@ -52,12 +52,14 @@ class INMapObject {
             })
         }
         return new Promise(resolve => {
+                const tempId = Math.round(Math.random() * 10000);
                 // create listener for event that will fire only once
-                Communication.listenOnce(`createObject-${this._type}`, setObject.bind(self), resolve);
+                Communication.listenOnce(`createObject-${self._type}`, setObject.bind(self), resolve, tempId);
                 // then send message
                 Communication.send(self._navi.iFrame, self._navi.targetHost, {
                     command: 'createObject',
-                    object: this._type
+                    object: self._type,
+                    tempId: tempId
                 });
             }
         );
