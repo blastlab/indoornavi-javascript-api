@@ -80,7 +80,7 @@
         getPaths();
         // getComplexes();
         setTimeout(() => {simulateNavigation()}, 2000);
-        getAreas();
+        // getAreas();
     });
 
     // const from = new Date(2017, 10, 1);
@@ -331,9 +331,7 @@
 
     function simulateNavigation() {
         const navigation = new INNavigation(navi);
-        navigation.start({x: 39, y: 49}, {x: 390, y: 473}, 10, (data)=> {
-            console.log(data);
-        });
+        navigation.start({x: 39, y: 49}, {x: 390, y: 473}, 10);
         setTimeout(() => navigation.updatePosition({x: 18, y: 16}), 1000);
         // for (let i = 0; i < 100; i++) {
         //     navigation.updatePosition({x: (100 + i), y: (100 + i)});

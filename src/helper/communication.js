@@ -25,16 +25,6 @@ class Communication {
 
         window.addEventListener('message', handler, false);
     }
-    static listenOnceGlobalEvent(eventName, callback) {
-        function handler(event) {
-            if (event.data.type === eventName) {
-                window.removeEventListener('message', handler, false);
-                callback(event.data);
-            }
-        }
-
-        window.addEventListener('message', handler, false);
-    }
 
 
     static remove(handler) {

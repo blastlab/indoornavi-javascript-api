@@ -11,22 +11,15 @@ class Communication {
         }, false);
     }
 
-    static listenOnce(eventName, callback, resolve) {
+    static listenOnce(eventName, callback, resolve, tempId) {
         function handler(event) {
-            if (event.data.hasOwnProperty('type') && event.data.type === eventName && !!event.data['mapObjectId']) {
+            if (event.data.hasOwnProperty('type') &&
+                event.data.type === eventName &&
+                event.data.tempId === tempId
+            ) {
                 window.removeEventListener('message', handler, false);
                 callback(event.data);
                 resolve();
-            }
-        }
-
-        window.addEventListener('message', handler, false);
-    }
-    static listenOnceGlobalEvent(eventName, callback) {
-        function handler(event) {
-            if (event.data.type === eventName) {
-                window.removeEventListener('message', handler, false);
-                callback(event.data);
             }
         }
 
@@ -247,12 +240,12 @@ class AreaPayload {
      * Area payload
      *  @param {number} id unique given area id number
      *  @param {string} name not unique given area name
-     *  @param {array} pointsList as array of {@link Point}
+     *  @param {array} points as array of {@link Point}
      */
-    constructor(id, name, pointsList) {
+    constructor(id, name, points) {
         this.id = id;
         this.name = name;
-        this.points = pointsList
+        this.points = points
     }
 }
 
@@ -426,9 +419,9 @@ class INMapObject {
 
         function setObject(data) {
             if(data.hasOwnProperty('mapObjectId')) {
-                self._id = data.mapObjectId;
+                this._id = data.mapObjectId;
             } else {
-                throw new Error(`Object ${self._type} doesn't contain id. It may not be created correctly.`);
+                throw new Error(`Object ${this._type} doesn't contain id. It may not be created correctly.`);
             }
         }
 
@@ -439,12 +432,14 @@ class INMapObject {
             })
         }
         return new Promise(resolve => {
+                const tempId = Math.round(Math.random() * 10000);
                 // create listener for event that will fire only once
-                Communication.listenOnce(`createObject-${this._type}`, setObject.bind(self), resolve);
+                Communication.listenOnce(`createObject-${self._type}`, setObject.bind(self), resolve, tempId);
                 // then send message
                 Communication.send(self._navi.iFrame, self._navi.targetHost, {
                     command: 'createObject',
-                    object: this._type
+                    object: self._type,
+                    tempId: tempId
                 });
             }
         );
@@ -623,7 +618,6 @@ class INArea extends INMapObject {
             throw new Error('INArea is not created yet, use ready() method before executing draw(), or remove()');
         }
     }
-
 }
 
 
@@ -1225,9 +1219,11 @@ class INMap {
     getMapDimensions(callback) {
         this._setIFrame();
         return new Promise(resolve => {
-                Communication.listenOnce(`getMapDimensions`, callback, resolve);
+                const tempId = Math.round(Math.random() * 10000);
+                Communication.listenOnce(`getMapDimensions`, callback, resolve, tempId);
                 Communication.send(this.iFrame, this.targetHost, {
                     command: 'getMapDimensions',
+                    tempId: tempId
                 });
             }
         );
@@ -1774,23 +1770,21 @@ class INNavigation {
      * Calculates shortest path for given beginning coordinates and destination coordinates
      * @param {Point} location - object {@link Point} representing starting location from which navigation is going to begin.
      * @param {Point} destination - object {@link Point} representing destination to which navigation is going to calculate and draw path.
-     * @param {number} pullToPathWidth - number representing width of the navigating belt for which navigator will pull given coordinate to path
-     * @param {function} callback - this method will resolve when navigation will finish
+     * @param {number} margin - number representing margin for which navigation will pull point to the nearest path
      * @return {INNavigation} self to let you chain methods
      * @example
      * const navigation = new INNavigation(navi);
      * navigation.start({x: 100, y: 100}, {x: 800, y: 800}, 10);
      */
-    start(location, destination, pullToPathWidth, callback) {
+    start(location, destination, margin) {
         Validation.isPoint(location, 'Given argument is not a Point');
         Validation.isPoint(destination, 'Given argument is not a Point');
         Validation.isInteger(pullToPathWidth, 'Pull width value is not an integer');
         this._sendToIFrame('start', {
             location: location,
             destination: destination,
-            accuracy: pullToPathWidth
+            accuracy: margin
         });
-        Communication.listenOnceGlobalEvent(`navigation`, callback);
         return this;
     }
 

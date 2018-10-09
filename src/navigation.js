@@ -18,23 +18,21 @@ class INNavigation {
      * Calculates shortest path for given beginning coordinates and destination coordinates
      * @param {Point} location - object {@link Point} representing starting location from which navigation is going to begin.
      * @param {Point} destination - object {@link Point} representing destination to which navigation is going to calculate and draw path.
-     * @param {number} pullToPathWidth - number representing width of the navigating belt for which navigator will pull given coordinate to path
-     * @param {function} callback - this method will resolve when navigation will finish
+     * @param {number} margin - number representing margin for which navigation will pull point to the nearest path
      * @return {INNavigation} self to let you chain methods
      * @example
      * const navigation = new INNavigation(navi);
      * navigation.start({x: 100, y: 100}, {x: 800, y: 800}, 10);
      */
-    start(location, destination, pullToPathWidth, callback) {
+    start(location, destination, margin) {
         Validation.isPoint(location, 'Given argument is not a Point');
         Validation.isPoint(destination, 'Given argument is not a Point');
         Validation.isInteger(pullToPathWidth, 'Pull width value is not an integer');
         this._sendToIFrame('start', {
             location: location,
             destination: destination,
-            accuracy: pullToPathWidth
+            accuracy: margin
         });
-        Communication.listenOnceGlobalEvent(`navigation`, callback);
         return this;
     }
 

@@ -26,6 +26,7 @@ class Communication {
         window.addEventListener('message', handler, false);
     }
 
+
     static remove(handler) {
         window.removeEventListener('message', handler, false);
     }
@@ -228,6 +229,23 @@ class AreaEvent {
         this.areaId = areaId;
         this.areaName = areaName;
         this.mode = mode;
+    }
+}
+
+/**
+ * Class representing an AreaPayload
+ */
+class AreaPayload {
+    /**
+     * Area payload
+     *  @param {number} id unique given area id number
+     *  @param {string} name not unique given area name
+     *  @param {array} points as array of {@link Point}
+     */
+    constructor(id, name, points) {
+        this.id = id;
+        this.name = name;
+        this.points = points
     }
 }
 
@@ -600,7 +618,6 @@ class INArea extends INMapObject {
             throw new Error('INArea is not created yet, use ready() method before executing draw(), or remove()');
         }
     }
-
 }
 
 
@@ -1281,6 +1298,20 @@ class INMap {
         });
     }
 
+    /**
+     * Get list of complex, buildings and floors.
+     * @returns {Promise} promise that will be resolved when complex list is retrieved.
+     */
+    getComplexes(callback) {
+        const self = this;
+        return new Promise(resolve => {
+            Communication.listenOnce(`getComplexes`, callback, resolve);
+            Communication.send(self.iFrame, self.targetHost, {
+                command: 'getComplexes'
+            });
+        });
+    }
+
     _checkIsReady() {
         if (!this.parameters) {
             throw new Error('INMap is not ready. Call load() first and then when promise resolves, INMap will be ready.');
@@ -1380,6 +1411,27 @@ class INData {
             });
         }).bind(this));
     }
+
+    /**
+     * Get list of areas
+     * @param {number} floorId id of the floor you want to get paths from
+     * @return {Promise} promise that will be resolved when {@link AreaPayload} list is retrieved
+     */
+    getAreas(floorId) {
+        return new Promise((function(resolve) {
+            this._http.doGet(`${this._targetHost}${this._baseUrl}areas/${floorId}`, function(data) {
+                const payloads = JSON.parse(data);
+                const areas = payloads.map(payload => {
+                    return {
+                        id: payload.name,
+                        name: payload.name,
+                        points: payload.points
+                    }
+                });
+                resolve(areas);
+            });
+        }).bind(this));
+    }
 }
 
 /**
@@ -1402,23 +1454,21 @@ class INNavigation {
      * Calculates shortest path for given beginning coordinates and destination coordinates
      * @param {Point} location - object {@link Point} representing starting location from which navigation is going to begin.
      * @param {Point} destination - object {@link Point} representing destination to which navigation is going to calculate and draw path.
-     * @param {number} pullToPathWidth - number representing width of the navigating belt for which navigator will pull given coordinate to path
-     * @param {function} callback - this method will resolve when navigation will finish
+     * @param {number} margin - number representing margin for which navigation will pull point to the nearest path
      * @return {INNavigation} self to let you chain methods
      * @example
      * const navigation = new INNavigation(navi);
      * navigation.start({x: 100, y: 100}, {x: 800, y: 800}, 10);
      */
-    start(location, destination, pullToPathWidth, callback) {
+    start(location, destination, margin) {
         Validation.isPoint(location, 'Given argument is not a Point');
         Validation.isPoint(destination, 'Given argument is not a Point');
         Validation.isInteger(pullToPathWidth, 'Pull width value is not an integer');
         this._sendToIFrame('start', {
             location: location,
             destination: destination,
-            accuracy: pullToPathWidth
+            accuracy: margin
         });
-        Communication.listenOnceGlobalEvent(`navigation`, callback);
         return this;
     }
 
