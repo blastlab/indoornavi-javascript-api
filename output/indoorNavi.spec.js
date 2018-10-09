@@ -1779,7 +1779,7 @@ class INNavigation {
     start(location, destination, margin) {
         Validation.isPoint(location, 'Given argument is not a Point');
         Validation.isPoint(destination, 'Given argument is not a Point');
-        Validation.isInteger(pullToPathWidth, 'Pull width value is not an integer');
+        Validation.isInteger(margin, 'Pull width value is not an integer');
         this._sendToIFrame('start', {
             location: location,
             destination: destination,
