@@ -8,7 +8,7 @@ module.exports = function(grunt) {
         //         banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n',
         //     },
         //     build: {
-        //         src: ['src/helper/*', 'src/model/*', 'src/object.js', 'src/polyline.js', 'src/area.js', 'src/marker.js', 'src/indoornavi.js', 'src/report.js'],
+        //         src: ['src/helper/*', 'src/model/*', 'src/object.js', 'src/polyline.js', 'src/areaPayload.js', 'src/marker.js', 'src/indoornavi.js', 'src/report.js'],
         //         dest: 'build/indoorNavi.min.js'
         //     }
         // },

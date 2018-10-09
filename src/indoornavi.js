@@ -51,9 +51,11 @@ class INMap {
     getMapDimensions(callback) {
         this._setIFrame();
         return new Promise(resolve => {
-                Communication.listenOnce(`getMapDimensions`, callback, resolve);
+                const tempId = Math.round(Math.random() * 10000);
+                Communication.listenOnce(`getMapDimensions`, callback, resolve, tempId);
                 Communication.send(this.iFrame, this.targetHost, {
                     command: 'getMapDimensions',
+                    tempId: tempId
                 });
             }
         );

@@ -51,7 +51,7 @@
     ];
 
     const navi = new INMap(
-        'http://127.0.0.1:4200',
+        'http://localhost:4200',
         'TestAdmin',
         'map',
         {
@@ -80,8 +80,8 @@
         getPaths();
         // getComplexes();
         setTimeout(() => {simulateNavigation()}, 2000);
+        getAreas();
     });
-
 
     // const from = new Date(2017, 10, 1);
     // const to = new Date(2017, 12, 30);
@@ -310,6 +310,12 @@
                 });
             });
         });
+    }
+
+    function getAreas() {
+        data.getAreas(floorId).then(data => {
+            console.log('Lista obiektów typu Area pobranych z bazy danych: ', data);
+        })
     }
 
     function pullPointToPath(point, accuracy, callback) {
