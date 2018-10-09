@@ -22,7 +22,7 @@
 <script src="indoorNavi.js"></script>
 <script>
     // floor id
-    const floorId = 1;
+    const floorId = 4;
     let inCircle = null;
     //set poly as global variable
     let poly = null;
@@ -78,6 +78,7 @@
         document.getElementById('removeCircle').removeAttribute('disabled');
 		applyLongClickListener();
         getPaths();
+        getAreas();
     });
 
     // const from = new Date(2017, 10, 1);
@@ -302,18 +303,29 @@
                 }
                 poly = new INPolyline(navi);
                 poly.ready().then(() => {
-                    poly.points(path)
-                        .setLineColor('#906090')
+                    poly.setPoints(path)
+                        .setColor('#906090')
                         .draw();
                 });
             });
         });
     }
+
+    function getAreas() {
+        data.getAreas(floorId).then(data => {
+            console.log('Lista obiektów typu Area pobranych z bazy danych: ', data);
+        })
+    }
+
     function pullPointToPath(point, accuracy, callback) {
         navi.pullToPath(point, accuracy).then(function(d) {
             console.log('Pulled to path coordinates: ', d.calculatedPosition);
             callback(d.calculatedPosition.x, d.calculatedPosition.y, null);
         });
+    }
+
+    function getComplexes() {
+        navi.getComplexes(data)
     }
 
 </script>

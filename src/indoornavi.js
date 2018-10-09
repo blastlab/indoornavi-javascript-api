@@ -130,6 +130,20 @@ class INMap {
         });
     }
 
+    /**
+     * Get list of complex, buildings and floors.
+     * @returns {Promise} promise that will be resolved when complex list is retrieved.
+     */
+    getComplexes(callback) {
+        const self = this;
+        return new Promise(resolve => {
+            Communication.listenOnce(`getComplexes`, callback, resolve);
+            Communication.send(self.iFrame, self.targetHost, {
+                command: 'getComplexes'
+            });
+        });
+    }
+
     _checkIsReady() {
         if (!this.parameters) {
             throw new Error('INMap is not ready. Call load() first and then when promise resolves, INMap will be ready.');
