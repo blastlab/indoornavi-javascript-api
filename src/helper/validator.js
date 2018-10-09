@@ -73,7 +73,7 @@ class Validation {
     }
 
     static isPoint(point, errorMessage) {
-        if (!point.x || !point.y) {
+        if (point.x === null || point.y === null || point.x === undefined || point.y === undefined) {
             throw new Error(errorMessage);
         }
         Validation.isInteger(point.x, errorMessage);
