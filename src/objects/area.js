@@ -99,28 +99,7 @@ class INArea extends INMapObject {
      * area.ready().then(() => area.isWithin({x: 100, y: 50}); );
      */
     isWithin(point) {
-        // Semi-infinite ray horizontally (increasing x, fixed y) out from the test point, and count how many edges it crosses.
-        // At each crossing, the ray switches between inside and outside. This is called the Jordan curve theorem.
-        let inside = false;
-        let intersect = false;
-        let xi, yi, xj, yj = null;
-
-        if (this._points === null) {
-            throw new Error('points of the object are null');
-        }
-        for (let i = 0, j = this._points.length - 1; i < this._points.length; j = i++) {
-            xi = this._points[i].x;
-            yi = this._points[i].y;
-
-            xj = this._points[j].x;
-            yj = this._points[j].y;
-
-            intersect = ((yi > point.y) !== (yj > point.y)) && (point.x < (xj - xi) * (point.y - yi) / (yj - yi) + xi);
-            if (intersect) {
-                inside = !inside;
-            }
-        }
-        return inside;
+        return MapUtils.pointIsWithinGivenArea(point, this._points);
     }
 
     /**

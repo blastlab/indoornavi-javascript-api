@@ -49,6 +49,7 @@ class INMap {
      * navi.getMapDimensions(data => doSomethingWithMapDimensions(data.height, data.width, data.scale));
      */
     getMapDimensions(callback) {
+        Validation.isFunction(callback);
         this._setIFrame();
         return new Promise(resolve => {
                 const tempId = Math.round(Math.random() * 10000);
@@ -68,6 +69,7 @@ class INMap {
      * navi.addMapLongClickListener(data => doSomethingOnLongClick(data.position.x, data.position.y));
      */
     addMapLongClickListener(callback) {
+        Validation.isFunction(callback);
         this._checkIsReady();
         this._setIFrame();
         Communication.send(this.iFrame, this.targetHost, {
@@ -101,6 +103,7 @@ class INMap {
      * navi.addEventListener(Event.LISTENER.COORDINATES, data => doSomethingWithCoordinates(data.coordinates.point));
      */
     addEventListener(event, callback) {
+        Validation.isFunction(callback);
         this._checkIsReady();
         this._setIFrame();
         Communication.send(this.iFrame, this.targetHost, {
@@ -135,6 +138,7 @@ class INMap {
      * @returns {Promise} promise that will be resolved when complex list is retrieved.
      */
     getComplexes(callback) {
+        Validation.isFunction(callback);
         const self = this;
         return new Promise(resolve => {
             Communication.listenOnce(`getComplexes`, callback, resolve);

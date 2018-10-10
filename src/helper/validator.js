@@ -79,4 +79,10 @@ class Validation {
         Validation.isInteger(point.x, errorMessage);
         Validation.isInteger(point.y, errorMessage);
     }
+
+    static isFunction(callback, errorMessage) {
+        if (typeof callback !== "function") {
+            throw new Error(errorMessage)
+        }
+    }
 }

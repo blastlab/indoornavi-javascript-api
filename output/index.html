@@ -22,7 +22,7 @@
 <script src="indoorNavi.js"></script>
 <script>
     // floor id
-    const floorId = 4;
+    const floorId = 3;
     let inCircle = null;
     //set poly as global variable
     let poly = null;
@@ -80,7 +80,7 @@
         getPaths();
         // getComplexes();
         setTimeout(() => {simulateNavigation()}, 2000);
-        // getAreas();
+        getAreas();
     });
 
     // const from = new Date(2017, 10, 1);
@@ -122,7 +122,7 @@
         poly = new INPolyline(navi);
         poly.ready().then(() => {
             poly.setPoints(points)
-                .setColor('#ff00ff')
+                .setColor('#ff1dee')
                 .draw();
         });
     }
@@ -211,11 +211,18 @@
     }
 
 	function addMarkerOnLongClick(x, y) {
-		let pointInRealDimension = MapUtils.pixelsToRealDimensions(navi, {x: x, y: y});
+		let pointInRealDimension = MapUtils.pixelsToRealDimensions(
+		    navi, {
+		    x: x,
+            y: y
+		});
 		let marker = new INMarker(navi);
 		marker.ready().then(() => {
 			marker
-				.setPosition({x: pointInRealDimension.x, y: pointInRealDimension.y})
+				.setPosition({
+                    x: pointInRealDimension.x,
+                    y: pointInRealDimension.y
+				})
 				.draw();
 		});
 	}
@@ -302,9 +309,9 @@
                 if (!!poly) {
                     return;
                 }
-                poly = new INPolyline(navi);
-                poly.ready().then(() => {
-                    poly.setPoints(path)
+                const poly_01 = new INPolyline(navi);
+                poly_01.ready().then(() => {
+                    poly_01.setPoints(path)
                         .setColor('#906090')
                         .draw();
                 });
@@ -331,8 +338,14 @@
 
     function simulateNavigation() {
         const navigation = new INNavigation(navi);
-        navigation.start({x: 39, y: 49}, {x: 390, y: 473}, 10);
-        setTimeout(() => navigation.updatePosition({x: 18, y: 16}), 1000);
+        navigation.start(
+            {x: 39, y: 49},
+            {x: 390, y: 473},
+            10);
+        setTimeout(() => navigation.updatePosition(
+            {x: 18, y: 16}),
+            1000
+        );
         // for (let i = 0; i < 100; i++) {
         //     navigation.updatePosition({x: (100 + i), y: (100 + i)});
         // }

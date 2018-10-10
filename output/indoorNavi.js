@@ -111,6 +111,29 @@ class MapUtils {
 			throw new Error('Unable to calculate coordinates. Missing information about map scale!');
 		}
 	}
+
+	static pointIsWithinGivenArea(point, areaPoints) {
+        let inside = false;
+        let intersect = false;
+        let xi, yi, xj, yj = null;
+
+        if (areaPoints === null) {
+            throw new Error('points of the object are null');
+        }
+        for (let i = 0, j = areaPoints.length - 1; i < areaPoints.length; j = i++) {
+            xi = areaPoints[i].x;
+            yi = areaPoints[i].y;
+
+            xj = areaPoints[j].x;
+            yj = areaPoints[j].y;
+
+            intersect = ((yi > point.y) !== (yj > point.y)) && (point.x < (xj - xi) * (point.y - yi) / (yj - yi) + xi);
+            if (intersect) {
+                inside = !inside;
+            }
+        }
+        return inside;
+	}
 }
 
 class Validation {
@@ -193,6 +216,12 @@ class Validation {
         }
         Validation.isInteger(point.x, errorMessage);
         Validation.isInteger(point.y, errorMessage);
+    }
+
+    static isFunction(callback, errorMessage) {
+        if (typeof callback !== "function") {
+            throw new Error(errorMessage)
+        }
     }
 }
 
@@ -569,28 +598,7 @@ class INArea extends INMapObject {
      * area.ready().then(() => area.isWithin({x: 100, y: 50}); );
      */
     isWithin(point) {
-        // Semi-infinite ray horizontally (increasing x, fixed y) out from the test point, and count how many edges it crosses.
-        // At each crossing, the ray switches between inside and outside. This is called the Jordan curve theorem.
-        let inside = false;
-        let intersect = false;
-        let xi, yi, xj, yj = null;
-
-        if (this._points === null) {
-            throw new Error('points of the object are null');
-        }
-        for (let i = 0, j = this._points.length - 1; i < this._points.length; j = i++) {
-            xi = this._points[i].x;
-            yi = this._points[i].y;
-
-            xj = this._points[j].x;
-            yj = this._points[j].y;
-
-            intersect = ((yi > point.y) !== (yj > point.y)) && (point.x < (xj - xi) * (point.y - yi) / (yj - yi) + xi);
-            if (intersect) {
-                inside = !inside;
-            }
-        }
-        return inside;
+        return MapUtils.pointIsWithinGivenArea(point, this._points);
     }
 
     /**
@@ -1217,6 +1225,7 @@ class INMap {
      * navi.getMapDimensions(data => doSomethingWithMapDimensions(data.height, data.width, data.scale));
      */
     getMapDimensions(callback) {
+        Validation.isFunction(callback);
         this._setIFrame();
         return new Promise(resolve => {
                 const tempId = Math.round(Math.random() * 10000);
@@ -1236,6 +1245,7 @@ class INMap {
      * navi.addMapLongClickListener(data => doSomethingOnLongClick(data.position.x, data.position.y));
      */
     addMapLongClickListener(callback) {
+        Validation.isFunction(callback);
         this._checkIsReady();
         this._setIFrame();
         Communication.send(this.iFrame, this.targetHost, {
@@ -1269,6 +1279,7 @@ class INMap {
      * navi.addEventListener(Event.LISTENER.COORDINATES, data => doSomethingWithCoordinates(data.coordinates.point));
      */
     addEventListener(event, callback) {
+        Validation.isFunction(callback);
         this._checkIsReady();
         this._setIFrame();
         Communication.send(this.iFrame, this.targetHost, {
@@ -1303,6 +1314,7 @@ class INMap {
      * @returns {Promise} promise that will be resolved when complex list is retrieved.
      */
     getComplexes(callback) {
+        Validation.isFunction(callback);
         const self = this;
         return new Promise(resolve => {
             Communication.listenOnce(`getComplexes`, callback, resolve);
@@ -1508,5 +1520,81 @@ class INNavigation {
                 }, payload)
             }
         });
+    }
+}
+
+/**
+ * Class representing a BLE,
+ * creates the INBle object to handle BlueTooth related events
+ */
+
+class INBle {
+    _floor = null;
+    _event = null;
+    _dataProvider = null;
+    _areas = null;
+
+    /**
+     * @constructor
+     * @param {number} floor - floor to which Bluetooth events are related
+     * @param {string} targetHost - address to the IndoorNavi backend server
+     * @param {string} apiKey - the API key created on IndoorNavi server (must be assigned to your domain)
+     */
+    constructor(floor, targetHost, apiKey) {
+        Validation.isInteger(floor, 'Floor number must be integer');
+        Validation.isString(targetHost, 'Target host parameter should be type of string');
+        Validation.isString(apiKey, 'apiKey parameter should be type of string');
+        this._dataProvider = new INData(targetHost, apiKey);
+        this._floor = floor;
+        this._event = new Event('bleAreaEvent');
+    }
+
+    /**
+     * Sets callback
+     * @param {function} callback - function that will be executed when new area event is triggered, callback takes area index as parameter
+     * @return {Promise} promise that will be resolved when {@link AreaPayload} list is retrieved
+     * @example
+     * const ble = new INBle(4);
+     * ble.addAreaEventListener((floorIndex) => console.log(floorIndex)).then(() => console.log('areas fetched'));
+     */
+    addAreaEventListener(callback) {
+        Validation.isFunction(callback);
+        return new Promise(resolve => {
+            this._dataProvider.getPaths(this._floor).then(areas => {
+                this._areas = areas;
+                this._event.addEventListener('bleAreaEvent', callback, false);
+                resolve();
+            });
+        });
+
+    }
+
+    /**
+     * Updates bluetooth position
+     * @param {Point} position from bluetooth module
+     * @example
+     * const ble = new INBle(4);
+     * ble.addAreaEventListener((floorIndex) => console.log(floorIndex)).then(() => console.log('areas fetched'));
+     * ble.updatePosition({x: 1, y: 1});
+     */
+    updatePosition(position) {
+        Validation.isPoint(position, 'Updated position is not a Point');
+        const areaIndex = this._areas.findIndex(area => {
+            return MapUtils.pointIsWithinGivenArea(position, area);
+        });
+        if (!!areaIndex && !!this._areas) {
+            this._event.dispatchEvent(areaIndex);
+        }
+    }
+
+    /**
+     * Updates bluetooth position
+     * @return {AreaPayload} areas if areas are fetched or null
+     * */
+    getAreas() {
+        if (!!this._areas) {
+            return this._areas;
+        }
+        return null;
     }
 }
