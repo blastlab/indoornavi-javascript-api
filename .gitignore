@@ -158,3 +158,6 @@ venv.bak/
 
 # custom
 output/indoorNavi.js
+.idea/codeStyles/
+package-lock.json
+ve/
