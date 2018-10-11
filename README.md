@@ -75,10 +75,10 @@ Second word describes a target of taken action - a noun.
 
 1. API should be written following the "soft rule" of [fluent API](https://www.tutorialspoint.com/entity_framework/entity_framework_fluent_api.html), and by "soft rule" is meant to not force this API to be fluent in every end point of this API.
 
-2. For methods that are returning values or API sensitive informations it is recommended to avoid fluent API rule by all means.
+2. For methods that are returning values or API sensitive information it is recommended to avoid fluent API rule by all means.
 
 Example of cases where fluid API is not recommended: ```area.isWithin(point);``` as it returns boolean value that answers the question is given point within area  that method is called upon.
 
-3. For methods that are not returning values or API sensitive informations it is recommended to use fluent API rule.
+3. For methods that are not returning values or API sensitive information it is recommended to use fluent API rule.
 
 Example of cases where fluid API is recommended: ```area.setOpacity();``` as it do not returns any value.

@@ -43,8 +43,7 @@ class INBle {
      * @param {Point} position from bluetooth module
      * @example
      * const ble = new INBle(4);
-     * ble.updatePosition((areaPayload) => console.log(areaPayload)).then(() => console.log('areas fetched'));
-     * ble.updatePosition({x: 1, y: 1});
+     * ble.updatePosition((areaPayload) => console.log(areaPayload)).then(ble.updatePosition({x: 1, y: 1}));
      */
     updatePosition(position) {
         Validation.isPoint(position, 'Updated position is not a Point');
@@ -60,7 +59,7 @@ class INBle {
 
     /**
      * Returns areas that are checked for Bluetooth events
-     * @return {AreaPayload} areas if areas are fetched else null
+     * @return {AreaPayload[]} areas if areas are fetched else null
      * */
     getAreas() {
         if (!!this._areas) {

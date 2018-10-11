@@ -1568,22 +1568,23 @@ class INBle {
      * @param {Point} position from bluetooth module
      * @example
      * const ble = new INBle(4);
-     * ble.updatePosition((areaPayload) => console.log(areaPayload)).then(() => console.log('areas fetched'));
-     * ble.updatePosition({x: 1, y: 1});
+     * ble.updatePosition((areaPayload) => console.log(areaPayload)).then(ble.updatePosition({x: 1, y: 1}));
      */
     updatePosition(position) {
         Validation.isPoint(position, 'Updated position is not a Point');
-        const areaIndex = this._areas.findIndex(area => {
-            return MapUtils.pointIsWithinGivenArea(position, area.points);
-        });
-        if (areaIndex > 0 && !!this._areas) {
-            this._callback(this._areas[areaIndex]);
+        if (!!this._areas && this._areas.length > 0) {
+            const areaIndex = this._areas.findIndex(area => {
+                return MapUtils.pointIsWithinGivenArea(position, area.points);
+            });
+            if (areaIndex > 0) {
+                this._callback(this._areas[areaIndex]);
+            }
         }
     }
 
     /**
      * Returns areas that are checked for Bluetooth events
-     * @return {AreaPayload} areas if areas are fetched else null
+     * @return {AreaPayload[]} areas if areas are fetched else null
      * */
     getAreas() {
         if (!!this._areas) {
