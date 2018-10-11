@@ -1,14 +1,9 @@
 /**
  * Class representing a BLE,
- * creates the INBle object to handle BlueTooth related events
+ * creates the INBle object to handle Bluetooth related events
  */
 
 class INBle {
-    _floor = null;
-    _event = null;
-    _dataProvider = null;
-    _areas = null;
-
     /**
      * @constructor
      * @param {number} floor - floor to which Bluetooth events are related
@@ -21,23 +16,22 @@ class INBle {
         Validation.isString(apiKey, 'apiKey parameter should be type of string');
         this._dataProvider = new INData(targetHost, apiKey);
         this._floor = floor;
-        this._event = new Event('bleAreaEvent');
     }
 
     /**
-     * Sets callback
-     * @param {function} callback - function that will be executed when new area event is triggered, callback takes area index as parameter
+     * Sets callback function to react for position update event
+     * @param {function} callback - function that will be executed when new area event is triggered, callback takes {@link AreaPayload} as argument
      * @return {Promise} promise that will be resolved when {@link AreaPayload} list is retrieved
      * @example
      * const ble = new INBle(4);
-     * ble.addAreaEventListener((floorIndex) => console.log(floorIndex)).then(() => console.log('areas fetched'));
+     * ble.updatePosition((areaPayload) => console.log(areaPayload)).then(() => console.log('areas fetched'));
      */
-    addAreaEventListener(callback) {
+    addCallbackFunction(callback) {
         Validation.isFunction(callback);
         return new Promise(resolve => {
-            this._dataProvider.getPaths(this._floor).then(areas => {
+            this._dataProvider.getAreas(this._floor).then(areas => {
                 this._areas = areas;
-                this._event.addEventListener('bleAreaEvent', callback, false);
+                this._callback = callback;
                 resolve();
             });
         });
@@ -45,26 +39,28 @@ class INBle {
     }
 
     /**
-     * Updates bluetooth position
+     * Updates Bluetooth position for area events check, if position is inside area callback function passed to addCallbackFunction() method is triggered
      * @param {Point} position from bluetooth module
      * @example
      * const ble = new INBle(4);
-     * ble.addAreaEventListener((floorIndex) => console.log(floorIndex)).then(() => console.log('areas fetched'));
+     * ble.updatePosition((areaPayload) => console.log(areaPayload)).then(() => console.log('areas fetched'));
      * ble.updatePosition({x: 1, y: 1});
      */
     updatePosition(position) {
         Validation.isPoint(position, 'Updated position is not a Point');
-        const areaIndex = this._areas.findIndex(area => {
-            return MapUtils.pointIsWithinGivenArea(position, area);
-        });
-        if (!!areaIndex && !!this._areas) {
-            this._event.dispatchEvent(areaIndex);
+        if (!!this._areas && this._areas.length > 0) {
+            const areaIndex = this._areas.findIndex(area => {
+                return MapUtils.pointIsWithinGivenArea(position, area.points);
+            });
+            if (areaIndex > 0) {
+                this._callback(this._areas[areaIndex]);
+            }
         }
     }
 
     /**
-     * Updates bluetooth position
-     * @return {AreaPayload} areas if areas are fetched or null
+     * Returns areas that are checked for Bluetooth events
+     * @return {AreaPayload} areas if areas are fetched else null
      * */
     getAreas() {
         if (!!this._areas) {

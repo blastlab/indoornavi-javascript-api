@@ -15,6 +15,7 @@
 <button disabled id="removeINMarker_2" onclick="removeINMarker_2()">Remove Marker 2</button>
 <button disabled id="addCircle" onclick="addINCircle()">Add Circle</button>
 <button disabled id="removeCircle" onclick="removeINCircle()">Remove Circle</button>
+<button disabled id="simulateBLE" onclick="simulateINBle()">Simulate BlueTooth Area Event</button>
 
 
 <div id="map"></div>
@@ -76,6 +77,7 @@
         data = new INData('http://localhost:90', 'TestAdmin');
         document.getElementById('addCircle').removeAttribute('disabled');
         document.getElementById('removeCircle').removeAttribute('disabled');
+        document.getElementById('simulateBLE').removeAttribute('disabled');
 		applyLongClickListener();
         getPaths();
         // getComplexes();
@@ -346,10 +348,22 @@
             {x: 18, y: 16}),
             1000
         );
-        // for (let i = 0; i < 100; i++) {
-        //     navigation.updatePosition({x: (100 + i), y: (100 + i)});
-        // }
-        // navigation.stop();
+        for (let i = 0; i < 100; i++) {
+            navigation.updatePosition({x: (100 + i), y: (100 + i)});
+        }
+        navigation.stop();
+    }
+
+    function simulateINBle() {
+        const areaCallback = (areaPayload) => console.log(`Given bluetooth coordinates are in area: ${areaPayload}`);
+        const ble = new INBle(floorId, 'http://localhost:90', 'TestAdmin');
+        ble.addCallbackFunction(areaCallback).then(() => {
+            console.log('Bluetooth component created');
+            setTimeout(() => ble.updatePosition({x: 100, y: 100}), 1000);
+            setTimeout(() => ble.updatePosition({x: 100, y: 100}), 2000);
+            setTimeout(() => ble.updatePosition({x: 100, y: 100}), 3000);
+        });
+
     }
 
 </script>

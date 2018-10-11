@@ -157,7 +157,7 @@ venv.bak/
 .mypy_cache/
 
 # custom
-output/indoorNavi.js
-.idea/codeStyles/
+output/
+.idea/
 package-lock.json
 ve/
