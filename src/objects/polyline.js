@@ -12,6 +12,8 @@ class INPolyline extends INMapObject {
         super(navi);
         this._type = 'POLYLINE';
         this._color = '#111';
+        this._lineType = 'solid';
+
     }
 
     /**
