@@ -348,8 +348,11 @@
             {x: 18, y: 16}),
             1000
         );
-        for (let i = 0; i < 100; i++) {
-            navigation.updatePosition({x: (100 + i), y: (100 + i)});
+
+        for (let i = 0; i < 390; i++) {
+            setTimeout(() => {
+                navigation.updatePosition({x: (18 + i), y: (16 + i)})
+            }, i * 20)
         }
         navigation.stop();
     }
