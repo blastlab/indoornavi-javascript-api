@@ -1579,22 +1579,24 @@ class INBle {
                 if (MapUtils.pointIsWithinGivenArea(position, area.points)) {
                     if (this._shouldSendOnEnterEvent(area)) {
                         this._areaEventsMap.set(area, new Date());
-                        this._callback({
-                            area: area,
-                            mode: 'ON_ENTER'
-                        });
+                        this._sendAreaEvent(area, 'ON_ENTER');
                     } else {
                         this._updateTime(area)
                     }
                 } else if (this._shouldSendOnLeaveEvent(area)) {
                     this._areaEventsMap.delete(area);
-                    this._callback({
-                        area: area,
-                        mode: 'ON_LEAVE'
-                    });
+                    this._sendAreaEvent(area, 'ON_LEAVE');
                 }
             });
         }
+    }
+
+    _sendAreaEvent(area, mode) {
+        this._callback({
+            area: area,
+            date: new Date(),
+            mode: mode
+        });
     }
 
     _shouldSendOnEnterEvent(area) {
