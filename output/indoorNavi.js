@@ -1543,6 +1543,7 @@ class INBle {
         Validation.isString(apiKey, 'apiKey parameter should be type of string');
         this._dataProvider = new INData(targetHost, apiKey);
         this._floor = floor;
+        this._areaEventsMap = new Map();
     }
 
     /**
@@ -1562,7 +1563,6 @@ class INBle {
                 resolve();
             });
         });
-
     }
 
     /**
@@ -1575,13 +1575,38 @@ class INBle {
     updatePosition(position) {
         Validation.isPoint(position, 'Updated position is not a Point');
         if (!!this._areas && this._areas.length > 0) {
-            const areaIndex = this._areas.findIndex(area => {
-                return MapUtils.pointIsWithinGivenArea(position, area.points);
+            this._areas.forEach(area => {
+                if (MapUtils.pointIsWithinGivenArea(position, area.points)) {
+                    if (this._shouldSendOnEnterEvent(area)) {
+                        this._areaEventsMap.set(area, new Date());
+                        this._callback({
+                            area: area,
+                            mode: 'ON_ENTER'
+                        });
+                    } else {
+                        this._updateTime(area)
+                    }
+                } else if (this._shouldSendOnLeaveEvent(area)) {
+                    this._areaEventsMap.delete(area);
+                    this._callback({
+                        area: area,
+                        mode: 'ON_LEAVE'
+                    });
+                }
             });
-            if (areaIndex > 0) {
-                this._callback(this._areas[areaIndex]);
-            }
         }
+    }
+
+    _shouldSendOnEnterEvent(area) {
+        return !this._areaEventsMap.has(area);
+    }
+
+    _shouldSendOnLeaveEvent(area) {
+        return this._areaEventsMap.has(area);
+    }
+
+    _updateTime(area) {
+        this._areaEventsMap.set(area, new Date());
     }
 
     /**
