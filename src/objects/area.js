@@ -13,6 +13,7 @@ class INArea extends INMapObject {
         this._type = 'AREA';
         this._opacity = 1;
         this._color = '#ff2233';
+        this._events = new Set();
     }
 
     /**
@@ -103,6 +104,38 @@ class INArea extends INMapObject {
     }
 
     /**
+     * Add listener to listen when area is clicked. Use of this method is optional.
+     * @param {Event.MOUSE} event - {@link Event}
+     * @param {function} callback - function that is going to be executed when event occurs.
+     * @return {INArea} self to let you chain methods
+     * @example
+     * const area = new INArea(navi);
+     * area.ready(() => area.addEventListener(Event.MOUSE.CLICK, () => console.log('event occurred!'));
+     */
+    addEventListener(event, callback) {
+        this._events.add(event);
+        const eventID = `${event}-${this._id}`;
+        Communication.listen(eventID, callback);
+        return this;
+    }
+
+    /**
+     * Removes listener if listener exists. Use of this method is optional.
+     * @param {Event.MOUSE} event - {@link Event}
+     * @param {callback} callback - callback function that was added to event listener to be executed when event occurs.
+     * @return {INArea} self to let you chain methods
+     * @example
+     * const area = new INArea(navi);
+     * area.ready(() => area.removeEventListener(Event.MOUSE.CLICK); );
+     */
+    removeEventListener(event, callback) {
+        if (this._events.has(event)) {
+            Communication.remove(callback)
+        }
+        return this;
+    }
+
+    /**
      * Place area on the map with all given settings. There is necessary to use setPoints() method before draw() method to indicate where area should to be located.
      * Use of this method is indispensable to draw area with set configuration in the IndoorNavi Map.
      * @example
@@ -119,7 +152,8 @@ class INArea extends INMapObject {
                         id: this._id,
                         points: this._points,
                         opacity: this._opacity,
-                        color: this._color
+                        color: this._color,
+                        events: this._events
                     }
                 }
             });
