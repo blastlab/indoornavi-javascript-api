@@ -512,7 +512,6 @@ class INArea extends INMapObject {
         this._type = 'AREA';
         this._opacity = 1;
         this._color = '#ff2233';
-        this._events = new Set();
     }
 
     /**
@@ -603,38 +602,6 @@ class INArea extends INMapObject {
     }
 
     /**
-     * Add listener to listen when area is clicked. Use of this method is optional.
-     * @param {Event.MOUSE} event - {@link Event}
-     * @param {function} callback - function that is going to be executed when event occurs.
-     * @return {INArea} self to let you chain methods
-     * @example
-     * const area = new INArea(navi);
-     * area.ready(() => area.addEventListener(Event.MOUSE.CLICK, () => console.log('event occurred!'));
-     */
-    addEventListener(event, callback) {
-        this._events.add(event);
-        const eventID = `${event}-${this._id}`;
-        Communication.listen(eventID, callback);
-        return this;
-    }
-
-    /**
-     * Removes listener if listener exists. Use of this method is optional.
-     * @param {Event.MOUSE} event - {@link Event}
-     * @param {callback} callback - callback function that was added to event listener to be executed when event occurs.
-     * @return {INArea} self to let you chain methods
-     * @example
-     * const area = new INArea(navi);
-     * area.ready(() => area.removeEventListener(Event.MOUSE.CLICK); );
-     */
-    removeEventListener(event, callback) {
-        if (this._events.has(event)) {
-            Communication.remove(callback)
-        }
-        return this;
-    }
-
-    /**
      * Place area on the map with all given settings. There is necessary to use setPoints() method before draw() method to indicate where area should to be located.
      * Use of this method is indispensable to draw area with set configuration in the IndoorNavi Map.
      * @example
@@ -651,8 +618,7 @@ class INArea extends INMapObject {
                         id: this._id,
                         points: this._points,
                         opacity: this._opacity,
-                        color: this._color,
-                        events: this._events
+                        color: this._color
                     }
                 }
             });
@@ -1433,55 +1399,371 @@ class INReport {
         }).bind(this));
     }
 }
-class INData {
-    /**
-     * Data object containing methods to retrieve data
-     * @param {string} targetHost - address to the IndoorNavi backend server
-     * @param {string} apiKey - the API key created on IndoorNavi server (must be assigned to your domain)
-     */
-    constructor(targetHost, apiKey) {
-        const authHeader = 'Token ' + apiKey;
-        this._targetHost = targetHost;
-        this._baseUrl = '/rest/v1/';
-        this._http = new Http();
-        this._http.setAuthorization(authHeader);
-    }
+describe('INMap module tests', function () {
+    it('Should throw an error when you try to toggle tag visibility when iFrame is not ready', function () {
+        // given
+        let map = new INMap();
 
-    /**
-     * Get list of paths
-     * @param {number} floorId id of the floor you want to get paths from
-     * @return {Promise} promise that will be resolved when {@link Path} list is retrieved
-     */
-    getPaths(floorId) {
-        return new Promise((function(resolve) {
-            this._http.doGet(`${this._targetHost}${this._baseUrl}paths/${floorId}`, function(data) {
-                resolve(JSON.parse(data));
+        // when
+        const toTest = function () {
+            map.toggleTagVisibility(1);
+        };
+
+        // then
+        expect(toTest).toThrow(new Error('INMap is not ready. Call load() first and then when promise resolves, INMap will be ready.'));
+    });
+
+    it('Should send message to iFrame when iFrame is ready and toggle tag is called', function () {
+        // given
+        let map = new INMap();
+        map.parameters = {};
+        map.iFrame = {};
+        spyOn(Communication, 'send').and.stub();
+        spyOn(DOM, 'getById').and.stub();
+        spyOn(DOM, 'getByTagName').and.stub();
+
+        // when
+        map.toggleTagVisibility(1);
+
+        // then
+        expect(Communication.send).toHaveBeenCalled();
+        expect(DOM.getById).toHaveBeenCalled();
+        expect(DOM.getByTagName).toHaveBeenCalled();
+    });
+
+    it('Should throw an error when you try to add event listener when iFrame is not ready', function () {
+        // given
+        let map = new INMap();
+
+        // when
+        const toTest = function () {
+            map.addEventListener(Event.LISTENER.AREA, function () {
             });
-        }).bind(this));
-    }
+        };
 
-    /**
-     * Get list of areas
-     * @param {number} floorId id of the floor you want to get paths from
-     * @return {Promise} promise that will be resolved when {@link AreaPayload} list is retrieved
-     */
-    getAreas(floorId) {
-        return new Promise((function(resolve) {
-            this._http.doGet(`${this._targetHost}${this._baseUrl}areas/${floorId}`, function(data) {
-                const payloads = JSON.parse(data);
-                const areas = payloads.map(payload => {
-                    return {
-                        id: payload.name,
-                        name: payload.name,
-                        points: payload.points
-                    }
-                });
-                resolve(areas);
-            });
-        }).bind(this));
-    }
-}
+        // then
+        expect(toTest).toThrow(new Error('INMap is not ready. Call load() first and then when promise resolves, INMap will be ready.'));
+    });
 
+    it('Should send message to iFrame and start listening on events when iFrame is ready and add event listener is called', function () {
+        // given
+        let map = new INMap();
+        map.parameters = {};
+        map.iFrame = {};
+
+        spyOn(Communication, 'send').and.stub();
+        spyOn(DOM, 'getById').and.stub();
+        spyOn(DOM, 'getByTagName').and.stub();
+        spyOn(Communication, 'listen').and.stub();
+
+        // when
+        map.addEventListener(Event.LISTENER.AREA, function () {
+        });
+
+        // then
+        expect(Communication.send).toHaveBeenCalled();
+        expect(DOM.getById).toHaveBeenCalled();
+        expect(DOM.getByTagName).toHaveBeenCalled();
+        expect(Communication.listen).toHaveBeenCalled();
+    });
+});
+describe('Object tests', function() {
+    it('Should throw an error when You try to create an INMapObject instance', () => {
+        // given
+        let map = new INMap();
+        map.isReady = true;
+
+        // when
+        function makeObject() {
+            new INMapObject(map);
+        }
+
+        // then
+        expect(makeObject).toThrow(new TypeError("Cannot construct INMapObject instances directly"));
+    });
+});
+
+describe('Validation module tests', function() {
+    it('should throw an error when required field is undefined', function() {
+        // given
+        const requiredField = 'test';
+        const object = {
+
+        };
+
+        // when
+        const toTest = function () {
+            Validation.required(object, requiredField, 'Test');
+        };
+
+        // then
+        expect(toTest).toThrow(new Error('Test'));
+    });
+
+    it('should throw an error when required field value is undefined', function() {
+        // given
+        const requiredField = 'test';
+        const object = {
+            'test': undefined
+        };
+
+        // when
+        const toTest = function () {
+            Validation.required(object, requiredField, 'Test');
+        };
+
+        // then
+        expect(toTest).toThrow(new Error('Test'));
+    });
+
+    it('should NOT throw an error when required field is defined', function() {
+        // given
+        const requiredField = 'test';
+        const object = {
+            test: 'test'
+        };
+        const spy = spyOn(Validation, 'required').and.callThrough();
+
+        // when
+        Validation.required(object, requiredField, 'Test');
+
+        // then
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should throw an error when all of the required fields are undefined', function() {
+        // given
+        const requiredFields = ['test', 'mama'];
+        const object = {
+
+        };
+
+        // when
+        const toTest = function() {
+            Validation.requiredAny(object, requiredFields, 'Test');
+        };
+
+        // then
+        expect(toTest).toThrow(new Error('Test'));
+    });
+
+    it('should NOT throw an error when any of the required fields is defined', function() {
+        // given
+        const requiredFields = ['test', 'mama'];
+        const object = {
+            'test': false
+        };
+        const spy = spyOn(Validation, 'requiredAny').and.callThrough();
+
+        // when
+        Validation.requiredAny(object, requiredFields, 'Test');
+
+        // then
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should throw an error when given number is NOT an integer', function() {
+        // given
+        const num = 1.1;
+
+        // when
+        const toTest = function() {
+            Validation.isInteger(num, 'Test');
+        };
+
+        // then
+        expect(toTest).toThrow(new Error('Test'));
+    });
+
+    it('should NOT throw an error when given number is an integer', function() {
+        // given
+        const num = 5;
+        const spy = spyOn(Validation, 'isInteger').and.callThrough();
+
+        // when
+        Validation.isInteger(num, 'Test');
+
+        // then
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should throw an error when given number is NOT in given range', function() {
+        // given
+        const min = 1;
+        const max = 5;
+
+        // when
+        const toTest = function() {
+            Validation.isBetween(min, max, 6, 'Test');
+        };
+
+        // then
+        expect(toTest).toThrow(new Error('Test'));
+    });
+
+    it('should NOT throw an error when given number is in given range', function() {
+        // given
+        const min = 5;
+        const max = 10;
+        const spy = spyOn(Validation, 'isBetween').and.callThrough();
+
+        // when
+        Validation.isBetween(min, max, 6, 'Test');
+
+        // then
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should throw an error when given value is NOT in the proper color format', function() {
+        // given
+        const wrongColorFormat = 'rb(19,91,9)';
+
+        // when
+        const toTest = function() {
+            Validation.isColor(wrongColorFormat, 'Test');
+        };
+
+        // then
+        expect(toTest).toThrow(new Error('Test'));
+    });
+
+    it('should NOT throw an error when given value is in the proper color format', function() {
+        // given
+        const goodColorFormat = '#ff0000';
+        const spy = spyOn(Validation, 'isColor').and.callThrough();
+
+        // when
+        Validation.isColor(goodColorFormat, 'Test');
+
+        // then
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should throw an error when given value is NOT a string', function() {
+        // given
+        const notAString = false;
+
+        // when
+        const toTest = function() {
+            Validation.isString(notAString, 'Test');
+        };
+
+        // then
+        expect(toTest).toThrow(new Error('Test'));
+    });
+
+    it('should NOT throw an error when given value is a string', function() {
+        // given
+        const value = 'test';
+        const spy = spyOn(Validation, 'isString').and.callThrough();
+
+        // when
+        Validation.isString(value, 'Test');
+
+        // then
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should throw an error when given value is NOT a number', function() {
+        // given
+        const notANumber = false;
+
+        // when
+        const toTest = function() {
+            Validation.isNumber(notANumber, 'Test');
+        };
+
+        // then
+        expect(toTest).toThrow(new Error('Test'));
+    });
+
+    it('should NOT throw an error when given value is a number', function() {
+        // given
+        const value = 1.1;
+        const spy = spyOn(Validation, 'isNumber').and.callThrough();
+
+        // when
+        Validation.isNumber(value, 'Test');
+
+        // then
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should throw an error when given value is NOT an array', function() {
+        // given
+        const notAnArray = false;
+
+        // when
+        const toTest = function() {
+            Validation.isArray(notAnArray, 'Test');
+        };
+
+        // then
+        expect(toTest).toThrow(new Error('Test'));
+    });
+
+    it('should NOT throw an error when given value is an array', function() {
+        // given
+        const value = ['test'];
+        const spy = spyOn(Validation, 'isArray').and.callThrough();
+
+        // when
+        Validation.isArray(value, 'Test');
+
+        // then
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should throw an error when given value is NOT in an array', function() {
+        // given
+        const value = 89;
+
+        // when
+        const toTest = function() {
+            Validation.isInArray([11, 22, 33], value, 'Test');
+        };
+
+        // then
+        expect(toTest).toThrow(new Error('Test'));
+    });
+
+    it('should NOT throw an error when given value is in an array', function() {
+        // given
+        const value = 89;
+        const spy = spyOn(Validation, 'isInArray').and.callThrough();
+
+        // when
+        Validation.isInArray([11, 22, 33, 89], value, 'Test');
+
+        // then
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('should throw an error when given value is lower than min', function() {
+        // given
+        const value = 89;
+
+        // when
+        const toTest = function() {
+            Validation.isGreaterThan(100, value, 'Test');
+        };
+
+        // then
+        expect(toTest).toThrow(new Error('Test'));
+    });
+
+    it('should NOT throw an error when given value is greater than min', function() {
+        // given
+        const value = 89;
+        const spy = spyOn(Validation, 'isGreaterThan').and.callThrough();
+
+        // when
+        Validation.isGreaterThan(82, value, 'Test');
+
+        // then
+        expect(spy).toHaveBeenCalled();
+    });
+});
 /**
  * Class representing a Navigation,
  * creates the InNavigator service
