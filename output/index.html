@@ -340,21 +340,28 @@
 
     function simulateNavigation() {
         const navigation = new INNavigation(navi);
+        navigation.addResponseListener(response => console.log(response));
         navigation.start(
             {x: 39, y: 49},
-            {x: 390, y: 473},
-            10);
+            {x: 3900, y: 4730},
+            0);
         setTimeout(() => navigation.updatePosition(
-            {x: 18, y: 16}),
-            1000
+            {x: 100, y: 100}),
+            14000
         );
 
-        for (let i = 0; i < 390; i++) {
+        for (let i = 0; i < 300; i++) {
             setTimeout(() => {
-                navigation.updatePosition({x: (18 + i), y: (16 + i)})
-            }, i * 20)
+                navigation.updatePosition({x: (100 + (i*5)), y: (100 + (i*5))});
+                console.log('update');
+            }, i * 100)
         }
-        navigation.stop();
+        setTimeout(() => {
+            navigation.stop();
+            console.log('stopped');
+            navigation.removeResponseListener();
+        }, 15000);
+
     }
 
     function simulateINBle() {
