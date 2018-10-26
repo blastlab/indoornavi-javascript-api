@@ -81,7 +81,7 @@
 		applyLongClickListener();
         getPaths();
         // getComplexes();
-        // setTimeout(() => {simulateNavigation()}, 2000);
+        setTimeout(() => {simulateNavigation()}, 2000);
         getAreas();
     });
 
@@ -340,7 +340,7 @@
 
     function simulateNavigation() {
         const navigation = new INNavigation(navi);
-        navigation.addResponseListener(response => console.log(response));
+        navigation.addEventListener(response => console.log(response));
         navigation.start(
             {x: 39, y: 49},
             {x: 3900, y: 4730},
@@ -359,7 +359,7 @@
         setTimeout(() => {
             navigation.stop();
             console.log('stopped');
-            navigation.removeResponseListener();
+            navigation.removeEventListener();
         }, 15000);
 
     }

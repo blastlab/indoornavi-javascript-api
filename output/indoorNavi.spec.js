@@ -1871,7 +1871,7 @@ class INNavigation {
      * const navigation = new INNavigation(navi);
      * navigation.addEventListener((eventData) => console.log('event occurred with: ', eventData));
      */
-    addResponseListener(callback) {
+    addEventListener(callback) {
         this._callback_event = callback;
         Communication.listen('navigation', this._callbackDispatcher.bind(this));
         return this;
@@ -1884,7 +1884,7 @@ class INNavigation {
      * const navigation = new INNavigation(navi);
      * navigation.removeEventListener();
      */
-    removeResponseListener() {
+    removeEventListener() {
         if (!!this._callback_event) {
             Communication.remove(this._callbackDispatcher);
             this._callback_event = null;
