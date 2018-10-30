@@ -352,6 +352,24 @@ const Event = {
 };
 
 /**
+ * Class representing an NavigationPoint
+ */
+class NavigationPoint {
+    /**
+     * Navigation point parameters
+     *  @param {number} radius of the circle
+     *  @param {Border} Border object
+     *  @param {number} opacity of the circle
+     *  @param {String} color of the circle
+     */
+    constructor(radius, border, opacity, color) {
+        this.radius = radius;
+        this.border = border;
+        this.opacity = opacity
+        this.color = color;
+    }
+}
+/**
  * Class representing a Path
  */
 class Path {
@@ -1471,7 +1489,7 @@ class INData {
                 const payloads = JSON.parse(data);
                 const areas = payloads.map(payload => {
                     return {
-                        id: payload.name,
+                        id: payload.id,
                         name: payload.name,
                         points: payload.points
                     }
@@ -1496,6 +1514,7 @@ class INNavigation {
         this._navi = navi;
         this._navi._checkIsReady();
         this._navi._setIFrame();
+        this._callback_event = null;
     }
 
     /**
@@ -1517,6 +1536,27 @@ class INNavigation {
             destination: destination,
             accuracy: margin
         });
+        return this;
+    }
+
+    addEventListener(callback) {
+        this._callback_event = callback;
+        Communication.listen('navigation', this._callbackDispatcher.bind(this));
+        return this;
+    }
+
+    /**
+     * Removes listener if listener exists. Use of this method is optional.
+     * @return {INNavigation} self to let you chain methods
+     * @example
+     * const navigation = new INNavigation(navi);
+     * navigation.removeEventListener();
+     */
+    removeEventListener() {
+        if (!!this._callback_event) {
+            Communication.remove(this._callbackDispatcher);
+            this._callback_event = null;
+        }
         return this;
     }
 
@@ -1547,6 +1587,61 @@ class INNavigation {
         return this;
     }
 
+    /**
+     * Disable drawing starting point of navigation.
+     * @returns {INNavigation} self to let you chain methods
+     * @example
+     * const navigation = new INNavigation(navi);
+     * navigation.disableStartPoint();
+     */
+    disableStartPoint() {
+        this._sendToIFrame('disableStart', {});
+        return this;
+    }
+
+    /**
+     * Disable drawing destination point of navigation.
+     * @returns {INNavigation} self to let you chain methods
+     * @example
+     * const navigation = new INNavigation(navi);
+     * navigation.disableEndPoint();
+     */
+    disableEndPoint() {
+        this._sendToIFrame('disableEnd', {});
+        return this;
+    }
+
+    /**
+     * Sets graphic properties of the starting point
+     * @param startPointObject {NavigationPoint} point parameters
+     * @returns {INNavigation} self to let you chain methods
+     */
+    setStartPoint(startPointObject) {
+        this._sendToIFrame('startPoint', {navigationPoint: startPointObject});
+        return this;
+    }
+
+    /**
+     * Sets graphic properties of the destination point
+     * @param startPointObject {NavigationPoint} point parameters
+     * @returns {INNavigation} self to let you chain methods
+     */
+    setEndPoint(endPointObject) {
+        this._sendToIFrame('endPoint', {navigationPoint: endPointObject});
+        return this;
+    }
+
+    /**
+     * Sets color of the navigation path
+     * @param pathColor desired color
+     * @returns {INNavigation} self to let you chain methods
+     */
+    setPathColor(pathColor) {
+        this._sendToIFrame('setPathColor', {pathColor: pathColor});
+        return this;
+    }
+
+
     _sendToIFrame(action, payload) {
         Communication.send(this._navi.iFrame, this._navi.targetHost, {
             command: 'navigation',
@@ -1556,6 +1651,12 @@ class INNavigation {
                 }, payload)
             }
         });
+    }
+
+    _callbackDispatcher(event) {
+        if (!!this._callback_event) {
+            this._callback_event(event);
+        }
     }
 }
 

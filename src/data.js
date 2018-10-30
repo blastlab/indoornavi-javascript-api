@@ -36,7 +36,7 @@ class INData {
                 const payloads = JSON.parse(data);
                 const areas = payloads.map(payload => {
                     return {
-                        id: payload.name,
+                        id: payload.id,
                         name: payload.name,
                         points: payload.points
                     }
