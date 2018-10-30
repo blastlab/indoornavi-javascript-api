@@ -87,25 +87,27 @@ class INNavigation {
 
     /**
      * Disable drawing starting point of navigation.
+     * @param state {boolean} enable or disable circle visibility, false by default
      * @returns {INNavigation} self to let you chain methods
      * @example
      * const navigation = new INNavigation(navi);
-     * navigation.disableStartPoint();
+     * navigation.disableStartPoint(true);
      */
-    disableStartPoint() {
-        this._sendToIFrame('disableStart', {});
+    disableStartPoint(state) {
+        this._sendToIFrame('disableStart', {state: state});
         return this;
     }
 
     /**
      * Disable drawing destination point of navigation.
+     * @param state {boolean} enable or disable circle visibility, false by default
      * @returns {INNavigation} self to let you chain methods
      * @example
      * const navigation = new INNavigation(navi);
-     * navigation.disableEndPoint();
+     * navigation.disableEndPoint(true);
      */
-    disableEndPoint() {
-        this._sendToIFrame('disableEnd', {});
+    disableEndPoint(state) {
+        this._sendToIFrame('disableEnd', {state: state});
         return this;
     }
 
