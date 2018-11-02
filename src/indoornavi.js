@@ -34,7 +34,9 @@ class INMap {
         return new Promise(function (resolve) {
             self.iFrame.onload = function () {
                 self.getMapDimensions(data => {
-                    self.parameters = {height: data.height, width: data.width, scale: data.scale};
+                    const error = self.setErrorMessage(data);
+                    self.parameters = {height: data.height, width: data.width, scale: data.scale, error: error};
+                    console.log( self.parameters);
                     resolve();
                 });
             }
@@ -168,6 +170,27 @@ class INMap {
         if (!!mapId) {
             this.iFrame.setAttribute('src', `${this.targetHost}/embedded/${mapId}?api_key=${this.apiKey}`);
         }
+    }
+
+    /**
+     * Set Object with error message
+     * @param data { height, width, scale }
+     * @return { error: message | null }
+     */
+    setErrorMessage(data) {
+        if (!data.width || data.width < 0) {
+            return { error: 'No width. Check if the map is loaded.' };
+        }
+
+        if (!data.height || data.height < 0) {
+            return { error: 'No height. Check if the map is loaded.' };
+        }
+
+        if (!data.scale && data.width && data.height) {
+            return { error: 'No scale. Set the scale on the map and publish.' };
+        }
+
+        return null;
     }
 
 }
