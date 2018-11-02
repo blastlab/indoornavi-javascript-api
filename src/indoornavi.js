@@ -34,8 +34,8 @@ class INMap {
         return new Promise(function (resolve) {
             self.iFrame.onload = function () {
                 self.getMapDimensions(data => {
-                    const error = self.setErrorMessage(data);
-                    self.parameters = {height: data.height, width: data.width, scale: data.scale, error: error};
+                    const errorMessage = self.setErrorMessage(data);
+                    self.parameters = {height: data.height, width: data.width, scale: data.scale, error: errorMessage};
                     console.log( self.parameters);
                     resolve();
                 });
