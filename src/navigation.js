@@ -142,6 +142,18 @@ class INNavigation {
     }
 
 
+    /**
+     * Sets width of the navigation path
+     * @param pathWidth desired width
+     * @returns {INNavigation} self to let you chain methods
+     */
+    setPathWidth(pathWidth) {
+        this._sendToIFrame('setPathWidth', {pathWidth: pathWidth});
+        return this;
+    }
+
+
+
     _sendToIFrame(action, payload) {
         Communication.send(this._navi.iFrame, this._navi.targetHost, {
             command: 'navigation',
