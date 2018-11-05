@@ -36,7 +36,6 @@ class INMap {
                 self.getMapDimensions(data => {
                     const errorMessage = self.setErrorMessage(data);
                     self.parameters = {height: data.height, width: data.width, scale: data.scale, error: errorMessage};
-                    console.log( self.parameters);
                     resolve();
                 });
             }
@@ -178,15 +177,15 @@ class INMap {
      * @return { error: message | null }
      */
     setErrorMessage(data) {
-        if (!data.width || data.width < 0) {
+        if (!data.width) {
             return { error: 'No width. Check if the map is loaded.' };
         }
 
-        if (!data.height || data.height < 0) {
+        if (!data.height) {
             return { error: 'No height. Check if the map is loaded.' };
         }
 
-        if (!data.scale && data.width && data.height) {
+        if (!data.scale) {
             return { error: 'No scale. Set the scale on the map and publish.' };
         }
 

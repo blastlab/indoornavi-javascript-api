@@ -1246,7 +1246,8 @@ class INMap {
         return new Promise(function (resolve) {
             self.iFrame.onload = function () {
                 self.getMapDimensions(data => {
-                    self.parameters = {height: data.height, width: data.width, scale: data.scale};
+                    const errorMessage = self.setErrorMessage(data);
+                    self.parameters = {height: data.height, width: data.width, scale: data.scale, error: errorMessage};
                     resolve();
                 });
             }
@@ -1380,6 +1381,27 @@ class INMap {
         if (!!mapId) {
             this.iFrame.setAttribute('src', `${this.targetHost}/embedded/${mapId}?api_key=${this.apiKey}`);
         }
+    }
+
+    /**
+     * Set Object with error message
+     * @param data { height, width, scale }
+     * @return { error: message | null }
+     */
+    setErrorMessage(data) {
+        if (!data.width) {
+            return { error: 'No width. Check if the map is loaded.' };
+        }
+
+        if (!data.height) {
+            return { error: 'No height. Check if the map is loaded.' };
+        }
+
+        if (!data.scale) {
+            return { error: 'No scale. Set the scale on the map and publish.' };
+        }
+
+        return null;
     }
 
 }
