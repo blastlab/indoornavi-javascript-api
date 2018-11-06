@@ -991,7 +991,8 @@ class INMarker extends INMapObject {
         super(navi);
         this._type = 'MARKER';
         this._position = {x: 0, y: 0};
-        this._icon = null;
+        this._iconUrl = null;
+        this._iconStringBase64 = null;
         this._infoWindow = {
             content: null,
             position: null
@@ -1038,17 +1039,34 @@ class INMarker extends INMapObject {
     }
 
     /**
-     * Sets marker icon. Use of this method is optional.
+     * Sets marker icon by passing url. Use of this method is optional.
      * @param {string} path - url path to your icon;
      * @return {INMarker} self to let you chain methods
      * @example
-     * const path = 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png'
+     * const iconUrl = 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png'
      * const marker = new INMarker(navi);
-     * marker.ready().then(() => marker.setIcon(icon).draw(); );
+     * marker.ready().then(() => marker.setIconUrl(iconUrl).draw(); );
      */
-    setIcon(path) {
+    setIconUrl(path) {
         Validation.isString(path, 'Invalid value supplied as an icon path argument');
-        this._icon = path;
+        this._iconUrl = path;
+        this._iconStringBase64 = null;
+        return this;
+    }
+
+    /**
+     * Sets marker icon by passing image as base64 string. Use of this method is optional.
+     * @param {string} stringBase64 - image in base64 string format
+     * @return {INMarker} self to let you chain methods
+     * @example
+     * const stringBase64 = 'ImageInStringBase64format';
+     * const marker = new INMarker(navi);
+     * marker.ready().then(() => marker.setIconImgFromBase64(stringBase64).draw(); );
+     */
+    setIconImgFromBase64(stringBase64) {
+        Validation.isString(stringBase64, 'Invalid value supplied as an icon base64 string');
+        this._iconStringBase64 = stringBase64;
+        this._iconUrl = null;
         return this;
     }
 
@@ -1124,7 +1142,8 @@ class INMarker extends INMapObject {
                     object: {
                         id: this._id,
                         position: this._position,
-                        icon: this._icon,
+                        iconUrl: this._iconUrl,
+                        iconStringBase64: this._iconStringBase64,
                         label: this._label,
                         infoWindow: this._infoWindow,
                         events: this._events
