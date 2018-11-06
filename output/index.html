@@ -82,6 +82,8 @@
         getPaths();
         // getComplexes();
         setTimeout(() => {simulateNavigation()}, 2000);
+        setTimeout(() => {simulateNavigation()}, 30000);
+        setTimeout(() => {simulateNavigation()}, 60000);
         getAreas();
     });
 
@@ -339,8 +341,19 @@
     }
 
     function simulateNavigation() {
+        function stop_navigation(message) {
+            if (message.action === 'stopped') {
+                console.log('received stop');
+                navigation.stop();
+                navigation.removeEventListener();
+            }
+            console.log(message);
+        }
         const navigation = new INNavigation(navi);
-        navigation.addEventListener(response => console.log(response));
+        navigation.addEventListener( res =>
+            stop_navigation(res)
+        );
+
         navigation.start(
             {x: 39, y: 49},
             {x: 3900, y: 4730},
@@ -350,7 +363,7 @@
             14000
         );
 
-        for (let i = 0; i < 300; i++) {
+        for (let i = 0; i < 200; i++) {
             setTimeout(() => {
                 navigation.updatePosition({x: (100 + (i*5)), y: (100 + (i*5))});
                 console.log('update');
@@ -360,7 +373,7 @@
             navigation.stop();
             console.log('stopped');
             navigation.removeEventListener();
-        }, 15000);
+        }, 20000);
 
     }
 
