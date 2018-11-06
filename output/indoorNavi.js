@@ -593,7 +593,7 @@ class INArea extends INMapObject {
     /**
      * Sets border of the area
      * @param {Border} border of the area
-     * @return {INCircle} self to let you chain methods
+     * @return {INArea} self to let you chain methods
      */
     setBorder(border) {
         Validation.requiredAny(border, ['color', 'width'], 'Border must have at least color and/or width');
