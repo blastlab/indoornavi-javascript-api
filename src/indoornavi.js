@@ -114,16 +114,18 @@ class INMap {
         Communication.listen(event, callback);
     }
 
+
     /**
      * Get closest coordinates on floor path for given point
      * @param {@link Point} point coordinates
      * @param {number} accuracy of path pull
+     * @param {function} callback that will be resolved when {Promise} is resolved
      * @return {Promise} promise that will be resolved when {@link Point} is retrieved
      */
-    pullToPath(point, accuracy) {
+    pullToPath(point, accuracy, callback) {
         const self = this;
         return new Promise(resolve => {
-            Communication.listen(`getPointOnPath`, resolve);
+            Communication.listenOnce(`getPointOnPath`, callback, resolve);
             Communication.send(self.iFrame, self.targetHost, {
                 command: 'getPointOnPath',
                 args: {
@@ -136,7 +138,8 @@ class INMap {
 
     /**
      * Get list of complex, buildings and floors.
-     * @returns {Promise} promise that will be resolved when complex list is retrieved.
+     * @param {function} callback that will be resolved when {Promise} is resolved
+     * @return {Promise} promise that will be resolved when complex list is retrieved.
      */
     getComplexes(callback) {
         Validation.isFunction(callback);
@@ -147,6 +150,27 @@ class INMap {
                 command: 'getComplexes'
             });
         });
+    }
+
+    /**
+     * Set Object with error message
+     * @param data { height, width, scale }
+     * @return { error: message | null }
+     */
+    setErrorMessage(data) {
+        if (!data.width) {
+            return { error: 'No width. Check if the map is loaded.' };
+        }
+
+        if (!data.height) {
+            return { error: 'No height. Check if the map is loaded.' };
+        }
+
+        if (!data.scale) {
+            return { error: 'No scale. Set the scale on the map and publish.' };
+        }
+
+        return null;
     }
 
     _checkIsReady() {
@@ -169,27 +193,6 @@ class INMap {
         if (!!mapId) {
             this.iFrame.setAttribute('src', `${this.targetHost}/embedded/${mapId}?api_key=${this.apiKey}`);
         }
-    }
-
-    /**
-     * Set Object with error message
-     * @param data { height, width, scale }
-     * @return { error: message | null }
-     */
-    setErrorMessage(data) {
-        if (!data.width) {
-            return { error: 'No width. Check if the map is loaded.' };
-        }
-
-        if (!data.height) {
-            return { error: 'No height. Check if the map is loaded.' };
-        }
-
-        if (!data.scale) {
-            return { error: 'No scale. Set the scale on the map and publish.' };
-        }
-
-        return null;
     }
 
 }
