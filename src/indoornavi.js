@@ -149,6 +149,27 @@ class INMap {
         });
     }
 
+    /**
+     * Set Object with error message
+     * @param data { height, width, scale }
+     * @return { error: message | null }
+     */
+    setErrorMessage(data) {
+        if (!data.width) {
+            return { error: 'No width. Check if the map is loaded.' };
+        }
+
+        if (!data.height) {
+            return { error: 'No height. Check if the map is loaded.' };
+        }
+
+        if (!data.scale) {
+            return { error: 'No scale. Set the scale on the map and publish.' };
+        }
+
+        return null;
+    }
+
     _checkIsReady() {
         if (!this.parameters) {
             throw new Error('INMap is not ready. Call load() first and then when promise resolves, INMap will be ready.');
@@ -169,27 +190,6 @@ class INMap {
         if (!!mapId) {
             this.iFrame.setAttribute('src', `${this.targetHost}/embedded/${mapId}?api_key=${this.apiKey}`);
         }
-    }
-
-    /**
-     * Set Object with error message
-     * @param data { height, width, scale }
-     * @return { error: message | null }
-     */
-    setErrorMessage(data) {
-        if (!data.width) {
-            return { error: 'No width. Check if the map is loaded.' };
-        }
-
-        if (!data.height) {
-            return { error: 'No height. Check if the map is loaded.' };
-        }
-
-        if (!data.scale) {
-            return { error: 'No scale. Set the scale on the map and publish.' };
-        }
-
-        return null;
     }
 
 }

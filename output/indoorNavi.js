@@ -475,12 +475,13 @@ class INMapObject {
     }
 
     /**
-     * Removes object and destroys its instance in the frontend server, but do not destroys object class instance in your app.
+     * Erase drawn object and destroys its instance in the frontend server, but do not destroys object class instance in your app.
      * inheritedObjectFromINMapObject is a child object of abstract class INMapObject
+     * To redrawn erased object usage of ready() method is needed again
      * @example
-     * 'inheritedObjectFromINMapObject'.ready().then(() => 'inheritedObjectFromINMapObject'.remove(); );
+     * 'inheritedObjectFromINMapObject'.ready().then(() => 'inheritedObjectFromINMapObject'.erase(); );
      */
-    remove() {
+    erase() {
         if (!!this._id) {
             Communication.send(this._navi.iFrame, this._navi.targetHost, {
                 command: 'removeObject',
@@ -593,7 +594,7 @@ class INArea extends INMapObject {
     /**
      * Sets border of the area
      * @param {Border} border of the area
-     * @return {INCircle} self to let you chain methods
+     * @return {INArea} self to let you chain methods
      */
     setBorder(border) {
         Validation.requiredAny(border, ['color', 'width'], 'Border must have at least color and/or width');
@@ -1381,6 +1382,27 @@ class INMap {
         });
     }
 
+    /**
+     * Set Object with error message
+     * @param data { height, width, scale }
+     * @return { error: message | null }
+     */
+    setErrorMessage(data) {
+        if (!data.width) {
+            return { error: 'No width. Check if the map is loaded.' };
+        }
+
+        if (!data.height) {
+            return { error: 'No height. Check if the map is loaded.' };
+        }
+
+        if (!data.scale) {
+            return { error: 'No scale. Set the scale on the map and publish.' };
+        }
+
+        return null;
+    }
+
     _checkIsReady() {
         if (!this.parameters) {
             throw new Error('INMap is not ready. Call load() first and then when promise resolves, INMap will be ready.');
@@ -1401,27 +1423,6 @@ class INMap {
         if (!!mapId) {
             this.iFrame.setAttribute('src', `${this.targetHost}/embedded/${mapId}?api_key=${this.apiKey}`);
         }
-    }
-
-    /**
-     * Set Object with error message
-     * @param data { height, width, scale }
-     * @return { error: message | null }
-     */
-    setErrorMessage(data) {
-        if (!data.width) {
-            return { error: 'No width. Check if the map is loaded.' };
-        }
-
-        if (!data.height) {
-            return { error: 'No height. Check if the map is loaded.' };
-        }
-
-        if (!data.scale) {
-            return { error: 'No scale. Set the scale on the map and publish.' };
-        }
-
-        return null;
     }
 
 }
@@ -1667,6 +1668,17 @@ class INBle {
         }
     }
 
+    /**
+     * Returns areas that are checked for Bluetooth events
+     * @return {AreaPayload[]} areas if areas are fetched else null
+     * */
+    getAreas() {
+        if (!!this._areas) {
+            return this._areas;
+        }
+        return null;
+    }
+
     _sendAreaEvent(area, mode) {
         this._callback({
             area: area,
@@ -1685,16 +1697,5 @@ class INBle {
 
     _updateTime(area) {
         this._areaEventsMap.set(area, new Date());
-    }
-
-    /**
-     * Returns areas that are checked for Bluetooth events
-     * @return {AreaPayload[]} areas if areas are fetched else null
-     * */
-    getAreas() {
-        if (!!this._areas) {
-            return this._areas;
-        }
-        return null;
     }
 }
