@@ -1045,9 +1045,9 @@ class INMarker extends INMapObject {
      * @example
      * const iconUrl = 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png'
      * const marker = new INMarker(navi);
-     * marker.ready().then(() => marker.setIconUrl(iconUrl).draw(); );
+     * marker.ready().then(() => marker.setIconImgFromUrl(iconUrl).draw(); );
      */
-    setIconUrl(path) {
+    setIconImgFromUrl(path) {
         Validation.isString(path, 'Invalid value supplied as an icon path argument');
         this._iconUrl = path;
         this._iconStringBase64 = null;
