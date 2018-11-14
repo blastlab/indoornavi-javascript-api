@@ -157,7 +157,6 @@ venv.bak/
 .mypy_cache/
 
 # custom
-output/
 .idea/
 package-lock.json
 ve/
