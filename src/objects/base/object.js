@@ -66,12 +66,13 @@ class INMapObject {
     }
 
     /**
-     * Removes object and destroys its instance in the frontend server, but do not destroys object class instance in your app.
+     * Erase drawn object and destroys its instance in the frontend server, but do not destroys object class instance in your app.
      * inheritedObjectFromINMapObject is a child object of abstract class INMapObject
+     * To redrawn erased object usage of ready() method is needed again
      * @example
-     * 'inheritedObjectFromINMapObject'.ready().then(() => 'inheritedObjectFromINMapObject'.remove(); );
+     * 'inheritedObjectFromINMapObject'.ready().then(() => 'inheritedObjectFromINMapObject'.erase(); );
      */
-    remove() {
+    erase() {
         if (!!this._id) {
             Communication.send(this._navi.iFrame, this._navi.targetHost, {
                 command: 'removeObject',

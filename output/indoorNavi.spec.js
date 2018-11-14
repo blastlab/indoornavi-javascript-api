@@ -475,12 +475,13 @@ class INMapObject {
     }
 
     /**
-     * Removes object and destroys its instance in the frontend server, but do not destroys object class instance in your app.
+     * Erase drawn object and destroys its instance in the frontend server, but do not destroys object class instance in your app.
      * inheritedObjectFromINMapObject is a child object of abstract class INMapObject
+     * To redrawn erased object usage of ready() method is needed again
      * @example
-     * 'inheritedObjectFromINMapObject'.ready().then(() => 'inheritedObjectFromINMapObject'.remove(); );
+     * 'inheritedObjectFromINMapObject'.ready().then(() => 'inheritedObjectFromINMapObject'.erase(); );
      */
-    remove() {
+    erase() {
         if (!!this._id) {
             Communication.send(this._navi.iFrame, this._navi.targetHost, {
                 command: 'removeObject',
@@ -1986,6 +1987,17 @@ class INBle {
         }
     }
 
+    /**
+     * Returns areas that are checked for Bluetooth events
+     * @return {AreaPayload[]} areas if areas are fetched else null
+     * */
+    getAreas() {
+        if (!!this._areas) {
+            return this._areas;
+        }
+        return null;
+    }
+
     _sendAreaEvent(area, mode) {
         this._callback({
             area: area,
@@ -2004,16 +2016,5 @@ class INBle {
 
     _updateTime(area) {
         this._areaEventsMap.set(area, new Date());
-    }
-
-    /**
-     * Returns areas that are checked for Bluetooth events
-     * @return {AreaPayload[]} areas if areas are fetched else null
-     * */
-    getAreas() {
-        if (!!this._areas) {
-            return this._areas;
-        }
-        return null;
     }
 }

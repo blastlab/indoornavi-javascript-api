@@ -132,7 +132,7 @@
     function removeINPolyline() {
         if (!!poly) {
             poly.ready().then(() => {
-                poly.remove();
+                poly.erase();
                 poly = null;
             });
         }
@@ -158,7 +158,7 @@
     function removeINArea() {
         if (!!inArea) {
             inArea.ready().then(() => {
-                inArea.remove();
+                inArea.erase();
                 inArea = null;
                 document.getElementById('addListener').setAttribute('disabled', 'true');
             });
@@ -258,7 +258,7 @@
             return;
         }
         inMarker1.ready().then(() => {
-            inMarker1.remove();
+            inMarker1.erase();
             inMarker1 = null;
         });
     }
@@ -268,7 +268,7 @@
             return;
         }
         inMarker2.ready().then(() => {
-            inMarker2.remove();
+            inMarker2.erase();
             inMarker2 = null;
         });
     }
