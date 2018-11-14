@@ -164,7 +164,7 @@ class INMarker extends INMapObject {
                         id: this._id,
                         position: this._position,
                         iconUrl: this._iconUrl,
-                        iconStringBase64: this._iconStringBase64,
+                        icon: this._icon,
                         label: this._label,
                         infoWindow: this._infoWindow,
                         events: this._events
