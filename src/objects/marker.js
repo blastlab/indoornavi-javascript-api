@@ -13,7 +13,7 @@ class INMarker extends INMapObject {
         this._type = 'MARKER';
         this._position = {x: 0, y: 0};
         this._iconUrl = null;
-        this._iconStringBase64 = null;
+        this._icon = null;
         this._infoWindow = {
             content: null,
             position: null
@@ -70,8 +70,8 @@ class INMarker extends INMapObject {
      */
     setIconImgFromUrl(path) {
         Validation.isString(path, 'Invalid value supplied as an icon path argument');
-        this._iconUrl = path;
-        this._iconStringBase64 = null;
+        this._iconUrl = true;
+        this._icon = path;
         return this;
     }
 
@@ -86,8 +86,8 @@ class INMarker extends INMapObject {
      */
     setIconImgFromBase64(stringBase64) {
         Validation.isString(stringBase64, 'Invalid value supplied as an icon base64 string');
-        this._iconStringBase64 = stringBase64;
-        this._iconUrl = null;
+        this._iconUrl = false;
+        this._icon = stringBase64;
         return this;
     }
 
