@@ -23,7 +23,7 @@
 <script src="indoorNavi.js"></script>
 <script>
     // floor id
-    const floorId = 3;
+    const floorId = 4;
     let inCircle = null;
     //set poly as global variable
     let poly = null;
@@ -134,7 +134,7 @@
     function removeINPolyline() {
         if (!!poly) {
             poly.ready().then(() => {
-                poly.remove();
+                poly.erase();
                 poly = null;
             });
         }
@@ -149,6 +149,7 @@
             inArea.setPoints(points)
                 .setColor('rgb(144,224,017)')
                 .setOpacity(0.5)
+                .setBorder({width: 2, color: '#090'})
                 .draw();
             console.log(`Point x: 740, y: 750 is within drawn area: ${inArea.isWithin({x: 740, y: 750})}`);
             console.log(`Point x: 740, y: 750 is within drawn area: ${inArea.isWithin({x: 750, y: 750})}`);
@@ -159,7 +160,7 @@
     function removeINArea() {
         if (!!inArea) {
             inArea.ready().then(() => {
-                inArea.remove();
+                inArea.erase();
                 inArea = null;
                 document.getElementById('addListener').setAttribute('disabled', 'true');
             });
@@ -259,7 +260,7 @@
             return;
         }
         inMarker1.ready().then(() => {
-            inMarker1.remove();
+            inMarker1.erase();
             inMarker1 = null;
         });
     }
@@ -269,7 +270,7 @@
             return;
         }
         inMarker2.ready().then(() => {
-            inMarker2.remove();
+            inMarker2.erase();
             inMarker2 = null;
         });
     }
@@ -330,7 +331,7 @@
     }
 
     function pullPointToPath(point, accuracy, callback) {
-        navi.pullToPath(point, accuracy).then(function(d) {
+        navi.pullToPath(point, accuracy, function(d) {
             console.log('Pulled to path coordinates: ', d.calculatedPosition);
             callback(d.calculatedPosition.x, d.calculatedPosition.y, null);
         });
