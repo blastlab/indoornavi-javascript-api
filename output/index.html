@@ -23,7 +23,7 @@
 <script src="indoorNavi.js"></script>
 <script>
     // floor id
-    const floorId = 4;
+    const floorId = 3;
     let inCircle = null;
     //set poly as global variable
     let poly = null;
@@ -174,7 +174,7 @@
         infoWindow1.ready().then(() => {
             infoWindow1
                 .setContent(infoWindowContent)
-                .setPositionAt(Position.TOP)
+                .setPositionAt(Position.BOTTOM)
                 .setWidth(200)
                 .setHeight(100);
         });
