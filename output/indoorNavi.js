@@ -475,12 +475,13 @@ class INMapObject {
     }
 
     /**
-     * Removes object and destroys its instance in the frontend server, but do not destroys object class instance in your app.
+     * Erase drawn object and destroys its instance in the frontend server, but do not destroys object class instance in your app.
      * inheritedObjectFromINMapObject is a child object of abstract class INMapObject
+     * To redrawn erased object usage of ready() method is needed again
      * @example
-     * 'inheritedObjectFromINMapObject'.ready().then(() => 'inheritedObjectFromINMapObject'.remove(); );
+     * 'inheritedObjectFromINMapObject'.ready().then(() => 'inheritedObjectFromINMapObject'.erase(); );
      */
-    remove() {
+    erase() {
         if (!!this._id) {
             Communication.send(this._navi.iFrame, this._navi.targetHost, {
                 command: 'removeObject',
@@ -1285,7 +1286,8 @@ class INMap {
         return new Promise(function (resolve) {
             self.iFrame.onload = function () {
                 self.getMapDimensions(data => {
-                    self.parameters = {height: data.height, width: data.width, scale: data.scale};
+                    const errorMessage = self.setErrorMessage(data);
+                    self.parameters = {height: data.height, width: data.width, scale: data.scale, error: errorMessage};
                     resolve();
                 });
             }
@@ -1364,16 +1366,18 @@ class INMap {
         Communication.listen(event, callback);
     }
 
+
     /**
      * Get closest coordinates on floor path for given point
      * @param {@link Point} point coordinates
      * @param {number} accuracy of path pull
+     * @param {function} callback that will be resolved when {Promise} is resolved
      * @return {Promise} promise that will be resolved when {@link Point} is retrieved
      */
-    pullToPath(point, accuracy) {
+    pullToPath(point, accuracy, callback) {
         const self = this;
         return new Promise(resolve => {
-            Communication.listen(`getPointOnPath`, resolve);
+            Communication.listenOnce(`getPointOnPath`, callback, resolve);
             Communication.send(self.iFrame, self.targetHost, {
                 command: 'getPointOnPath',
                 args: {
@@ -1386,7 +1390,8 @@ class INMap {
 
     /**
      * Get list of complex, buildings and floors.
-     * @returns {Promise} promise that will be resolved when complex list is retrieved.
+     * @param {function} callback that will be resolved when {Promise} is resolved
+     * @return {Promise} promise that will be resolved when complex list is retrieved.
      */
     getComplexes(callback) {
         Validation.isFunction(callback);
@@ -1397,6 +1402,27 @@ class INMap {
                 command: 'getComplexes'
             });
         });
+    }
+
+    /**
+     * Set Object with error message
+     * @param data { height, width, scale }
+     * @return { error: message | null }
+     */
+    setErrorMessage(data) {
+        if (!data.width) {
+            return { error: 'No width. Check if the map is loaded.' };
+        }
+
+        if (!data.height) {
+            return { error: 'No height. Check if the map is loaded.' };
+        }
+
+        if (!data.scale) {
+            return { error: 'No scale. Set the scale on the map and publish.' };
+        }
+
+        return null;
     }
 
     _checkIsReady() {
@@ -1510,7 +1536,7 @@ class INData {
                 const payloads = JSON.parse(data);
                 const areas = payloads.map(payload => {
                     return {
-                        id: payload.name,
+                        id: payload.id,
                         name: payload.name,
                         points: payload.points
                     }
@@ -1535,6 +1561,7 @@ class INNavigation {
         this._navi = navi;
         this._navi._checkIsReady();
         this._navi._setIFrame();
+        this._callback_event = null;
     }
 
     /**
@@ -1575,7 +1602,6 @@ class INNavigation {
         });
         return this;
     }
-
     /**
      * Stop navigation process on demand.
      * @example
@@ -1583,6 +1609,35 @@ class INNavigation {
      */
     stop() {
         this._sendToIFrame('stop', {});
+        return this;
+    }
+
+    /**
+     * Add listener for navigation events. Use of this method is optional.
+     * @param {function} callback - function that is going to be executed when event occurs.
+     * @return {INNavigation} self to let you chain methods
+     * @example
+     * const navigation = new INNavigation(navi);
+     * navigation.addEventListener((eventData) => console.log('event occurred with: ', eventData));
+     */
+    addEventListener(callback) {
+        this._callback_event = callback;
+        Communication.listen('navigation', this._callbackDispatcher.bind(this));
+        return this;
+    }
+
+    /**
+     * Removes listener if listener exists. Use of this method is optional.
+     * @return {INNavigation} self to let you chain methods
+     * @example
+     * const navigation = new INNavigation(navi);
+     * navigation.removeEventListener();
+     */
+    removeEventListener() {
+        if (!!this._callback_event) {
+            Communication.remove(this._callbackDispatcher);
+            this._callback_event = null;
+        }
         return this;
     }
 
@@ -1595,6 +1650,12 @@ class INNavigation {
                 }, payload)
             }
         });
+    }
+
+    _callbackDispatcher(event) {
+        if (!!this._callback_event) {
+            this._callback_event(event);
+        }
     }
 }
 
@@ -1664,6 +1725,17 @@ class INBle {
         }
     }
 
+    /**
+     * Returns areas that are checked for Bluetooth events
+     * @return {AreaPayload[]} areas if areas are fetched else null
+     * */
+    getAreas() {
+        if (!!this._areas) {
+            return this._areas;
+        }
+        return null;
+    }
+
     _sendAreaEvent(area, mode) {
         this._callback({
             area: area,
@@ -1682,16 +1754,5 @@ class INBle {
 
     _updateTime(area) {
         this._areaEventsMap.set(area, new Date());
-    }
-
-    /**
-     * Returns areas that are checked for Bluetooth events
-     * @return {AreaPayload[]} areas if areas are fetched else null
-     * */
-    getAreas() {
-        if (!!this._areas) {
-            return this._areas;
-        }
-        return null;
     }
 }

@@ -82,6 +82,8 @@
         getPaths();
         // getComplexes();
         setTimeout(() => {simulateNavigation()}, 2000);
+        setTimeout(() => {simulateNavigation()}, 30000);
+        setTimeout(() => {simulateNavigation()}, 60000);
         getAreas();
     });
 
@@ -132,7 +134,7 @@
     function removeINPolyline() {
         if (!!poly) {
             poly.ready().then(() => {
-                poly.remove();
+                poly.erase();
                 poly = null;
             });
         }
@@ -158,7 +160,7 @@
     function removeINArea() {
         if (!!inArea) {
             inArea.ready().then(() => {
-                inArea.remove();
+                inArea.erase();
                 inArea = null;
                 document.getElementById('addListener').setAttribute('disabled', 'true');
             });
@@ -173,7 +175,7 @@
         infoWindow1.ready().then(() => {
             infoWindow1
                 .setContent(infoWindowContent)
-                .setPositionAt(Position.TOP)
+                .setPositionAt(Position.BOTTOM)
                 .setWidth(200)
                 .setHeight(100);
         });
@@ -258,7 +260,7 @@
             return;
         }
         inMarker1.ready().then(() => {
-            inMarker1.remove();
+            inMarker1.erase();
             inMarker1 = null;
         });
     }
@@ -268,7 +270,7 @@
             return;
         }
         inMarker2.ready().then(() => {
-            inMarker2.remove();
+            inMarker2.erase();
             inMarker2 = null;
         });
     }
@@ -329,7 +331,7 @@
     }
 
     function pullPointToPath(point, accuracy, callback) {
-        navi.pullToPath(point, accuracy).then(function(d) {
+        navi.pullToPath(point, accuracy, function(d) {
             console.log('Pulled to path coordinates: ', d.calculatedPosition);
             callback(d.calculatedPosition.x, d.calculatedPosition.y, null);
         });
@@ -340,22 +342,40 @@
     }
 
     function simulateNavigation() {
+        function stop_navigation(message) {
+            if (message.action === 'stopped') {
+                console.log('received stop');
+                navigation.stop();
+                navigation.removeEventListener();
+            }
+            console.log(message);
+        }
         const navigation = new INNavigation(navi);
-        navigation.start(
-            {x: 39, y: 49},
-            {x: 390, y: 473},
-            10);
-        setTimeout(() => navigation.updatePosition(
-            {x: 18, y: 16}),
-            1000
+        navigation.addEventListener( res =>
+            stop_navigation(res)
         );
 
-        for (let i = 0; i < 390; i++) {
+        navigation.start(
+            {x: 39, y: 49},
+            {x: 3900, y: 4730},
+            0);
+        setTimeout(() => navigation.updatePosition(
+            {x: 100, y: 100}),
+            14000
+        );
+
+        for (let i = 0; i < 200; i++) {
             setTimeout(() => {
-                navigation.updatePosition({x: (18 + i), y: (16 + i)})
-            }, i * 20)
+                navigation.updatePosition({x: (100 + (i*5)), y: (100 + (i*5))});
+                console.log('update');
+            }, i * 100)
         }
-        navigation.stop();
+        setTimeout(() => {
+            navigation.stop();
+            console.log('stopped');
+            navigation.removeEventListener();
+        }, 20000);
+
     }
 
     function simulateINBle() {

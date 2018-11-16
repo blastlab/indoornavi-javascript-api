@@ -12,6 +12,7 @@ class INNavigation {
         this._navi = navi;
         this._navi._checkIsReady();
         this._navi._setIFrame();
+        this._callback_event = null;
     }
 
     /**
@@ -52,7 +53,6 @@ class INNavigation {
         });
         return this;
     }
-
     /**
      * Stop navigation process on demand.
      * @example
@@ -60,6 +60,35 @@ class INNavigation {
      */
     stop() {
         this._sendToIFrame('stop', {});
+        return this;
+    }
+
+    /**
+     * Add listener for navigation events. Use of this method is optional.
+     * @param {function} callback - function that is going to be executed when event occurs.
+     * @return {INNavigation} self to let you chain methods
+     * @example
+     * const navigation = new INNavigation(navi);
+     * navigation.addEventListener((eventData) => console.log('event occurred with: ', eventData));
+     */
+    addEventListener(callback) {
+        this._callback_event = callback;
+        Communication.listen('navigation', this._callbackDispatcher.bind(this));
+        return this;
+    }
+
+    /**
+     * Removes listener if listener exists. Use of this method is optional.
+     * @return {INNavigation} self to let you chain methods
+     * @example
+     * const navigation = new INNavigation(navi);
+     * navigation.removeEventListener();
+     */
+    removeEventListener() {
+        if (!!this._callback_event) {
+            Communication.remove(this._callbackDispatcher);
+            this._callback_event = null;
+        }
         return this;
     }
 
@@ -72,5 +101,11 @@ class INNavigation {
                 }, payload)
             }
         });
+    }
+
+    _callbackDispatcher(event) {
+        if (!!this._callback_event) {
+            this._callback_event(event);
+        }
     }
 }
