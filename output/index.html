@@ -92,17 +92,6 @@
             simulateNavigation(points[6], points[4])
         }, 2000);
     });
-
-    // const from = new Date(2017, 10, 1);
-    // const to = new Date(2017, 12, 30);
-    // const report = new INReport('http://localhost:90', 'TestAdmin');
-    // report.getCoordinates(2, from, to).then(function(coordinates) {
-    //     console.log(coordinates);
-    // });
-    // report.getAreaEvents(2, from, to).then(function(events) {
-    //    console.log(events);
-    // });
-    //
     function toggle10999() {
         navi.toggleTagVisibility(10999);
     }
@@ -358,9 +347,24 @@
             0);
         console.log(p1, p2);
 
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < 80; i++) {
             setTimeout(() => {
                 navigation.updatePosition({x: (p1.x + (i*5)), y: (p1.y + (i*5))});
+                console.log('update');
+            }, i * 100)
+        }
+    }
+
+    function navigateBack(p1, p2) {
+        navigation.start(
+            p1,
+            p2,
+            0);
+        console.log(p1, p2);
+
+        for (let i = 0; i < 80; i++) {
+            setTimeout(() => {
+                navigation.updatePosition({x: (p1.x - (i*5)), y: (p1.y - (i*5))});
                 console.log('update');
             }, i * 100)
         }
@@ -395,7 +399,7 @@
             navigation.stop()
         }, 3000);
         setTimeout(() => {
-            navigate(navPoint1, navPoint2);
+            navigateBack(navPoint2, navPoint1);
         }, 12000);
         setTimeout(() => {
             navigate(navPoint1, navPoint2);
