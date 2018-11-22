@@ -326,7 +326,18 @@
 
     function getAreas() {
         data.getAreas(floorId).then(data => {
-            console.log('Lista obiektów typu Area pobranych z bazy danych: ', data);
+            data.forEach(area => {
+                console.log(area.id);
+                const areaObject = new INArea(navi);
+                areaObject.ready().then(() => {
+                    const points = [];
+                    area.points.forEach(point => {
+                        const pointOnMap = MapUtils.pixelsToRealDimensions(navi, point);
+                        points.push(pointOnMap);
+                    });
+                    areaObject.setPoints(points).draw();
+                });
+            });
         })
     }
 
