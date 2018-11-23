@@ -48,8 +48,13 @@
         {x: 1220, y: 1220},
         {x: 480, y: 1220},
         {x: 750, y: 750},
-		{x: 480, y: 480}
+		{x: 480, y: 480},
+        {x: 39, y: 49},
+        {x: 1220, y: 1220}
     ];
+
+    let navigationEvenLoop = false;
+
 
     const navi = new INMap(
         'http://localhost:4200',
@@ -63,6 +68,7 @@
 
     let infoWindow2;
     let infoWindow1;
+    let navigation = null;
     navi.load(floorId).then(function () {
         document.getElementById('toggle10999').removeAttribute('disabled');
         document.getElementById('drawINPolyline').removeAttribute('disabled');
@@ -81,22 +87,11 @@
 		applyLongClickListener();
         getPaths();
         // getComplexes();
-        setTimeout(() => {simulateNavigation()}, 2000);
-        setTimeout(() => {simulateNavigation()}, 30000);
-        setTimeout(() => {simulateNavigation()}, 60000);
-        getAreas();
+        navigation = new INNavigation(navi);
+        setTimeout(() => {
+            simulateNavigation(points[6], points[4])
+        }, 2000);
     });
-
-    // const from = new Date(2017, 10, 1);
-    // const to = new Date(2017, 12, 30);
-    // const report = new INReport('http://localhost:90', 'TestAdmin');
-    // report.getCoordinates(2, from, to).then(function(coordinates) {
-    //     console.log(coordinates);
-    // });
-    // report.getAreaEvents(2, from, to).then(function(events) {
-    //    console.log(events);
-    // });
-    //
     function toggle10999() {
         navi.toggleTagVisibility(10999);
     }
@@ -183,13 +178,13 @@
         inMarker1.ready().then(() => {
 		inMarker1
 			.setPosition(points[0])
-			.setIconImgFromBase64(markerIcon)
+			.setIconBase64(markerIcon)
 			.setLabel('this is label 1')
 			.addEventListener(Event.MOUSE.CLICK, () => {
 					infoWindow1.open(inMarker1);
 				})
 			.draw();
-        });	
+        });
     }
 	
 	
@@ -209,7 +204,7 @@
             marker
                 .setPosition({x: pointInRealDimension.x, y: pointInRealDimension.y});
             if (!!icon) {
-                marker.setIcon(icon);
+                marker.setIconUrl(icon);
             }
             marker.draw();
         });
@@ -352,40 +347,74 @@
         navi.getComplexes(data)
     }
 
-    function simulateNavigation() {
-        function stop_navigation(message) {
-            if (message.action === 'stopped') {
-                console.log('received stop');
-                navigation.stop();
-                navigation.removeEventListener();
-            }
-            console.log(message);
-        }
-        const navigation = new INNavigation(navi);
-        navigation.addEventListener( res =>
-            stop_navigation(res)
-        );
+    function loggingMessages(res) {
+        console.log(res)
+    }
 
+    function navigate(p1, p2) {
         navigation.start(
-            {x: 39, y: 49},
-            {x: 3900, y: 4730},
+            p1,
+            p2,
             0);
-        setTimeout(() => navigation.updatePosition(
-            {x: 100, y: 100}),
-            14000
-        );
+        console.log(p1, p2);
 
-        for (let i = 0; i < 200; i++) {
+        for (let i = 0; i < 80; i++) {
             setTimeout(() => {
-                navigation.updatePosition({x: (100 + (i*5)), y: (100 + (i*5))});
+                navigation.updatePosition({x: (p1.x + (i*5)), y: (p1.y + (i*5))});
                 console.log('update');
             }, i * 100)
         }
+    }
+
+    function navigateBack(p1, p2) {
+        navigation.start(
+            p1,
+            p2,
+            0);
+        console.log(p1, p2);
+
+        for (let i = 0; i < 80; i++) {
+            setTimeout(() => {
+                navigation.updatePosition({x: (p1.x - (i*5)), y: (p1.y - (i*5))});
+                console.log('update');
+            }, i * 100)
+        }
+    }
+
+    function simulateNavigation(p1, p2) {
+        navigationEvenLoop = !navigationEvenLoop;
+        const marker1 = new INMarker(navi);
+
+        const navPoint1 = MapUtils.realDimensionsToPixels(navi, p1);
+        const navPoint2 = MapUtils.realDimensionsToPixels(navi, p2);
+
+        marker1.ready().then(() => {
+            marker1
+                .setPosition(p1)
+                // .setIconBase64(markerIcon)
+                .setLabel('point 1 ')
+                .draw();
+        });
+        const marker2 = new INMarker(navi);
+        marker2.ready().then(() => {
+            marker2
+                .setPosition(p2)
+                // .setIconBase64(markerIcon)
+                .setLabel('point 2')
+                .draw();
+        });
+
+        navigation.addEventListener(loggingMessages);
+        navigate(navPoint1, navPoint2);
         setTimeout(() => {
-            navigation.stop();
-            console.log('stopped');
-            navigation.removeEventListener();
-        }, 20000);
+            navigation.stop()
+        }, 3000);
+        setTimeout(() => {
+            navigateBack(navPoint2, navPoint1);
+        }, 12000);
+        setTimeout(() => {
+            navigate(navPoint1, navPoint2);
+        }, 24000);
 
     }
 
