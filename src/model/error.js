@@ -3,7 +3,7 @@
  */
 const Error = Object.freeze({
     /**
-     * Enum holding descriptions for error codes
+     * Description if path of zero length is calculated.
      */
     NV_001: 'Navigation route has zero length or there is no paths available on given map.'
 });

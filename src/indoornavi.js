@@ -154,8 +154,8 @@ class INMap {
 
     /**
      * Set Object with error message
-     * @param data { height, width, scale }
-     * @return { error: message | null }
+     * @param data object holding height, width, scale
+     * @return object holding error: message
      */
     setErrorMessage(data) {
         if (!data.width) {

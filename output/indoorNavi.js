@@ -332,7 +332,7 @@ class Coordinates {
  */
 const Error = Object.freeze({
     /**
-     * Enum holding descriptions for error codes
+     * Description if path of zero length is calculated.
      */
     NV_001: 'Navigation route has zero length or there is no paths available on given map.'
 });
@@ -1416,8 +1416,8 @@ class INMap {
 
     /**
      * Set Object with error message
-     * @param data { height, width, scale }
-     * @return { error: message | null }
+     * @param data object holding height, width, scale
+     * @return object holding error: message
      */
     setErrorMessage(data) {
         if (!data.width) {
