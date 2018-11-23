@@ -348,7 +348,10 @@
     }
 
     function loggingMessages(res) {
-        console.log(res)
+        console.log(res);
+        if (res.status === 'error') {
+            console.error(Error[res.code]);
+        }
     }
 
     function navigate(p1, p2) {
