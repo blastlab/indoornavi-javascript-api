@@ -1308,7 +1308,7 @@ class INMap {
         return new Promise(function (resolve) {
             self.iFrame.onload = function () {
                 self.getMapDimensions(data => {
-                    const errorMessage = self.setErrorMessage(data);
+                    const errorMessage = self._checkErrorMessage(data);
                     self.parameters = {height: data.height, width: data.width, scale: data.scale, error: errorMessage, zoomExtent: data.zoomExtent};
                     resolve();
                 });
@@ -1426,12 +1426,7 @@ class INMap {
         });
     }
 
-    /**
-     * Set Object with error message
-     * @param data { height, width, scale }
-     * @return { error: message | null }
-     */
-    setErrorMessage(data) {
+    _checkErrorMessage(data) {
         if (!data.width) {
             return { error: 'No width. Check if the map is loaded.' };
         }
