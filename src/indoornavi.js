@@ -1,6 +1,6 @@
 /**
- * Class representing a INMap,
- * creates the INMap object to communicate with INMap frontend server
+ * Class representing an INMap,
+ * creates the INMap object to communicate with IndoorNavi frontend server
  */
 class INMap {
     /**
@@ -20,22 +20,23 @@ class INMap {
     }
 
     /**
-     * Load map with specific id
+     * Loads map with specific id and zoom (default is 1). After map is loaded parameters {@link Parameters} are set to it.
      * @param {number} mapId
+     * @param zoom
      * @returns {Promise} promise that will resolve when connection to WebSocket will be established
      * @example
      * const mapId = 2;
      * const navi = new INMap( 'http://localhost:4200', 'TestAdmin', 'map', { width: 800, height: 600});
      * navi.load(mapId).then(() => console.log(`Map ${mapId} is loaded`));
      */
-    load(mapId) {
+    load(mapId, zoom = 1) {
         const self = this;
-        this._setIFrame(mapId);
+        this._setIFrame(mapId, zoom);
         return new Promise(function (resolve) {
             self.iFrame.onload = function () {
                 self.getMapDimensions(data => {
                     const errorMessage = self.setErrorMessage(data);
-                    self.parameters = {height: data.height, width: data.width, scale: data.scale, error: errorMessage};
+                    self.parameters = {height: data.height, width: data.width, scale: data.scale, error: errorMessage, zoomExtent: data.zoomExtent};
                     resolve();
                 });
             }
@@ -45,7 +46,7 @@ class INMap {
     /**
      * Getter for map dimensions and scale
      * @param {function} callback - this method will be called when the event occurs. Returns object which contains height and width of the map given in pixels,
-     * and {object} scale which contains unit, real distance and other parameters.
+     * and {object} scale which contains unit, real distance and other parameters {@link Parameters}.
      * @example
      * navi.getMapDimensions(data => doSomethingWithMapDimensions(data.height, data.width, data.scale));
      */
@@ -117,7 +118,7 @@ class INMap {
 
     /**
      * Get closest coordinates on floor path for given point
-     * @param {@link Point} point coordinates
+     * @param {Point} point coordinates
      * @param {number} accuracy of path pull
      * @param {function} callback that will be resolved when {Promise} is resolved
      * @return {Promise} promise that will be resolved when {@link Point} is retrieved
@@ -179,7 +180,7 @@ class INMap {
         }
     }
 
-    _setIFrame(mapId) {
+    _setIFrame(mapId, zoom) {
         if (!this.iFrame) {
             const iFrame = document.createElement('iframe');
             iFrame.style.width = `${!!this.config.width ? this.config.width : 640}px`;
@@ -191,7 +192,7 @@ class INMap {
         }
 
         if (!!mapId) {
-            this.iFrame.setAttribute('src', `${this.targetHost}/embedded/${mapId}?api_key=${this.apiKey}`);
+            this.iFrame.setAttribute('src', `${this.targetHost}/embedded/${mapId}?api_key=${this.apiKey}&zoom=${zoom}`);
         }
     }
 
