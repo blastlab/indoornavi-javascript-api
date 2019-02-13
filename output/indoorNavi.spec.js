@@ -493,12 +493,13 @@ class INMapObject {
     }
 
     /**
-     * Removes object and destroys its instance in the frontend server, but do not destroys object class instance in your app.
+     * Erase drawn object and destroys its instance in the frontend server, but do not destroys object class instance in your app.
      * inheritedObjectFromINMapObject is a child object of abstract class INMapObject
+     * To redrawn erased object usage of ready() method is needed again
      * @example
-     * 'inheritedObjectFromINMapObject'.ready().then(() => 'inheritedObjectFromINMapObject'.remove(); );
+     * 'inheritedObjectFromINMapObject'.ready().then(() => 'inheritedObjectFromINMapObject'.erase(); );
      */
-    remove() {
+    erase() {
         if (!!this._id) {
             Communication.send(this._navi.iFrame, this._navi.targetHost, {
                 command: 'removeObject',
@@ -531,6 +532,7 @@ class INArea extends INMapObject {
         this._opacity = 1;
         this._color = '#ff2233';
         this._events = new Set();
+        this._border = {width: 0, color: '#111'};
     }
 
     /**
@@ -608,6 +610,25 @@ class INArea extends INMapObject {
     }
 
     /**
+     * Sets border of the area
+     * @param {Border} border of the area
+     * @return {INArea} self to let you chain methods
+     */
+    setBorder(border) {
+        Validation.requiredAny(border, ['color', 'width'], 'Border must have at least color and/or width');
+        this._border = border;
+        return this;
+    }
+
+    /**
+     * Gets border of the area
+     * @return {Border} border of the area
+     */
+    getBorder() {
+        return this._border;
+    }
+
+    /**
      * Checks, is point of given coordinates inside of the created object.
      * Use of this method is optional.
      * @param {Point} point - coordinates in {@link Point} format that are described in real world dimensions.
@@ -670,7 +691,8 @@ class INArea extends INMapObject {
                         points: this._points,
                         opacity: this._opacity,
                         color: this._color,
-                        events: this._events
+                        events: this._events,
+                        border: this._border
                     }
                 }
             });
@@ -679,7 +701,6 @@ class INArea extends INMapObject {
         }
     }
 }
-
 
 /**
  * Class representing a Circle,
@@ -989,6 +1010,7 @@ class INMarker extends INMapObject {
         super(navi);
         this._type = 'MARKER';
         this._position = {x: 0, y: 0};
+        this._isUrl = null;
         this._icon = null;
         this._infoWindow = {
             content: null,
@@ -1036,17 +1058,34 @@ class INMarker extends INMapObject {
     }
 
     /**
-     * Sets marker icon. Use of this method is optional.
+     * Sets marker icon by passing url. Use of this method is optional.
      * @param {string} path - url path to your icon;
      * @return {INMarker} self to let you chain methods
      * @example
-     * const path = 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png'
+     * const iconUrl = 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png'
      * const marker = new INMarker(navi);
-     * marker.ready().then(() => marker.setIcon(icon).draw(); );
+     * marker.ready().then(() => marker.setIconUrl(iconUrl).draw(); );
      */
-    setIcon(path) {
+    setIconUrl(path) {
         Validation.isString(path, 'Invalid value supplied as an icon path argument');
+        this._isUrl = true;
         this._icon = path;
+        return this;
+    }
+
+    /**
+     * Sets marker icon by passing image as base64 string. Use of this method is optional.
+     * @param {string} stringBase64 - image in base64 string format
+     * @return {INMarker} self to let you chain methods
+     * @example
+     * const stringBase64 = 'ImageInStringBase64format';
+     * const marker = new INMarker(navi);
+     * marker.ready().then(() => marker.setIconBase64(stringBase64).draw(); );
+     */
+    setIconBase64(stringBase64) {
+        Validation.isString(stringBase64, 'Invalid value supplied as an icon base64 string');
+        this._isUrl = false;
+        this._icon = stringBase64;
         return this;
     }
 
@@ -1122,6 +1161,7 @@ class INMarker extends INMapObject {
                     object: {
                         id: this._id,
                         position: this._position,
+                        isUrl: this._isUrl,
                         icon: this._icon,
                         label: this._label,
                         infoWindow: this._infoWindow,
@@ -1264,7 +1304,8 @@ class INMap {
         return new Promise(function (resolve) {
             self.iFrame.onload = function () {
                 self.getMapDimensions(data => {
-                    self.parameters = {height: data.height, width: data.width, scale: data.scale};
+                    const errorMessage = self.setErrorMessage(data);
+                    self.parameters = {height: data.height, width: data.width, scale: data.scale, error: errorMessage};
                     resolve();
                 });
             }
@@ -1347,12 +1388,13 @@ class INMap {
      * Get closest coordinates on floor path for given point
      * @param {@link Point} point coordinates
      * @param {number} accuracy of path pull
+     * @param {function} callback that will be resolved when {Promise} is resolved
      * @return {Promise} promise that will be resolved when {@link Point} is retrieved
      */
-    pullToPath(point, accuracy) {
+    pullToPath(point, accuracy, callback) {
         const self = this;
         return new Promise(resolve => {
-            Communication.listen(`getPointOnPath`, resolve);
+            Communication.listenOnce(`getPointOnPath`, callback, resolve);
             Communication.send(self.iFrame, self.targetHost, {
                 command: 'getPointOnPath',
                 args: {
@@ -1365,7 +1407,8 @@ class INMap {
 
     /**
      * Get list of complex, buildings and floors.
-     * @returns {Promise} promise that will be resolved when complex list is retrieved.
+     * @param {function} callback that will be resolved when {Promise} is resolved
+     * @return {Promise} promise that will be resolved when complex list is retrieved.
      */
     getComplexes(callback) {
         Validation.isFunction(callback);
@@ -1376,6 +1419,27 @@ class INMap {
                 command: 'getComplexes'
             });
         });
+    }
+
+    /**
+     * Set Object with error message
+     * @param data { height, width, scale }
+     * @return { error: message | null }
+     */
+    setErrorMessage(data) {
+        if (!data.width) {
+            return { error: 'No width. Check if the map is loaded.' };
+        }
+
+        if (!data.height) {
+            return { error: 'No height. Check if the map is loaded.' };
+        }
+
+        if (!data.scale) {
+            return { error: 'No scale. Set the scale on the map and publish.' };
+        }
+
+        return null;
     }
 
     _checkIsReady() {
@@ -2056,6 +2120,17 @@ class INBle {
         }
     }
 
+    /**
+     * Returns areas that are checked for Bluetooth events
+     * @return {AreaPayload[]} areas if areas are fetched else null
+     * */
+    getAreas() {
+        if (!!this._areas) {
+            return this._areas;
+        }
+        return null;
+    }
+
     _sendAreaEvent(area, mode) {
         this._callback({
             area: area,
@@ -2074,16 +2149,5 @@ class INBle {
 
     _updateTime(area) {
         this._areaEventsMap.set(area, new Date());
-    }
-
-    /**
-     * Returns areas that are checked for Bluetooth events
-     * @return {AreaPayload[]} areas if areas are fetched else null
-     * */
-    getAreas() {
-        if (!!this._areas) {
-            return this._areas;
-        }
-        return null;
     }
 }

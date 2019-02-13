@@ -21,9 +21,10 @@
 <div id="map"></div>
 </body>
 <script src="indoorNavi.js"></script>
+<script src="markerIconBase64.js"></script>
 <script>
     // floor id
-    const floorId = 3;
+    const floorId = 4;
     let inCircle = null;
     //set poly as global variable
     let poly = null;
@@ -32,7 +33,6 @@
     // set INMarker as global variable
     let inMarker1 = null;
     let inMarker2 = null;
-    let markerIcon = 'https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png';
     let infoWindowContent = '<h2>Lorem ipsum dolor sit amet</h2>,' +
         ' consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.' +
         ' <b>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.' +
@@ -48,8 +48,13 @@
         {x: 1220, y: 1220},
         {x: 480, y: 1220},
         {x: 750, y: 750},
-		{x: 480, y: 480}
+		{x: 480, y: 480},
+        {x: 39, y: 49},
+        {x: 1220, y: 1220}
     ];
+
+    let navigationEvenLoop = false;
+
 
     const navi = new INMap(
         'http://localhost:4200',
@@ -63,6 +68,7 @@
 
     let infoWindow2;
     let infoWindow1;
+    let navigation = null;
     navi.load(floorId).then(function () {
         document.getElementById('toggle10999').removeAttribute('disabled');
         document.getElementById('drawINPolyline').removeAttribute('disabled');
@@ -81,20 +87,11 @@
 		applyLongClickListener();
         getPaths();
         // getComplexes();
-        setTimeout(() => {simulateNavigation()}, 2000);
-        getAreas();
+        navigation = new INNavigation(navi);
+        setTimeout(() => {
+            simulateNavigation(points[6], points[4])
+        }, 2000);
     });
-
-    // const from = new Date(2017, 10, 1);
-    // const to = new Date(2017, 12, 30);
-    // const report = new INReport('http://localhost:90', 'TestAdmin');
-    // report.getCoordinates(2, from, to).then(function(coordinates) {
-    //     console.log(coordinates);
-    // });
-    // report.getAreaEvents(2, from, to).then(function(events) {
-    //    console.log(events);
-    // });
-    //
     function toggle10999() {
         navi.toggleTagVisibility(10999);
     }
@@ -132,7 +129,7 @@
     function removeINPolyline() {
         if (!!poly) {
             poly.ready().then(() => {
-                poly.remove();
+                poly.erase();
                 poly = null;
             });
         }
@@ -147,6 +144,7 @@
             inArea.setPoints(points)
                 .setColor('rgb(144,224,017)')
                 .setOpacity(0.5)
+                .setBorder({width: 2, color: '#090'})
                 .draw();
             console.log(`Point x: 740, y: 750 is within drawn area: ${inArea.isWithin({x: 740, y: 750})}`);
             console.log(`Point x: 740, y: 750 is within drawn area: ${inArea.isWithin({x: 750, y: 750})}`);
@@ -157,7 +155,7 @@
     function removeINArea() {
         if (!!inArea) {
             inArea.ready().then(() => {
-                inArea.remove();
+                inArea.erase();
                 inArea = null;
                 document.getElementById('addListener').setAttribute('disabled', 'true');
             });
@@ -172,7 +170,7 @@
         infoWindow1.ready().then(() => {
             infoWindow1
                 .setContent(infoWindowContent)
-                .setPositionAt(Position.TOP)
+                .setPositionAt(Position.BOTTOM)
                 .setWidth(200)
                 .setHeight(100);
         });
@@ -180,13 +178,13 @@
         inMarker1.ready().then(() => {
 		inMarker1
 			.setPosition(points[0])
-			.setIcon(markerIcon)
+			.setIconBase64(markerIcon)
 			.setLabel('this is label 1')
 			.addEventListener(Event.MOUSE.CLICK, () => {
 					infoWindow1.open(inMarker1);
 				})
 			.draw();
-        });	
+        });
     }
 	
 	
@@ -206,7 +204,7 @@
             marker
                 .setPosition({x: pointInRealDimension.x, y: pointInRealDimension.y});
             if (!!icon) {
-                marker.setIcon(icon);
+                marker.setIconUrl(icon);
             }
             marker.draw();
         });
@@ -257,7 +255,7 @@
             return;
         }
         inMarker1.ready().then(() => {
-            inMarker1.remove();
+            inMarker1.erase();
             inMarker1 = null;
         });
     }
@@ -267,7 +265,7 @@
             return;
         }
         inMarker2.ready().then(() => {
-            inMarker2.remove();
+            inMarker2.erase();
             inMarker2 = null;
         });
     }
@@ -323,12 +321,23 @@
 
     function getAreas() {
         data.getAreas(floorId).then(data => {
-            console.log('Lista obiektów typu Area pobranych z bazy danych: ', data);
+            data.forEach(area => {
+                console.log(area.id);
+                const areaObject = new INArea(navi);
+                areaObject.ready().then(() => {
+                    const points = [];
+                    area.points.forEach(point => {
+                        const pointOnMap = MapUtils.pixelsToRealDimensions(navi, point);
+                        points.push(pointOnMap);
+                    });
+                    areaObject.setPoints(points).draw();
+                });
+            });
         })
     }
 
     function pullPointToPath(point, accuracy, callback) {
-        navi.pullToPath(point, accuracy).then(function(d) {
+        navi.pullToPath(point, accuracy, function(d) {
             console.log('Pulled to path coordinates: ', d.calculatedPosition);
             callback(d.calculatedPosition.x, d.calculatedPosition.y, null);
         });
@@ -338,23 +347,75 @@
         navi.getComplexes(data)
     }
 
-    function simulateNavigation() {
-        const navigation = new INNavigation(navi);
-        navigation.start(
-            {x: 39, y: 49},
-            {x: 390, y: 473},
-            10);
-        setTimeout(() => navigation.updatePosition(
-            {x: 18, y: 16}),
-            1000
-        );
+    function loggingMessages(res) {
+        console.log(res)
+    }
 
-        for (let i = 0; i < 390; i++) {
+    function navigate(p1, p2) {
+        navigation.start(
+            p1,
+            p2,
+            0);
+        console.log(p1, p2);
+
+        for (let i = 0; i < 80; i++) {
             setTimeout(() => {
-                navigation.updatePosition({x: (18 + i), y: (16 + i)})
-            }, i * 20)
+                navigation.updatePosition({x: (p1.x + (i*5)), y: (p1.y + (i*5))});
+                console.log('update');
+            }, i * 100)
         }
-        navigation.stop();
+    }
+
+    function navigateBack(p1, p2) {
+        navigation.start(
+            p1,
+            p2,
+            0);
+        console.log(p1, p2);
+
+        for (let i = 0; i < 80; i++) {
+            setTimeout(() => {
+                navigation.updatePosition({x: (p1.x - (i*5)), y: (p1.y - (i*5))});
+                console.log('update');
+            }, i * 100)
+        }
+    }
+
+    function simulateNavigation(p1, p2) {
+        navigationEvenLoop = !navigationEvenLoop;
+        const marker1 = new INMarker(navi);
+
+        const navPoint1 = MapUtils.realDimensionsToPixels(navi, p1);
+        const navPoint2 = MapUtils.realDimensionsToPixels(navi, p2);
+
+        marker1.ready().then(() => {
+            marker1
+                .setPosition(p1)
+                // .setIconBase64(markerIcon)
+                .setLabel('point 1 ')
+                .draw();
+        });
+        const marker2 = new INMarker(navi);
+        marker2.ready().then(() => {
+            marker2
+                .setPosition(p2)
+                // .setIconBase64(markerIcon)
+                .setLabel('point 2')
+                .draw();
+        });
+
+        navigation.addEventListener(loggingMessages);
+        navigate(navPoint1, navPoint2);
+        setTimeout(() => {
+            navigation.stop()
+        }, 3000);
+        setTimeout(() => {
+            navigateBack(navPoint2, navPoint1);
+        }, 12000);
+        setTimeout(() => {
+            navigate(navPoint1, navPoint2);
+        }, 24000);
+
     }
 
     function simulateINBle() {

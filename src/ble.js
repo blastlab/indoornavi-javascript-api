@@ -64,6 +64,17 @@ class INBle {
         }
     }
 
+    /**
+     * Returns areas that are checked for Bluetooth events
+     * @return {AreaPayload[]} areas if areas are fetched else null
+     * */
+    getAreas() {
+        if (!!this._areas) {
+            return this._areas;
+        }
+        return null;
+    }
+
     _sendAreaEvent(area, mode) {
         this._callback({
             area: area,
@@ -82,16 +93,5 @@ class INBle {
 
     _updateTime(area) {
         this._areaEventsMap.set(area, new Date());
-    }
-
-    /**
-     * Returns areas that are checked for Bluetooth events
-     * @return {AreaPayload[]} areas if areas are fetched else null
-     * */
-    getAreas() {
-        if (!!this._areas) {
-            return this._areas;
-        }
-        return null;
     }
 }
