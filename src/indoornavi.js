@@ -114,7 +114,6 @@ class INMap {
         Communication.listen(event, callback);
     }
 
-
     /**
      * Get closest coordinates on floor path for given point
      * @param {@link Point} point coordinates
