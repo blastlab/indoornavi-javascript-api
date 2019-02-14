@@ -373,6 +373,24 @@ class Parameters {
 }
 
 /**
+ * Class representing an NavigationPoint
+ */
+class NavigationPoint {
+    /**
+     * Navigation point parameters
+     *  @param {number} radius of the circle
+     *  @param {Border} Border object
+     *  @param {number} opacity of the circle
+     *  @param {String} color of the circle
+     */
+    constructor(radius, border, opacity, color) {
+        this.radius = radius;
+        this.border = border;
+        this.opacity = opacity
+        this.color = color;
+    }
+}
+/**
  * Class representing a Path
  */
 class Path {
@@ -1388,7 +1406,6 @@ class INMap {
         Communication.listen(event, callback);
     }
 
-
     /**
      * Get closest coordinates on floor path for given point
      * @param {Point} point coordinates
@@ -1603,40 +1620,6 @@ class INNavigation {
         return this;
     }
 
-    /**
-     * Updates actual location on navigation path
-     * @param {Point} position - object {@link Point} representing updated location
-     * @return {INNavigation} self to let you chain methods
-     * @example
-     * const navigation = new INNavigation(navi);
-     * navigation.start({x: 100, y: 100}, {x: 800, y: 800}, 10)
-     * navigation.update({x: 120, y: 120})
-     */
-    updatePosition(position) {
-        Validation.isPoint(position, 'Position value is not an integer');
-        this._sendToIFrame('update', {
-            position: position
-        });
-        return this;
-    }
-    /**
-     * Stop navigation process on demand.
-     * @example
-     * navigation.stop();
-     */
-    stop() {
-        this._sendToIFrame('stop', {});
-        return this;
-    }
-
-    /**
-     * Add listener for navigation events. Use of this method is optional.
-     * @param {function} callback - function that is going to be executed when event occurs.
-     * @return {INNavigation} self to let you chain methods
-     * @example
-     * const navigation = new INNavigation(navi);
-     * navigation.addEventListener((eventData) => console.log('event occurred with: ', eventData));
-     */
     addEventListener(callback) {
         this._callback_event = callback;
         Communication.listen('navigation', this._callbackDispatcher.bind(this));
@@ -1657,6 +1640,102 @@ class INNavigation {
         }
         return this;
     }
+
+    /**
+     * Updates actual location on navigation path
+     * @param {Point} position - object {@link Point} representing updated location
+     * @return {INNavigation} self to let you chain methods
+     * @example
+     * const navigation = new INNavigation(navi);
+     * navigation.start({x: 100, y: 100}, {x: 800, y: 800}, 10)
+     * navigation.update({x: 120, y: 120})
+     */
+    updatePosition(position) {
+        Validation.isPoint(position, 'Position value is not an integer');
+        this._sendToIFrame('update', {
+            position: position
+        });
+        return this;
+    }
+
+    /**
+     * Stop navigation process on demand.
+     * @example
+     * navigation.stop();
+     */
+    stop() {
+        this._sendToIFrame('stop', {});
+        return this;
+    }
+
+    /**
+     * Disable drawing starting point of navigation.
+     * @param state {boolean} enable or disable circle visibility, false by default
+     * @returns {INNavigation} self to let you chain methods
+     * @example
+     * const navigation = new INNavigation(navi);
+     * navigation.disableStartPoint(true);
+     */
+    disableStartPoint(state) {
+        this._sendToIFrame('disableStart', {state: state});
+        return this;
+    }
+
+    /**
+     * Disable drawing destination point of navigation.
+     * @param state {boolean} enable or disable circle visibility, false by default
+     * @returns {INNavigation} self to let you chain methods
+     * @example
+     * const navigation = new INNavigation(navi);
+     * navigation.disableEndPoint(true);
+     */
+    disableEndPoint(state) {
+        this._sendToIFrame('disableEnd', {state: state});
+        return this;
+    }
+
+    /**
+     * Sets graphic properties of the starting point
+     * @param startPointObject {NavigationPoint} point parameters
+     * @returns {INNavigation} self to let you chain methods
+     */
+    setStartPoint(startPointObject) {
+        this._sendToIFrame('startPoint', {navigationPoint: startPointObject});
+        return this;
+    }
+
+    /**
+     * Sets graphic properties of the destination point
+     * @param startPointObject {NavigationPoint} point parameters
+     * @returns {INNavigation} self to let you chain methods
+     */
+    setEndPoint(endPointObject) {
+        this._sendToIFrame('endPoint', {navigationPoint: endPointObject});
+        return this;
+    }
+
+    /**
+     * Sets color of the navigation path
+     * @param pathColor desired color
+     * @returns {INNavigation} self to let you chain methods
+     */
+    setPathColor(pathColor) {
+        this._sendToIFrame('setPathColor', {pathColor: pathColor});
+        return this;
+    }
+
+
+    /**
+     * Sets width of the navigation path
+     * @param pathWidth desired width
+     * @returns {INNavigation} self to let you chain methods
+     */
+    setPathWidth(pathWidth) {
+        this._sendToIFrame('setPathWidth', {pathWidth: pathWidth});
+        return this;
+    }
+
+
 
     _sendToIFrame(action, payload) {
         Communication.send(this._navi.iFrame, this._navi.targetHost, {
