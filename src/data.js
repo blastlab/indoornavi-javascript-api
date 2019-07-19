@@ -38,7 +38,9 @@ class INData {
                     return {
                         id: payload.id,
                         name: payload.name,
-                        points: payload.points
+                        points: payload.points,
+                        heightMin: payload.heightMin,
+                        heightMax: payload.heightMax
                     }
                 });
                 resolve(areas);

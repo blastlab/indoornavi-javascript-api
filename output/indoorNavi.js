@@ -270,11 +270,15 @@ class AreaPayload {
      *  @param {number} id unique given area id number
      *  @param {string} name not unique given area name
      *  @param {array} points as array of {@link Point}
+     *  @param {number} heightMin vertical start of the area
+     *  @param {number} heightMax vertical end of the area
      */
-    constructor(id, name, points) {
+    constructor(id, name, points, heightMin, heightMax) {
         this.id = id;
         this.name = name;
-        this.points = points
+        this.points = points;
+        this.heightMin = heightMin;
+        this.heightMax = heightMax;
     }
 }
 
@@ -305,6 +309,7 @@ class Coordinates {
             coordinates.push(new Coordinates(
                 _coordinates['point']['x'],
                 _coordinates['point']['y'],
+                _coordinates['point']['z'],
                 _coordinates['tagShortId'],
                 new Date(_coordinates['date'])
             ));
@@ -316,12 +321,14 @@ class Coordinates {
      * Coordinates object
      * @param {number} x
      * @param {number} y
+     * @param {number} z
      * @param {number} tagId short id of the tag
      * @param {Date} date when tag appeared in this coordinates
      */
-    constructor(x, y, tagId, date) {
+    constructor(x, y, z, tagId, date) {
         this.x = x;
         this.y = y;
+        this.z = z;
         this.tagId = tagId;
         this.date = date;
     }
@@ -352,6 +359,24 @@ const Event = {
 };
 
 /**
+ * Class representing an NavigationPoint
+ */
+class NavigationPoint {
+    /**
+     * Navigation point parameters
+     *  @param {number} radius of the circle
+     *  @param {Border} Border object
+     *  @param {number} opacity of the circle
+     *  @param {String} color of the circle
+     */
+    constructor(radius, border, opacity, color) {
+        this.radius = radius;
+        this.border = border;
+        this.opacity = opacity
+        this.color = color;
+    }
+}
+/**
  * Parameters set to INMap object
  */
 class Parameters {
@@ -372,24 +397,6 @@ class Parameters {
     }
 }
 
-/**
- * Class representing an NavigationPoint
- */
-class NavigationPoint {
-    /**
-     * Navigation point parameters
-     *  @param {number} radius of the circle
-     *  @param {Border} Border object
-     *  @param {number} opacity of the circle
-     *  @param {String} color of the circle
-     */
-    constructor(radius, border, opacity, color) {
-        this.radius = radius;
-        this.border = border;
-        this.opacity = opacity
-        this.color = color;
-    }
-}
 /**
  * Class representing a Path
  */
@@ -1326,7 +1333,7 @@ class INMap {
         return new Promise(function (resolve) {
             self.iFrame.onload = function () {
                 self.getMapDimensions(data => {
-                    const errorMessage = self._checkErrorMessage(data);
+                    const errorMessage = self.setErrorMessage(data);
                     self.parameters = {height: data.height, width: data.width, scale: data.scale, error: errorMessage, zoomExtent: data.zoomExtent};
                     resolve();
                 });
@@ -1443,7 +1450,12 @@ class INMap {
         });
     }
 
-    _checkErrorMessage(data) {
+    /**
+     * Set Object with error message
+     * @param data { height, width, scale }
+     * @return { error: message | null }
+     */
+    setErrorMessage(data) {
         if (!data.width) {
             return { error: 'No width. Check if the map is loaded.' };
         }
@@ -1572,7 +1584,9 @@ class INData {
                     return {
                         id: payload.id,
                         name: payload.name,
-                        points: payload.points
+                        points: payload.points,
+                        heightMin: payload.heightMin,
+                        heightMax: payload.heightMax
                     }
                 });
                 resolve(areas);
